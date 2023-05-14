@@ -1,0 +1,22 @@
+{
+  "files.associations": {
+    "slap.h": "c",
+    "array": "c",
+    "string": "c",
+    "string_view": "c",
+    "ranges": "c",
+    "tuple": "c",
+    "random": "c",
+    "types.h": "c",
+    "constants.h": "c",
+    "errors.h": "c",
+    "utils.h": "c",
+    "lqr.h": "c",
+    "model.h": "c",
+    "chrono": "c",
+    "limits": "c",
+    "algorithm": "c",
+    "forward_pass_data.h": "c",
+    "auxil.h": "c"
+  }
+}

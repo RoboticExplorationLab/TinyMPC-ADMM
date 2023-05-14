@@ -39,16 +39,16 @@ void BackPassTest() {
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
-  tiny_Settings stgs;
+  tiny_ADMMSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  tiny_Data data;
-  tiny_Info info;
-  tiny_Solution soln;
-  tiny_Workspace work;
+  tiny_ADMMData data;
+  tiny_ADMMInfo info;
+  tiny_ADMMSolution soln;
+  tiny_ADMMWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   sfloat temp_data[work.data_size];
-  INIT_ZEROS(temp_data);
+  T_INIT_ZEROS(temp_data);
 
   tiny_InitWorkspaceTempData(&work, temp_data);
 

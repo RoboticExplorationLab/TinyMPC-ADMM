@@ -7,29 +7,15 @@ extern "C" {
 
 
 #include "types.h"
+#include "utils.h"
 
-enum tiny_ErrorCode tiny_SetInputBound(tiny_Workspace* work, sfloat* Ac_data, sfloat* bc_data);
+enum tiny_ErrorCode tiny_SetInputBound(tiny_ADMMWorkspace* work, sfloat* Ac_data, sfloat* lc_data, sfloat* uc_data);
 
-enum tiny_ErrorCode tiny_SetStateBound(tiny_Workspace* work, sfloat* Ac_data, sfloat* bc_data);
+enum tiny_ErrorCode tiny_SetStateBound(tiny_ADMMWorkspace* work, sfloat* Ac_data, sfloat* lc_data, sfloat* uc_data);
 
-enum tiny_ErrorCode tiny_EvalInputConstraint(tiny_Workspace* work, const int k);
+// enum tiny_ErrorCode tiny_ProjectInput(tiny_ADMMWorkspace* work);
 
-// void tiny_EvalInputConstraintOffset(Matrix* cu, const tiny_ProblemData prob);
-
-// void tiny_EvalInputConstraintJacobian(Matrix* ineq_jac, const tiny_ProblemData prob);
-
-enum tiny_ErrorCode tiny_EvalStateConstraint(tiny_Workspace* work, const int k);
-
-// void tiny_EvalStateConstraintOffset(Matrix* cx, const tiny_ProblemData prob);
-
-// void tiny_EvalStateConstraintJacobian(Matrix* ineq_jac, const tiny_ProblemData prob);
-
-enum tiny_ErrorCode tiny_ActiveIneqMask(Matrix* mask, const Matrix dual,
-                         const Matrix eval);
-
-enum tiny_ErrorCode tiny_ProjectOrthantDuals(Matrix* dual, const Matrix new_dual);
-
-int IsConstrained(tiny_Workspace* work);
+int IsConstrained(tiny_ADMMWorkspace* work);
 
 
 # ifdef __cplusplus

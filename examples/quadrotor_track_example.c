@@ -117,20 +117,20 @@ int main() {
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
   // tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
-  tiny_Settings stgs;
+  tiny_ADMMSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
 
-  tiny_Data data;
-  tiny_Info info;
-  tiny_Solution soln;
-  tiny_Workspace work;
+  tiny_ADMMData data;
+  tiny_ADMMInfo info;
+  tiny_ADMMSolution soln;
+  tiny_ADMMWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   // ===== Fill in the remaining struct =====
   tiny_InitModelFromArray(&model, &A, &B, &f, A_data, B_data, f_data);
 
   sfloat temp_data[work.data_size];
-  INIT_ZEROS(temp_data);
+  T_INIT_ZEROS(temp_data);
   tiny_InitWorkspaceTempData(&work, temp_data);  
 
   tiny_InitSolnTrajFromArray(&work, Xhrz, Uhrz, Xhrz_data, Uhrz_data);
@@ -175,8 +175,8 @@ int main() {
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
   stgs.max_iter_riccati = 1;
-  stgs.max_iter_al = 1;
-  stgs.tol_abs_cstr = 1e-3;
+  stgs.max_iter = 1;
+  stgs.tol_abs_dual = 1e-3;
   stgs.verbose = 0;
   stgs.reg_min = 1e-6;
 
@@ -194,7 +194,7 @@ int main() {
 
     // === 1. Setup and solve MPC ===
     for (int j = 0; j < NSTATES; ++j) {
-      X[k].data[j] += X[k].data[j] * NOISE(5);
+      X[k].data[j] += X[k].data[j] * T_NOISE(5);
     }
     slap_Copy(work.data->x0, X[k]);  // update current measurement
 
@@ -220,8 +220,8 @@ int main() {
     }
     // Test control constraints here (since we didn't save U)
     for (int i = 0; i < NINPUTS; ++i) {
-      TEST(Uhrz[0].data[i] < bcu_data[i] + stgs.tol_abs_cstr);
-      TEST(Uhrz[0].data[i] > -bcu_data[i] - stgs.tol_abs_cstr);
+      TEST(Uhrz[0].data[i] < bcu_data[i] + stgs.tol_abs_dual);
+      TEST(Uhrz[0].data[i] > -bcu_data[i] - stgs.tol_abs_dual);
     }
     // PrintMatrixT(Uhrz[0]);
 
@@ -232,15 +232,15 @@ int main() {
     // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uref[k]);
     tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uhrz[0]);
     // tiny_DynamicsLti(&X[k + 1], X[k], Uref[k], model);
-    tiny_ShiftFill(Uhrz, ARRAY_SIZE(Uhrz));
+    tiny_ShiftFill(Uhrz, T_ARRAY_SIZE(Uhrz));
   }
 
   // ========== Test ==========
   // Test state constraints
   for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
     for (int i = 0; i < NSTATES; ++i) {
-      TEST(X[k].data[i] < bcx_data[i] + stgs.tol_abs_cstr);
-      TEST(X[k].data[i] > -bcx_data[i] - stgs.tol_abs_cstr);
+      TEST(X[k].data[i] < bcx_data[i] + stgs.tol_abs_dual);
+      TEST(X[k].data[i] > -bcx_data[i] - stgs.tol_abs_dual);
     }
   }
   // Test tracking performance

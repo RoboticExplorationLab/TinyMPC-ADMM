@@ -36,32 +36,31 @@ typedef struct {
   Matrix* X;      ///< State trajectory solution 
   Matrix* U;      ///< Input trajectory solution
 
-  Matrix* K;
-  Matrix* d;
-  Matrix* P;
-  Matrix* p;
+  Matrix Kinf;    ///< Feedback gain of IHLQR
+  Matrix* d;      ///< Feedforward gain
+  Matrix Pinf;    ///< Terminal cost Hessian of IHLQR
+  Matrix* p;      ///< Terminal cost gradient
   
-  Matrix* YX;     ///< Input duals associated to \f$l <= A*X[k] <= u\f$
-  Matrix* YU;     ///< State duals associated to \f$l <= A*U[k] <= u\f$
-  Matrix  YG;     ///< Goal dual associated to \f$X[N] = xg\f$
+  Matrix* YU;     ///< Dual variables for input constraints
+  Matrix* YX;     ///< Dual variables for state constraints
+  Matrix YG;      ///< Dual variables for goal constraint
 
   int data_size;
-} tiny_Solution;
+} tiny_ADMMSolution;
 
 
 /**
  * Solver return information
  */
 typedef struct {
-  int iter_al;        ///< Number of AL iterations taken
+  int iter;           ///< Number of AL iterations taken
   int iter_riccati;   ///< Number of Riccati iterations taken
   int status_val;     ///< Integer, status defined in constants.h
 
-  sfloat obj_pri;     ///< primal objective
-  sfloat obj_al;      ///< Augmented Lagrangian objective
+  sfloat obj_val;     ///< primal objective
   sfloat pri_res;     ///< norm of primal residual
   sfloat dua_res;     ///< norm of dual residual
-} tiny_Info;
+} tiny_ADMMInfo;
 
 
 /**********************************
@@ -77,18 +76,18 @@ typedef struct {
   sfloat reg_mul;             ///< Regularization update multiplier
   int    en_reg_update;       ///< Boolean, enable regularization update (tighter solve)
   
-  sfloat penalty_init;        ///< Initial penalty
-  sfloat penalty_max;         ///< Maximum penalty
-  sfloat penalty_mul;         ///< Penalty multiplier
+  sfloat rho_init;            ///< Initial rho
+  sfloat rho_max;             ///< Maximum rho
+  sfloat rho_mul;             ///< Penalty multiplier
 
   sfloat alpha_mul;           ///< Line-search step multiplier
 
-  int    max_iter_al;         ///< Maximum number of AL iterations
+  int    max_iter;            ///< Maximum number of AL iterations
   int    max_iter_riccati;    ///< Maximum number of Riccati solve iterations
   int    max_iter_ls;         ///< Maximum number of line-search iterations
 
-  sfloat tol_abs_riccati;     ///< Riccati solve tolerance
-  sfloat tol_abs_cstr;        ///< Constraint tolerance
+  sfloat tol_abs_prim;        ///< Riccati solve tolerance
+  sfloat tol_abs_dual;        ///< Constraint tolerance
 
   int    en_cstr_states;      ///< Boolean, enable inequality constraints on states
   int    en_cstr_inputs;      ///< Boolean, enable inequality constraints on inputs
@@ -97,12 +96,12 @@ typedef struct {
   int    verbose;             ///< Integer, level to write out progress
   int    adaptive_horizon;    ///< Integer, after `adaptive_horizon` steps, use the second model with longer interval; if 0, disabled 
   int    check_riccati;       ///< Boolean, if 0, then termination checking is disabled
-  int    check_al;            ///< Boolean, if 0, then termination checking is disabled
+  int    check_termination;   ///< Integer, check termination interval; if 0, then termination checking is disabled
   int    warm_start;          ///< boolean, enable warm start
   sfloat time_limit;          ///< Time limit of each MPC step; if 0, disabled
-} tiny_Settings;
+} tiny_ADMMSettings;
 
-// void tiny_InitSettings(tiny_Settings* solver);
+// void tiny_InitSettings(tiny_ADMMSettings* solver);
 
 
 /**
@@ -114,62 +113,48 @@ typedef struct {
 
   Matrix  Q;
   Matrix  R;
-  Matrix  Qf;
   Matrix* q;
   Matrix* r;
-  Matrix  qf;
-
+  
   Matrix* X_ref;
   Matrix* U_ref;
 
   Matrix Acx;
-  Matrix bcx;
+  Matrix ucx;
+  Matrix lcx;
   Matrix Acu;
-  Matrix bcu;
+  Matrix ucu;
+  Matrix lcu;
+  
   int data_size;
-} tiny_Data;
+} tiny_ADMMData;
 
 // void tiny_InitProblemData(tiny_ProblemData* prob);
 
 typedef struct {
-  tiny_Data*        data;      ///< problem data
-  tiny_Settings*    stgs;      ///< problem settings
-  tiny_Solution*    soln;      ///< problem solution
-  tiny_Info*        info;      ///< solver information
+  tiny_ADMMData*        data;      ///< problem data
+  tiny_ADMMSettings*    stgs;      ///< problem settings
+  tiny_ADMMSolution*    soln;      ///< problem solution
+  tiny_ADMMInfo*        info;      ///< solver information
 
   sfloat reg;
   sfloat alpha;
-  sfloat penalty;
+  sfloat rho;
+
   // Temporary data
-  Matrix Q_temp;
-  Matrix c_temp;
-
-  Matrix Qxx;
-  Matrix Qxu;
-  Matrix Qux;
-  Matrix Quu;
-  Matrix Qx;
-  Matrix Qu;
+  Matrix Qu;          ///< temporary 
+  Matrix Quu_inv;     ///< mxm cache for (R + B'*Pinf*B)\I 
+  Matrix AmBKt;       ///< nxn cache for (A - BKinf)'
+  Matrix coeff_d2p;   ///< nxm cache for Kinf'*R - AmBKt*Pinf*B
   
-  Matrix cu;
-  Matrix cu2;
-  Matrix cu_jac;
-  Matrix cu_jac2;
-  Matrix cu_mask;
-  Matrix YU_hat;
-
-  Matrix cx;
-  Matrix cx2;
-  Matrix cx_jac;
-  Matrix cx_jac2;
-  Matrix cx_mask;
-  Matrix YX_hat;
-
-  Matrix cg;
+  Matrix* ZU;         ///< Slack variable for input
+  Matrix* ZU_new;     ///< Updated slack variable for input
+  Matrix* ZX;         ///< Slack variable for input
+  Matrix* ZX_new;     ///< Updated slack variable for input
 
   int data_size;      ///< sum data size of all temporary data //TODO: + model + solution 
   int first_run;      ///< flag indicating whether the solve function has been run before
-} tiny_Workspace;
+} tiny_ADMMWorkspace;
 
 
 # ifdef __cplusplus

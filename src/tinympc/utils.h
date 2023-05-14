@@ -32,17 +32,38 @@ extern "C" {
 //========================================
 // Return length of an array
 //========================================
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+#define T_ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 //========================================
 // Initialize memory with zeros
 //========================================
-#define INIT_ZEROS(data) (memset(data, 0, sizeof(data)))  
+#define T_INIT_ZEROS(data) (memset(data, 0, sizeof(data)))  
 
 //========================================
 // Return a random noise from percentage
 //========================================
-#define NOISE(percent) (((2 * ((float)rand() / RAND_MAX)) - 1) / 100 * percent)
+#define T_NOISE(percent) (((2 * ((float)rand() / RAND_MAX)) - 1) / 100 * percent)
+
+//========================================
+// Maximum
+//========================================
+# ifndef T_MAX
+#  define T_MAX(a, b) (((a) > (b)) ? (a) : (b))
+# endif /* ifndef T_MAX */
+
+//========================================
+// Minimum
+//========================================
+# ifndef T_MIN
+#  define T_MIN(a, b) (((a) < (b)) ? (a) : (b))
+# endif /* ifndef T_MIN */
+
+//========================================
+// Absolute
+//========================================
+# ifndef T_ABS
+#  define T_ABS(x) (((x) < 0) ? -(x) : (x))
+# endif /* ifndef T_ABS */
 
 //========================================
 // Print matrix info
@@ -68,7 +89,7 @@ extern "C" {
     printf(" LTV: %d, affine: %d\n", model.ltv, model.affine); \
   }
 
-void PrintSolveInfo(tiny_Workspace* work);
+void PrintSolveInfo(tiny_ADMMWorkspace* work);
 //========================================
 // Read data from file
 //========================================
@@ -105,6 +126,7 @@ void tiny_ShiftFill(Matrix* mats, const int length);
 
 void tiny_ShiftFillWith(Matrix* mats, const sfloat* x, const int length);
 
+void SwapVectors(sfloat **a, sfloat **b);
 
 # ifdef __cplusplus
 }

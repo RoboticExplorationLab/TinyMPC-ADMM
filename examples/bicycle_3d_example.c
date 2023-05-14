@@ -83,19 +83,19 @@ int main() {
   // Create model and settings first due to essential problem setup
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 1, 1, 0.1);
-  tiny_Settings stgs;
+  tiny_ADMMSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
 
   // Create workspace
-  tiny_Data data;
-  tiny_Info info;
-  tiny_Solution soln;
-  tiny_Workspace work;
+  tiny_ADMMData data;
+  tiny_ADMMInfo info;
+  tiny_ADMMSolution soln;
+  tiny_ADMMWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
 
   // Now can fill in all the remaining struct
   sfloat temp_data[work.data_size];
-  INIT_ZEROS(temp_data);
+  T_INIT_ZEROS(temp_data);
   tiny_InitWorkspaceTempData(&work, temp_data);
 
   tiny_InitModelFromArray(&model, A, B, f, A_data, B_data, f_data);
@@ -142,7 +142,7 @@ int main() {
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 1;
   stgs.max_iter_riccati = 1;
-  stgs.max_iter_al = 6;
+  stgs.max_iter = 6;
   stgs.verbose = 0;
   stgs.reg_min = 1e-6;
 
@@ -154,9 +154,9 @@ int main() {
   for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
     printf("\n=> k = %d\n", k);
     // === 1. Setup and solve MPC ===
-    X[k].data[0] += X[k].data[0] * NOISE(1);  // noise 2% of current X
-    X[k].data[1] += X[k].data[1] * NOISE(1);
-    X[k].data[2] += X[k].data[2] * NOISE(1);
+    X[k].data[0] += X[k].data[0] * T_NOISE(1);  // noise 2% of current X
+    X[k].data[1] += X[k].data[1] * T_NOISE(1);
+    X[k].data[2] += X[k].data[2] * T_NOISE(1);
     slap_Copy(work.data->x0, X[k]);  // update current measurement
 
     // Update reference
@@ -175,8 +175,8 @@ int main() {
     }
     // Test control constraints here (since we didn't save U)
     for (int i = 0; i < NINPUTS; ++i) {
-      TEST(Uhrz[0].data[i] < bcu_data[i] + stgs.tol_abs_cstr);
-      TEST(Uhrz[0].data[i] > -bcu_data[i] - stgs.tol_abs_cstr);
+      TEST(Uhrz[0].data[i] < bcu_data[i] + stgs.tol_abs_dual);
+      TEST(Uhrz[0].data[i] > -bcu_data[i] - stgs.tol_abs_dual);
     }
 
     // === 2. Simulate dynamics using the first control solution ===
@@ -190,8 +190,8 @@ int main() {
   // Test state constraints
   for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
     for (int i = 0; i < NSTATES; ++i) {
-      TEST(X[k].data[i] < bcx_data[i] + stgs.tol_abs_cstr);
-      TEST(X[k].data[i] > -bcx_data[i] - stgs.tol_abs_cstr);
+      TEST(X[k].data[i] < bcx_data[i] + stgs.tol_abs_dual);
+      TEST(X[k].data[i] > -bcx_data[i] - stgs.tol_abs_dual);
     }
   }
   // Test tracking performance

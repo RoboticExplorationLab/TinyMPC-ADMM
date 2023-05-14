@@ -1,6 +1,6 @@
 #include "auxil.h"
 
-enum tiny_ErrorCode tiny_InitSettings(tiny_Settings* stgs) {
+enum tiny_ErrorCode tiny_InitSettings(tiny_ADMMSettings* stgs) {
   SLAP_ASSERT(stgs != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
   "tiny_InitSettings: settings must not be TINY_NULL");
   stgs->reg_min       = (sfloat)REG_MIN;
@@ -8,118 +8,48 @@ enum tiny_ErrorCode tiny_InitSettings(tiny_Settings* stgs) {
   stgs->reg_mul       = (sfloat)REG_MUL;
   stgs->en_reg_update = EN_REG_UPDATE;
 
-  stgs->penalty_init  = (sfloat)PENALTY_INIT;
-  stgs->penalty_max   = (sfloat)PENALTY_MAX;
-  stgs->penalty_mul   = (sfloat)PENALTY_MUL;
+  stgs->rho_init  = (sfloat)RHO_INIT;
+  stgs->rho_max   = (sfloat)RHO_MAX;
+  stgs->rho_mul   = (sfloat)RHO_MUL;
 
-  stgs->alpha_mul     = (sfloat)ALPHA_MUL;
+  stgs->alpha_mul = (sfloat)ALPHA_MUL;
 
-  stgs->max_iter_al   = MAX_ITER_AL;
-  stgs->max_iter_riccati = MAX_ITER_RICCATI;
-  stgs->max_iter_ls   = MAX_ITER_LS;
+  stgs->max_iter          = MAX_ITER;
+  stgs->max_iter_riccati  = MAX_ITER_RICCATI;
+  stgs->max_iter_ls       = MAX_ITER_LS;
 
-  stgs->tol_abs_riccati = (sfloat)TOL_ABS_RICCATI;
-  stgs->tol_abs_cstr    = (sfloat)TOL_ABS_CSTR;
+  stgs->tol_abs_prim    = (sfloat)TOL_ABS_PRIM;
+  stgs->tol_abs_dual    = (sfloat)TOL_ABS_DUAL;
 
   stgs->en_cstr_states  = EN_CSTR_STATES;
   stgs->en_cstr_inputs  = EN_CSTR_INPUTS;
   stgs->en_cstr_goal    = EN_CSTR_GOAL;
 
-  stgs->verbose          = VERBOSE;
-  stgs->adaptive_horizon = ADAPTIVE_HORIZON;
-  stgs->check_riccati    = CHECK_RICCATI;
-  stgs->check_al         = CHECK_AL;
-  stgs->warm_start       = WARM_START;
-  stgs->time_limit       = TIME_LIMIT;
+  stgs->verbose           = VERBOSE;
+  stgs->adaptive_horizon  = ADAPTIVE_HORIZON;
+  stgs->check_riccati     = CHECK_RICCATI;
+  stgs->check_termination = CHECK_TERMINATION;
+  stgs->warm_start        = WARM_START;
+  stgs->time_limit        = TIME_LIMIT;
 
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_SetUnconstrained(tiny_Settings* stgs) {
+enum tiny_ErrorCode tiny_SetUnconstrained(tiny_ADMMSettings* stgs) {
   stgs->en_cstr_states  = 0;
   stgs->en_cstr_inputs  = 0;
   stgs->en_cstr_goal    = 0;
-  stgs->check_al        = 0;
+  stgs->check_termination = 0;
 
   return TINY_NO_ERROR;
 }
 
-// enum tiny_ErrorCode tiny_InitSolution(tiny_Workspace* work) {
-//   tiny_Solution* soln = work->soln;
-//   tiny_Model* model   = &(work->data->model[0]);
-//   int n = model->nstates;
-//   int m = model->ninputs;
-//   int N = model->nhorizon;
-
-//   soln->X = TINY_NULL;
-//   soln->U = TINY_NULL;
-
-//   soln->YX = TINY_NULL;
-//   soln->YU = TINY_NULL;
-//   soln->YG = TINY_NULL_MAT;
-
-//   soln->K = TINY_NULL;
-//   soln->d = TINY_NULL;
-//   soln->P = TINY_NULL;
-//   soln->p = TINY_NULL;
-
-//   soln->data_size = n*N + m*(N-1) + (m+1)*n*(N-1) + (n+1)*n*N;
-
-//   if (work->stgs->en_cstr_inputs) {
-//     soln->data_size += m*(N-1)*2;
-//   }
-
-//   if (work->stgs->en_cstr_states) {
-//     soln->data_size += n*N*2;
-//   }  
-
-//   if (work->stgs->en_cstr_goal) {
-//     soln->data_size += n;
-//   }  
-//   return TINY_NO_ERROR;
-// }
-
-enum tiny_ErrorCode tiny_InitSolutionFromMatrix(tiny_Workspace* work, 
-                                               Matrix* X, Matrix* U,
-                                               Matrix* P, Matrix* p,
-                                               Matrix* K, Matrix* d,
-                                               Matrix* YX, Matrix* YU,
-                                               Matrix YG) {
-  work->soln->X = X;
-  work->soln->U = U;
-
-  work->soln->P = P;
-  work->soln->p = p;
-  work->soln->K = K;
-  work->soln->d = d;
-
-  // if (work->stgs->en_cstr_states) {
-  //   SLAP_ASSERT(YX != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  //   "tiny_InitSolitionDataArray: YX must not be TINY_NULL");
-  // }
-  work->soln->YX = YX;
-
-  // if (work->stgs->en_cstr_inputs) {
-  //   SLAP_ASSERT(YU != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  //   "tiny_InitSolitionDataArray: YU must not be TINY_NULL");
-  // } 
-  work->soln->YU = YU;
-
-  // if (work->stgs->en_cstr_goal) {
-  //   SLAP_ASSERT(slap_IsNull(YG), SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  //   "tiny_InitSolitionDataArray: YG must not be TINY_NULL");
-  // }
-  work->soln->YG = YG;
-
-  return TINY_NO_ERROR;
-}
-
-enum tiny_ErrorCode tiny_InitSolnTrajFromArray(tiny_Workspace* work,
+enum tiny_ErrorCode tiny_InitSolnTrajFromArray(tiny_ADMMWorkspace* work,
 Matrix* X, Matrix* U,
 sfloat* X_data, sfloat* U_data) {
 
   int N = work->data->model->nhorizon;
-  int n = work->data->model->nstates;
+  int n = work->data->model[0].nstates;
   int m = work->data->model->ninputs;
 
   work->soln->X = X;  
@@ -136,12 +66,12 @@ sfloat* X_data, sfloat* U_data) {
   return TINY_NO_ERROR;  
 }
 
-enum tiny_ErrorCode tiny_InitSolnDualsFromArray(tiny_Workspace* work,
+enum tiny_ErrorCode tiny_InitSolnDualsFromArray(tiny_ADMMWorkspace* work,
 Matrix* YX, Matrix* YU,
 sfloat* YX_data, sfloat* YU_data, sfloat* YG_data) {
 
   int N = work->data->model->nhorizon;
-  int n = work->data->model->nstates;
+  int n = work->data->model[0].nstates;
   int m = work->data->model->ninputs;
 
   work->soln->YX = YX;  
@@ -165,121 +95,46 @@ sfloat* YX_data, sfloat* YU_data, sfloat* YG_data) {
   return TINY_NO_ERROR;  
 }
 
-enum tiny_ErrorCode tiny_InitSolnGainsFromArray(tiny_Workspace* work, 
-Matrix* K, Matrix* d, Matrix* P, Matrix* p, 
-sfloat* K_data, sfloat* d_data, sfloat* P_data, sfloat* p_data) {
+enum tiny_ErrorCode tiny_InitSolnGainsFromArray(tiny_ADMMWorkspace* work, 
+Matrix* d, Matrix* p, sfloat* d_data, sfloat* p_data, 
+sfloat* Kinf_data, sfloat* Pinf_data) {
 
   int N = work->data->model->nhorizon;
-  int n = work->data->model->nstates;
+  int n = work->data->model[0].nstates;
   int m = work->data->model->ninputs;
 
-  work->soln->K = K;  
+  work->soln->Kinf = slap_MatrixFromArray(m, n, Kinf_data);
   work->soln->d = d;
-  work->soln->P = P;  
+  work->soln->Pinf = slap_MatrixFromArray(n, n, Pinf_data);
   work->soln->p = p;
 
   for (int i = 0; i < N - 1; ++i) {
-    K[i] = slap_MatrixFromArray(m, n, &K_data[i * m * n]);
     d[i] = slap_MatrixFromArray(m, 1, &d_data[i * m]);
   }
   for (int i = 0; i < N; ++i) {
-    P[i] = slap_MatrixFromArray(n, n, &P_data[i * n * n]);
     p[i] = slap_MatrixFromArray(n, 1, &p_data[i * n]);
   }
 
   return TINY_NO_ERROR;  
 }
 
-// enum tiny_ErrorCode tiny_InitData(tiny_Workspace* work) {
-//   tiny_Data* data   = work->data;
-//   tiny_Model* model = &(work->data->model[0]);
-//   int n = model->nstates;
-//   int m = model->ninputs;
-//   int N = model->nhorizon;
-
-//   data->x0 = TINY_NULL_MAT;
-//   data->Q = TINY_NULL_MAT;
-//   data->R = TINY_NULL_MAT;
-//   data->Qf = TINY_NULL_MAT;
-//   data->q = TINY_NULL;
-//   data->r = TINY_NULL;
-//   data->qf = TINY_NULL_MAT;
-//   data->X_ref = TINY_NULL;
-//   data->U_ref = TINY_NULL;
-//   data->Acx = TINY_NULL_MAT;
-//   data->bcx = TINY_NULL_MAT;
-//   data->Acu = TINY_NULL_MAT;
-//   data->bcu = TINY_NULL_MAT;
-
-//   data->data_size = n + n*n*2 + m*m + (N-1)*(n + m) + m + N*n + (N-1)*m;  // with ref
-
-//   if (work->stgs->en_cstr_inputs) {
-//     data->data_size += 2*m*m + 2*m; 
-//   }
-
-//   if (work->stgs->en_cstr_states) {
-//     data->data_size += 2*n*n + 2*n;
-//   }  
-
-//   return TINY_NO_ERROR;
-// }
-
-enum tiny_ErrorCode tiny_InitDataFromMatrix(tiny_Workspace* work, Matrix x0,
-                                            Matrix Q, Matrix R, Matrix Qf,
-                                            Matrix* q, Matrix* r, Matrix qf,
-                                            Matrix* X_ref, Matrix* U_ref,
-                                            Matrix Acx, Matrix bcx,
-                                            Matrix Acu, Matrix bcu) {
-  work->data->x0 = x0;
-
-  work->data->Q = Q;
-  work->data->R = R;
-  work->data->Qf = Qf;
-  work->data->q = q;
-  work->data->r = r;
-  work->data->qf = qf;
-
-  work->data->X_ref = X_ref;
-  work->data->U_ref = U_ref;
-
-  // if (work->stgs->en_cstr_states) {
-  //   SLAP_ASSERT(slap_IsNull(Acx) || slap_IsNull(bcx), SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  //   "tiny_InitSolitionDataArray: Acx and bcx must not be TINY_NULL_MAT");
-  // }
-  work->data->Acx = Acx;
-  work->data->bcx = bcx;
-
-  // if (work->stgs->en_cstr_inputs) {
-  //   SLAP_ASSERT(slap_IsNull(Acu) || slap_IsNull(bcu), SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  //   "tiny_InitSolitionDataArray: Acu and bcu must not be TINY_NULL_MAT");
-  // } 
-  work->data->Acu = Acu;
-  work->data->bcu = bcu;
-
-  return TINY_NO_ERROR;
-}
-
-enum tiny_ErrorCode tiny_InitDataQuadCostFromArray(tiny_Workspace* work, 
+enum tiny_ErrorCode tiny_InitDataQuadCostFromArray(tiny_ADMMWorkspace* work, 
 sfloat* Q_data, 
-sfloat* R_data, 
-sfloat* Qf_data) {
+sfloat* R_data) {
 
-  int n = work->data->model->nstates;
+  int n = work->data->model[0].nstates;
   int m = work->data->model->ninputs;
   work->data->Q = slap_MatrixFromArray(n, n, Q_data);
   work->data->R = slap_MatrixFromArray(m, m, R_data);
-  work->data->Qf = slap_MatrixFromArray(n, n, Qf_data);
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_InitDataLinearCostFromArray(tiny_Workspace* work, 
-Matrix* q, Matrix* r, 
-sfloat* q_data, sfloat* r_data, sfloat* qf_data) {
+enum tiny_ErrorCode tiny_InitDataLinearCostFromArray(tiny_ADMMWorkspace* work, 
+Matrix* q, Matrix* r, sfloat* q_data, sfloat* r_data) {
 
   int N = work->data->model->nhorizon;
-  int n = work->data->model->nstates;
+  int n = work->data->model[0].nstates;
   int m = work->data->model->ninputs;
-  work->data->qf = slap_MatrixFromArray(n, 1, qf_data);  
   work->data->q = q;
   work->data->r = r;
   for (int i = 0; i < N - 1; ++i) {
@@ -289,12 +144,12 @@ sfloat* q_data, sfloat* r_data, sfloat* qf_data) {
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_InitWorkspace(tiny_Workspace* work,
-                                       tiny_Info* info,
+enum tiny_ErrorCode tiny_InitWorkspace(tiny_ADMMWorkspace* work,
+                                       tiny_ADMMInfo* info,
                                        tiny_Model* model,
-                                       tiny_Data* data,
-                                       tiny_Solution* soln,
-                                       tiny_Settings* stgs) {
+                                       tiny_ADMMData* data,
+                                       tiny_ADMMSolution* soln,
+                                       tiny_ADMMSettings* stgs) {
   SLAP_ASSERT(work != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
   "tiny_InitWorkspace: work must not be TINY_NULL");
   SLAP_ASSERT(info != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
@@ -317,87 +172,109 @@ enum tiny_ErrorCode tiny_InitWorkspace(tiny_Workspace* work,
   // tiny_InitSolution(work);
   // tiny_InitData(work);
 
-  int n = model->nstates;
+  // int n = model->nstates;
   int m = model->ninputs;
-  // int N = model->nhorizon;
+  int N = model->nhorizon;
 
   work->reg = (sfloat)REG_MIN;
   work->alpha = (sfloat)ALPHA;
-  work->penalty = work->stgs->penalty_init;
-  // work->Q_temp = TINY_NULL_MAT;
-  // work->c_temp = TINY_NULL_MAT;
+  work->rho = work->stgs->rho_init;
 
-  // work->Qxx = TINY_NULL_MAT;
-  // work->Qxu = TINY_NULL_MAT;
-  // work->Qux = TINY_NULL_MAT;
-  // work->Quu = TINY_NULL_MAT;
-  // work->Qx = TINY_NULL_MAT;
-  // work->Qu = TINY_NULL_MAT;
-
-  // work->cu = TINY_NULL_MAT;
-  // work->cu2 = TINY_NULL_MAT;
-  // work->cu_jac = TINY_NULL_MAT;
-  // work->cu_jac2 = TINY_NULL_MAT;
-  // work->cu_mask = TINY_NULL_MAT;
-  // work->YU_hat = TINY_NULL_MAT;
-
-  // work->cx = TINY_NULL_MAT;
-  // work->cx2 = TINY_NULL_MAT;
-  // work->cx_jac = TINY_NULL_MAT;
-  // work->cx_jac2 = TINY_NULL_MAT;
-  // work->cx_mask = TINY_NULL_MAT;
-  // work->YX_hat = TINY_NULL_MAT;
-
-  // work->cg = TINY_NULL_MAT;
-
-
-  work->data_size = 2 * n * (2 * n + 2 * n + 2) + (n + m) * (n + m + 1);
+  work->data_size = m + 2*m*(N - 1);  // only input constraints
   work->first_run = 1;
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_InitWorkspaceTempData(tiny_Workspace* work, sfloat* temp_data) {
-  int n = work->data->model->nstates;
+enum tiny_ErrorCode tiny_InitWorkspaceTempData(tiny_ADMMWorkspace* work, 
+Matrix* ZU, Matrix* ZU_new, Matrix* ZX, Matrix* ZX_new, sfloat* temp_data) {
+  int N = work->data->model->nhorizon;
+  int n = work->data->model[0].nstates;
   int m = work->data->model->ninputs;
 
-  work->Q_temp = slap_MatrixFromArray(n + m, n + m + 1, temp_data);
-  work->Qxx = slap_CreateSubMatrix(work->Q_temp, 0, 0, n, n);
-  work->Qxu = slap_CreateSubMatrix(work->Q_temp, 0, n, n, m);
-  work->Qux = slap_CreateSubMatrix(work->Q_temp, n, 0, m, n);
-  work->Quu = slap_CreateSubMatrix(work->Q_temp, n, n, m, m);
-  work->Qx = slap_CreateSubMatrix(work->Q_temp, 0, n + m, n, 1);
-  work->Qu = slap_CreateSubMatrix(work->Q_temp, n, n + m, m, 1);
+  sfloat* ptr = temp_data;
+  // work->Quu_inv = slap_MatrixFromArray(m, m, ptr); 
+  // ptr += m*m;
+  work->Qu = slap_MatrixFromArray(m, 1, ptr);   
+  ptr += m;
+  // work->AmBKt = slap_MatrixFromArray(n, n, ptr);
+  // ptr += n*n; 
+  // work->coeff_d2p = slap_MatrixFromArray(n, m, ptr); 
+  // ptr += n*m; 
 
-  work->c_temp = slap_MatrixFromArray(2 * n, 2 * n + 2 * n + 2,
-                                          &temp_data[(n + m) * (n + m + 1)]);
-  work->cu = slap_CreateSubMatrix(work->c_temp, 0, 0, 2 * m, 1);
-  work->YU_hat = slap_CreateSubMatrix(work->c_temp, 0, 1, 2 * m, 1);
-  // work->cu2 = slap_CreateSubMatrix(work->c_temp, 0, 1, 2 * m, 1);   // YU_hat ~ cu2
-  work->cu2 = work->YU_hat;
-  work->cu_mask = slap_CreateSubMatrix(work->c_temp, 0, 2, 2 * m, 2 * m);
-  work->cu_jac = slap_CreateSubMatrix(work->c_temp, 0, 2 * m + 2, 2 * m, m);
-  work->cu_jac2 = slap_CreateSubMatrix(work->c_temp, 0, 2 * m + 2 + m, 2 * m, m);
+  work->ZU     = ZU;
+  work->ZU_new = ZU_new;
+  work->ZX     = ZX;
+  work->ZX_new = ZX_new;
 
-  work->cx = slap_CreateSubMatrix(work->c_temp, 0, 0, 2 * n, 1);
-  work->YX_hat = slap_CreateSubMatrix(work->c_temp, 0, 1, 2 * n, 1);  // YX_hat ~ cx2
-  // work->cx2 = slap_CreateSubMatrix(work->c_temp, 0, 1, 2 * n, 1);
-  work->cx2 = work->YX_hat;
-  work->cx_mask = slap_CreateSubMatrix(work->c_temp, 0, 2, 2 * n, 2 * n);
-  work->cx_jac = slap_CreateSubMatrix(work->c_temp, 0, 2 * n + 2, 2 * n, n);
-  work->cx_jac2 = slap_CreateSubMatrix(work->c_temp, 0, 2 * n + 2 + n, 2 * n, n);
+  if (ZU) {
+    for (int i = 0; i < N - 1; ++i) {
+      ZU[i] = slap_MatrixFromArray(m, 1, ptr); 
+      ptr += m;
+      ZU_new[i] = slap_MatrixFromArray(m, 1, ptr); 
+      ptr += m;
+    }
+  }
 
-  work->cg = slap_MatrixFromArray(n, 1, &temp_data[2 * n * (2 * n + 2 * n + 2)]);   
+  if (ZX) {
+    for (int i = 0; i < N; ++i) {
+      ZX[i] = slap_MatrixFromArray(n, 1, ptr); 
+      ptr += n;
+      ZX_new[i] = slap_MatrixFromArray(n, 1, ptr); 
+      ptr += n;
+    }
+  }
 
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_ResetInfo(tiny_Workspace* work) {
-  work->info->iter_al = 0;
+// enum tiny_ErrorCode tiny_EvalPrimalCache(tiny_ADMMWorkspace* work) {
+//   tiny_Model* model = work->data->model;
+
+//   int n = work->data->model[0].nstates;
+//   int m = work->data->model->ninputs;
+
+//   sfloat PB_data[n*m];
+//   T_INIT_ZEROS(PB_data);
+//   Matrix PB = slap_MatrixFromArray(n, m, PB_data);
+
+//   if (model[0].ltv) {
+
+//   }
+//   else {
+//     // cache for (A - BK)'
+//     // slap_Copy(work->AmBKt, model[0].A[0]);
+//     // slap_MatMulAdd(work->AmBKt, model[0].B[0], work->soln->Kinf, -1, 1);
+//     // work->AmBKt = slap_Transpose(work->AmBKt);
+//     slap_MatMulAB(work->AmBKt, model[0].B[0], work->soln->Kinf);
+//     slap_MatrixAddition(work->AmBKt, model[0].A[0], work->AmBKt, -1);
+
+//     // cache for Kinf'*R - AmBKt*Pinf*B
+//     slap_MatMulAtB(work->coeff_d2p, work->soln->Kinf, work->data->R);
+//     slap_MatMulAB(PB, work->soln->Pinf, model[0].B[0]);
+//     slap_MatMulAdd(work->coeff_d2p, work->AmBKt, PB, -1, 1);
+//   }
+//   return TINY_NO_ERROR;
+// }
+
+enum tiny_ErrorCode tiny_LoadPrimalCache(tiny_ADMMWorkspace* work, 
+sfloat* Quu_inv_data, sfloat* AmBKt_data, sfloat* coeff_d2p_data) {
+
+  int n = work->data->model[0].nstates;
+  int m = work->data->model->ninputs;
+
+  work->Quu_inv   = slap_MatrixFromArray(m, m, Quu_inv_data); 
+  work->AmBKt     = slap_MatrixFromArray(n, n, AmBKt_data); 
+  work->coeff_d2p = slap_MatrixFromArray(n, m, coeff_d2p_data); 
+
+  return TINY_NO_ERROR;
+}
+
+enum tiny_ErrorCode tiny_ResetInfo(tiny_ADMMWorkspace* work) {
+  work->info->iter = 0;
   work->info->iter_riccati = 0;
   work->info->status_val = TINY_UNSOLVED;
 
-  work->info->obj_pri = 0.0;
-  work->info->obj_al = 0.0;
+  work->info->obj_val = 0.0;
   work->info->pri_res = 0.0;
   work->info->dua_res = 0.0;
   return TINY_NO_ERROR;

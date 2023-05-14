@@ -39,7 +39,7 @@ void DeltaLqrLtvTest() {
   tiny_InitLtvModel(&model);
   tiny_ProblemData prob;
   tiny_InitProblemData(&prob);
-  tiny_Settings solver;
+  tiny_ADMMSettings solver;
   tiny_InitSettings(&solver);
 
   Matrix X[NHORIZON];
@@ -140,7 +140,7 @@ void DeltaLqrLtvTest() {
   // for (int k = 0; k < NHORIZON - 1; ++k) {
   //   // Control input: du = - d - K*dx
   //   slap_Copy(U[k], prob.d[k]);              // du[k] = -d[k]
-  //   slap_MatMulAdd(U[k], prob.K[k], X[k], -1, -1);   // du[k] -= K[k] * dx[k]
+  //   slap_MatMulAdd(U[k], prob.Kinf, X[k], -1, -1);   // du[k] -= Kinf * dx[k]
   //   // Next state: dx = A*dx + B*du + f
   //   tiny_DynamicsLtv(&X[k + 1], X[k], U[k], model, k);
   //   // tiny_PQuadNonlinearDynamics(&X[k+1], X[k], U[k]);
@@ -169,7 +169,7 @@ void AbsLqrLtvTest() {
   tiny_InitLtvModel(&model);
   tiny_ProblemData prob;
   tiny_InitProblemData(&prob);
-  tiny_Settings solver;
+  tiny_ADMMSettings solver;
   tiny_InitSettings(&solver);
 
   Matrix X[NHORIZON];
@@ -271,7 +271,7 @@ void AbsLqrLtvTest() {
   // for (int k = 0; k < NHORIZON - 1; ++k) {
   //   // Control input: du = - d - K*(x - xf)
   //   slap_Copy(U[k], prob.d[k]);              // u[k] = -d[k]
-  //   slap_MatMulAdd(U[k], prob.K[k], X[k], -1, -1);   // u[k] -= K[k] * x[k]
+  //   slap_MatMulAdd(U[k], prob.Kinf, X[k], -1, -1);   // u[k] -= Kinf * x[k]
   //   tiny_PQuadNonlinearDynamics(&X[k+1], X[k], U[k]);
   // }
   for (int k = 0; k < NHORIZON - 1; ++k) {
@@ -298,7 +298,7 @@ void DeltaLqrLtiTest() {
   tiny_InitLtiModel(&model);
   tiny_ProblemData prob;
   tiny_InitProblemData(&prob);
-  tiny_Settings solver;
+  tiny_ADMMSettings solver;
   tiny_InitSettings(&solver);
 
   Matrix X[NHORIZON];
@@ -385,7 +385,7 @@ void DeltaLqrLtiTest() {
   // for (int k = 0; k < NHORIZON - 1; ++k) {
   //   // Control input: du = - d - K*dx
   //   slap_Copy(U[k], prob.d[k]);              // u[k] = -d[k]
-  //   slap_MatMulAdd(U[k], prob.K[k], X[k], -1, -1);   // u[k] -= K[k] * dx[k]
+  //   slap_MatMulAdd(U[k], prob.Kinf, X[k], -1, -1);   // u[k] -= Kinf * dx[k]
   //   // Next state: dx = A*dx + B*du + f
   //   tiny_DynamicsLti(&X[k + 1], X[k], U[k], model);
   // }
@@ -414,7 +414,7 @@ void AbsLqrLtiTest() {
   tiny_InitLtiModel(&model);
   tiny_ProblemData prob;
   tiny_InitProblemData(&prob);
-  tiny_Settings solver;
+  tiny_ADMMSettings solver;
   tiny_InitSettings(&solver);
 
   Matrix X[NHORIZON];
@@ -502,7 +502,7 @@ void AbsLqrLtiTest() {
   // for (int k = 0; k < NHORIZON - 1; ++k) {
   //   // Control input: u = - d - K*x
   //   slap_Copy(U[k], prob.d[k]);              // u[k] = -d[k]
-  //   slap_MatMulAdd(U[k], prob.K[k], X[k], -1, -1);   // u[k] -= K[k] * x[k]
+  //   slap_MatMulAdd(U[k], prob.Kinf, X[k], -1, -1);   // u[k] -= Kinf * x[k]
   //   // Next state: x = A*x + B*u + f
   //   tiny_DynamicsLti(&X[k + 1], X[k], U[k], model);
   // }

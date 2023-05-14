@@ -13,23 +13,23 @@ extern "C" {
 #include "auxil.h"
 #include "lqr.h"
 
-enum tiny_ErrorCode tiny_ConstrainedForwardPass(tiny_Workspace* work);
+enum tiny_ErrorCode tiny_ConstrainedForwardPass(tiny_ADMMWorkspace* work);
 
-enum tiny_ErrorCode tiny_ConstrainedBackwardPass(tiny_Workspace* work);
+enum tiny_ErrorCode tiny_ConstrainedBackwardPass(tiny_ADMMWorkspace* work);
 
-enum tiny_ErrorCode tiny_SolveAlLqr(tiny_Workspace* work);
+enum tiny_ErrorCode tiny_SolveAlLqr(tiny_ADMMWorkspace* work);
 
-int tiny_CheckRiccati(tiny_Workspace* work);
+int tiny_CheckRiccati(tiny_ADMMWorkspace* work);
 
-int tiny_CheckAl(tiny_Workspace* work);
+int tiny_CheckAl(tiny_ADMMWorkspace* work);
 
-enum tiny_ErrorCode tiny_ResetWorkspace(tiny_Workspace* work);
+enum tiny_ErrorCode tiny_ResetWorkspace(tiny_ADMMWorkspace* work);
 
-enum tiny_ErrorCode tiny_WarmStartInput(tiny_Workspace* work, sfloat* U_data);
+enum tiny_ErrorCode tiny_WarmStartInput(tiny_ADMMWorkspace* work, sfloat* U_data);
 
-enum tiny_ErrorCode tiny_UpdateDuals(tiny_Workspace* work);
+enum tiny_ErrorCode tiny_UpdateDuals(tiny_ADMMWorkspace* work);
 
-enum tiny_ErrorCode tiny_UpdatePenalty(tiny_Workspace* work);
+enum tiny_ErrorCode tiny_UpdatePenalty(tiny_ADMMWorkspace* work);
 
 # ifdef __cplusplus
 }

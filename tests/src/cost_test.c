@@ -22,9 +22,8 @@ sfloat u_ref_data[NINPUTS * (NHORIZON - 1)] = {-2.1, 1.4};
 sfloat Q_data[NSTATES * NSTATES] = {0};  // NOLINT
 sfloat R_data[NINPUTS * NINPUTS] = {0};  // NOLINT
 sfloat q_data[NSTATES*NHORIZON] = {0};            // NOLINT
-sfloat qf_data[NSTATES] ={0};
 sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};            // NOLINT
-sfloat Qf_data[NSTATES * NSTATES] = {0};
+sfloat Pinf_data[NSTATES * NSTATES] = {0};
 sfloat ans_stage[2] = {0.04549999999999994, 0.1314999999999999};
 sfloat ans_term = 0.0049999999999999975;
 sfloat ans_gradx[NSTATES] = {-0.11, -0.12, -0.13, 0.42};
@@ -50,110 +49,47 @@ void AddCostTest() {
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
-  tiny_Settings stgs;
+  tiny_ADMMSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  tiny_Data data;
-  tiny_Info info;
-  tiny_Solution soln;
-  tiny_Workspace work;
+  tiny_ADMMData data;
+  tiny_ADMMInfo info;
+  tiny_ADMMSolution soln;
+  tiny_ADMMWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   sfloat temp_data[work.data_size];
-  INIT_ZEROS(temp_data);
+  T_INIT_ZEROS(temp_data);
 
-  tiny_InitWorkspaceTempData(&work, temp_data);
+  tiny_InitWorkspaceTempData(&work, 0, 0, 0, 0, temp_data);
 
   data.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(data.Q, 0.1);
   data.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(data.R, 1);
-  data.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
-  slap_SetIdentity(data.Qf, 0.5);
+  soln.Pinf = slap_MatrixFromArray(NSTATES, NSTATES, Pinf_data);
+  slap_SetIdentity(soln.Pinf, 0.5);
   data.X_ref = X_ref;
   data.U_ref = U_ref;
 
   soln.X = X;
   soln.U = U;
 
-  work.info->obj_pri = 0.0;
+  work.info->obj_val = 0.0;
   for (int k = 0; k < NHORIZON - 1; ++k) {
     soln.X[k] = x;
     soln.U[k] = u;
     tiny_AddStageCost(&work, k);
-    TESTAPPROX(work.info->obj_pri, ans_stage[k], tol);
+    TESTAPPROX(work.info->obj_val, ans_stage[k], tol);
   }
   soln.X[NHORIZON - 1] = x;
-  work.info->obj_pri = 0.0;
+  work.info->obj_val = 0.0;
   tiny_AddTerminalCost(&work);
-  TESTAPPROX(work.info->obj_pri, ans_term, tol);
-}
-
-void ExpandCostTest() {
-  const sfloat tol = 1e-6;
-  Matrix U[NHORIZON-1];
-  Matrix X[NHORIZON];
-  Matrix U_ref[NHORIZON-1];
-  Matrix X_ref[NHORIZON];
-  Matrix q[NHORIZON];
-  Matrix r[NHORIZON - 1];
-
-  sfloat* uptr = u_ref_data;
-  sfloat* xptr = x_ref_data;
-  for (int i = 0; i < NHORIZON; ++i) {
-    U_ref[i] = slap_MatrixFromArray(NINPUTS, 1, uptr);
-    uptr += NINPUTS;
-    X_ref[i] = slap_MatrixFromArray(NSTATES, 1, xptr);
-    xptr += NSTATES;
-  }
-
-  tiny_Model model;
-  tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
-  tiny_Settings stgs;
-  tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  tiny_Data data;
-  tiny_Info info;
-  tiny_Solution soln;
-  tiny_Workspace work;
-  tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
-  
-  sfloat temp_data[work.data_size];
-  INIT_ZEROS(temp_data);
-
-  tiny_InitWorkspaceTempData(&work, temp_data);
-  data.q = q;
-  data.r = r;
-  data.qf = slap_MatrixFromArray(NSTATES, 1, ans_gradxf);
-  soln.X = X;
-  soln.U = U;
-
-  data.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
-  slap_SetIdentity(data.Q, 0.1);
-  data.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
-  slap_SetIdentity(data.R, 0.1);
-  data.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
-  slap_SetIdentity(data.Qf, 0.5);
-  data.q[0] = slap_MatrixFromArray(NSTATES, 1, q_data);
-  data.q[1] = slap_MatrixFromArray(NSTATES, 1, &q_data[NSTATES]);
-  data.r[0] = slap_MatrixFromArray(NINPUTS, 1, r_data);
-  data.qf = slap_MatrixFromArray(NSTATES, 1, qf_data);    
-
-  data.X_ref = X_ref;
-  data.U_ref = U_ref;
-  tiny_UpdateLinearCost(&work);
-  
-  tiny_ExpandStageCost(&work, 0);
-  TEST(SumOfSquaredError(work.Qx.data, ans_gradx, NINPUTS * NINPUTS) < tol);
-  TEST(SumOfSquaredError(work.Qu.data, ans_gradu, NINPUTS) < tol);
-  // FIXME: problem with sub-matrices
-  // tiny_ExpandTerminalCost(&work);  // have to allocate P, p first
-  // TEST(SumOfSquaredError(work.Qxx.data, data.Qf.data, NSTATES * NSTATES) < tol);
-  // TEST(SumOfSquaredError(work.soln->p[NHORIZON-1].data, ans_gradxf, NSTATES) < tol);
+  TESTAPPROX(work.info->obj_val, ans_term, tol);
 }
 
 int main() {
   printf("=== Cost Test ===\n");
   AddCostTest();
-  ExpandCostTest();
   PrintTestResult();
   return TestResult();
 }

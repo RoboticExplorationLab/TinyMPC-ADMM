@@ -128,19 +128,19 @@ void AbsLqrLtvTest() {
   // Create model and settings first due to essential problem setup
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 1, 1, 0.1);
-  tiny_Settings stgs;
+  tiny_ADMMSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
   tiny_SetUnconstrained(&stgs);
 
   // Create workspace
-  tiny_Data data;
-  tiny_Info info;
-  tiny_Solution soln;
-  tiny_Workspace work;
+  tiny_ADMMData data;
+  tiny_ADMMInfo info;
+  tiny_ADMMSolution soln;
+  tiny_ADMMWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
 
   sfloat temp_data[work.data_size];
-  INIT_ZEROS(temp_data);
+  T_INIT_ZEROS(temp_data);
   tiny_InitWorkspaceTempData(&work, temp_data);
 
   // Now can fill in all the remaining struct
@@ -203,7 +203,7 @@ void AbsLqrLtvTest() {
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 1;
   stgs.max_iter_riccati = 1;
-  stgs.max_iter_al = 6;
+  stgs.max_iter = 6;
   stgs.verbose = 0;
   stgs.reg_min = 1e-6;
 
@@ -225,12 +225,12 @@ void AbsLqrLtvTest() {
   for (int k = 0; k < NHORIZON - 1; ++k) {
     // PrintMatrix(U[k]);
     for (int i = 0; i < NSTATES; ++i) {
-      TEST(X[k].data[i] < bcstr_state_data[i] + stgs.tol_abs_cstr);
-      TEST(X[k].data[i] > -bcstr_state_data[i] - stgs.tol_abs_cstr);
+      TEST(X[k].data[i] < bcstr_state_data[i] + stgs.tol_abs_dual);
+      TEST(X[k].data[i] > -bcstr_state_data[i] - stgs.tol_abs_dual);
     }
     for (int i = 0; i < NINPUTS; ++i) {
-      TEST(U[k].data[i] > -bcstr_input_data[i] - stgs.tol_abs_cstr);
-      TEST(U[k].data[i] < bcstr_input_data[i] + stgs.tol_abs_cstr);
+      TEST(U[k].data[i] > -bcstr_input_data[i] - stgs.tol_abs_dual);
+      TEST(U[k].data[i] < bcstr_input_data[i] + stgs.tol_abs_dual);
     }
   }
   for (int k = NHORIZON - 5; k < NHORIZON; ++k) {

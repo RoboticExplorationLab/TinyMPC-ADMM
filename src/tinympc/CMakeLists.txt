@@ -28,11 +28,11 @@ add_library(tinympc
   lqr.h
   lqr.c
 
-  constraint_linear.h
-  constraint_linear.c
+  # constraint_linear.h
+  # constraint_linear.c
 
-  al_lqr.h
-  al_lqr.c
+  # al_lqr.h
+  # al_lqr.c
   )
 
 target_include_directories(tinympc

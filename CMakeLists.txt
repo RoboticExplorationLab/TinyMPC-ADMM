@@ -132,6 +132,6 @@ endif()
 ##############################
 # Examples
 ##############################
-if (TINY_BUILD_EXAMPLES)
-  add_subdirectory(examples)
-endif()
+# if (TINY_BUILD_EXAMPLES)
+#   add_subdirectory(examples)
+# endif()

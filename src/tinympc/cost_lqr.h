@@ -8,22 +8,13 @@ extern "C" {
 
 #include "types.h"
 
-enum tiny_ErrorCode tiny_AddStageCost(tiny_Workspace* work, const int k);
+enum tiny_ErrorCode tiny_AddStageCost(tiny_ADMMWorkspace* work, const int k);
 
-enum tiny_ErrorCode tiny_AddTerminalCost(tiny_Workspace* work);
+enum tiny_ErrorCode tiny_AddTerminalCost(tiny_ADMMWorkspace* work);
 
-enum tiny_ErrorCode tiny_ExpandStageCost(tiny_Workspace* work, const int k);
+enum tiny_ErrorCode tiny_UpdateLinearCost(tiny_ADMMWorkspace* work);
 
-enum tiny_ErrorCode tiny_ExpandTerminalCost(tiny_Workspace* work);
-
-enum tiny_ErrorCode tiny_UpdateLinearCost(tiny_Workspace* work);
-
-// enum tiny_ErrorCode tiny_SetQ(tiny_Workspace* work, sfloat* Q);
-
-// enum tiny_ErrorCode tiny_SetQf(tiny_Workspace* work, sfloat* Qf);
-
-// enum tiny_ErrorCode tiny_SetR(tiny_Workspace* work, sfloat* R);
-
+enum tiny_ErrorCode tiny_UpdateConstrainedLinearCost(tiny_ADMMWorkspace* work);
 
 # ifdef __cplusplus
 }

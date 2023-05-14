@@ -84,17 +84,17 @@ void MpcLtiTest() {
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
   // tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
-  tiny_Settings stgs;
+  tiny_ADMMSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
 
-  tiny_Data data;
-  tiny_Info info;
-  tiny_Solution soln;
-  tiny_Workspace work;
+  tiny_ADMMData data;
+  tiny_ADMMInfo info;
+  tiny_ADMMSolution soln;
+  tiny_ADMMWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   sfloat temp_data[work.data_size];
-  INIT_ZEROS(temp_data);
+  T_INIT_ZEROS(temp_data);
 
   tiny_InitWorkspaceTempData(&work, temp_data);
 
@@ -110,9 +110,7 @@ void MpcLtiTest() {
   tiny_InitDataQuadCostFromArray(&work, Q_data, R_data, Qf_data);
   slap_SetIdentity(data.Q, 1);  
   slap_SetIdentity(data.R, 1);  
-  slap_SetIdentity(data.Qf, 10);
-  tiny_InitDataLinearCostFromArray(&work, q, r, q_data, r_data, qf_data);
-
+  
   tiny_SetInputBound(&work, Acu_data, bcu_data);
   tiny_SetStateBound(&work, Acx_data, bcx_data);
 
@@ -137,7 +135,7 @@ void MpcLtiTest() {
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 1;
   stgs.max_iter_riccati = 1;
-  stgs.max_iter_al = 6;
+  stgs.max_iter = 6;
   stgs.verbose = 0;
   stgs.reg_min = 1e-6;
 
@@ -163,16 +161,16 @@ void MpcLtiTest() {
   // ========== Test ==========
   for (int k = 0; k < NHORIZON - 1; ++k) {
     for (int i = 0; i < NSTATES; ++i) {
-      TEST(X[k].data[i] < xmax_data[i] + stgs.tol_abs_cstr);
-      TEST(X[k].data[i] > xmin_data[i] - stgs.tol_abs_cstr);
+      TEST(X[k].data[i] < xmax_data[i] + stgs.tol_abs_dual);
+      TEST(X[k].data[i] > xmin_data[i] - stgs.tol_abs_dual);
     }
     for (int i = 0; i < NINPUTS; ++i) {
-      TEST(U[k].data[i] > umin_data[i] - stgs.tol_abs_cstr);
-      TEST(U[k].data[i] < umax_data[i] + stgs.tol_abs_cstr);
+      TEST(U[k].data[i] > umin_data[i] - stgs.tol_abs_dual);
+      TEST(U[k].data[i] < umax_data[i] + stgs.tol_abs_dual);
     }
   }
   TEST(SumOfSquaredError(X[NHORIZON - 1].data, xg_data, NSTATES) <
-       stgs.tol_abs_cstr);
+       stgs.tol_abs_dual);
 }
 
 int main() {
