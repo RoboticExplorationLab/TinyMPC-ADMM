@@ -17,7 +17,7 @@ extern "C" {
 #include "cost_lqr.h"
 #include "lqr.h"
 #include "constraint_linear.h"
-#include "al_lqr.h"
+#include "admm.h"
 
 // #include "lqr_lti.h"
 // #include "lqr_ltv.h"

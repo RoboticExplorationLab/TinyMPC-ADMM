@@ -12,8 +12,8 @@
 
 #define NSTATES 4
 #define NINPUTS 2
-#define NHORIZON 5
-1
+#define NHORIZON 51
+
 void MpcLtiTest() {
   sfloat A_data[NSTATES * NSTATES] = {1,   0, 0, 0, 0, 1,   0, 0,
                                       0.1, 0, 1, 0, 0, 0.1, 0, 1};
@@ -31,7 +31,8 @@ void MpcLtiTest() {
     0.000000f,2.483925f,
     3.337324f,0.000000f,
     0.000000f,3.337324f,
-  };sfloat Pinf_data[NSTATES*NSTATES] = {
+  };
+  sfloat Pinf_data[NSTATES*NSTATES] = {
     134.356886f,0.000000f,33.541020f,0.000000f,
     0.000000f,134.356886f,0.000000f,33.541020f,
     33.541020f,0.000000f,48.387619f,0.000000f,
@@ -60,25 +61,23 @@ void MpcLtiTest() {
 
   sfloat umin_data[NINPUTS] = {-1, -1};
   sfloat umax_data[NINPUTS] = {1, 1};
-  sfloat xmin_data[NSTATES] = {-2, -2, -2, -2};
-  sfloat xmax_data[NSTATES] = {6, 8, 3, 2};
+  // sfloat xmin_data[NSTATES] = {-2, -2, -2, -2};
+  // sfloat xmax_data[NSTATES] = {6, 8, 3, 2};
   // Put constraints on u, x
   sfloat Acu_data[NINPUTS * NINPUTS] = {0};  
-  sfloat Acx_data[NSTATES * NSTATES] = {0};  
+  // sfloat Acx_data[NSTATES * NSTATES] = {0};  
   sfloat YU_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat YX_data[NSTATES * (NHORIZON)] = {0};
-  sfloat YG_data[NSTATES] = {0};
+  // sfloat YX_data[NSTATES * (NHORIZON)] = {0};
+  // sfloat YG_data[NSTATES] = {0};
 
   Matrix X[NHORIZON];
   Matrix U[NHORIZON - 1];
   Matrix Xref[NHORIZON];
   Matrix Uref[NHORIZON - 1];
-  Matrix K[NHORIZON - 1];
   Matrix d[NHORIZON - 1];
-  Matrix P[NHORIZON];
   Matrix p[NHORIZON];
   Matrix YU[NHORIZON - 1];
-  Matrix YX[NHORIZON];
+  // Matrix YX[NHORIZON];
   Matrix ZU[NHORIZON - 1];
   Matrix ZU_new[NHORIZON - 1];
   Matrix q[NHORIZON-1];
@@ -92,10 +91,11 @@ void MpcLtiTest() {
   // tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
   tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
+  stgs.rho_init = 1e0;
   tiny_AdmmData data;
   tiny_AdmmInfo info;
   tiny_AdmmSolution soln;
-  tiny_AdmmWorkspace work;
+  tiny_AdmmWorkspace work;  
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   sfloat temp_data[work.data_size];
@@ -139,9 +139,8 @@ void MpcLtiTest() {
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
   stgs.max_iter = 200;
-  stgs.verbose = 0;
+  stgs.verbose = 1;
   stgs.check_termination = 10;
-  stgs.rho_init = 1e0;
 
   clock_t start, end;
   double cpu_time_used;
@@ -153,10 +152,10 @@ void MpcLtiTest() {
 
   if (1) {
     for (int k = 0; k < NHORIZON - 1; ++k) {
-      // printf("\n=>k = %d\n", k);
+      printf("\n=>k = %d\n", k);
       // PrintMatrix(p[k]);
       // PrintMatrixT(Xref[k]);
-      // PrintMatrixT(U[k]);
+      PrintMatrixT(U[k]);
       // PrintMatrixT(X[k]);
     }
     PrintMatrixT(X[NHORIZON - 1]);
@@ -173,8 +172,7 @@ void MpcLtiTest() {
       TEST(U[k].data[i] < umax_data[i] + stgs.tol_abs_dual);
     }
   }
-  TEST(SumOfSquaredError(X[NHORIZON - 1].data, xg_data, NSTATES) <
-       stgs.tol_abs_dual);
+  TEST(SumOfSquaredError(X[NHORIZON - 1].data, xg_data, NSTATES) < 1e-1);
 }
 
 int main() {

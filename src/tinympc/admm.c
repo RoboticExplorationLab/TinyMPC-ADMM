@@ -100,13 +100,13 @@ enum tiny_ErrorCode UpdateSlackDual(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
 
   for (int k = 0; k < N - 1; ++k) {
-    slap_MatrixAddition(work->soln->YU[k], work->soln->YU[k], work->soln->U[k], 1);
+    MatAdd(work->soln->YU[k], work->soln->YU[k], work->soln->U[k], 1);
     for (int i = 0; i < n; ++i) { 
       work->ZU_new[k].data[i] = T_MIN(T_MAX(work->soln->YU[k].data[i],
                                 work->data->lcu.data[i]),  // Between lower
                                 work->data->ucu.data[i]);  // and upper bounds
     } 
-    slap_MatrixAddition(work->soln->YU[k], work->soln->YU[k], work->ZU_new[k], -1);
+    MatAdd(work->soln->YU[k], work->soln->YU[k], work->ZU_new[k], -1);
   }
   return TINY_NO_ERROR;
 }
