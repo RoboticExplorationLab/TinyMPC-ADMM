@@ -6,6 +6,12 @@ extern "C" {
 # endif // ifdef __cplusplus
 
 
+/************************************
+* Printing Constants to set Layout *
+************************************/
+# define HEADER_LINE_LEN 65
+
+
 /******************
 * Solver Status  *
 ******************/
@@ -49,7 +55,7 @@ enum tiny_ErrorCode {
 # define ALPHA (1)
 
 // Max iteration
-# define MAX_ITER (10)
+# define MAX_ITER (500)
 # define MAX_ITER_RICCATI (10)
 # define MAX_ITER_LS (10)
 
@@ -94,7 +100,7 @@ enum tiny_ErrorCode {
 # endif /* ifndef TINY_INFTY */
 
 /* Printing */
-# define PRINT_INTERVAL 200
+# define PRINT_INTERVAL 1
 
 # ifdef __cplusplus
 }

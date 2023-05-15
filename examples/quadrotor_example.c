@@ -118,13 +118,13 @@ int main() {
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
   // tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
-  tiny_ADMMSettings stgs;
+  tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
 
-  tiny_ADMMData data;
-  tiny_ADMMInfo info;
-  tiny_ADMMSolution soln;
-  tiny_ADMMWorkspace work;
+  tiny_AdmmData data;
+  tiny_AdmmInfo info;
+  tiny_AdmmSolution soln;
+  tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   // ===== Fill in the remaining struct =====
@@ -139,8 +139,8 @@ int main() {
   tiny_InitSolnGainsFromArray(&work, K, d, P, p, K_data, d_data, P_data, p_data);
   
   data.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);  
-  data.X_ref = Xref;
-  data.U_ref = Uref;
+  data.Xref = Xref;
+  data.Uref = Uref;
   tiny_InitDataQuadCostFromArray(&work, Q_data, R_data, Qf_data);
   // slap_SetIdentity(prob.Q, 1000e-1);
   sfloat Qdiag[NSTATES] = {10, 10, 10, 1, 1, 1, 1, 1, 1, 0.1, 0.1, 0.1};
@@ -166,8 +166,8 @@ int main() {
     PrintMatrix(work.data->R);
     PrintMatrix(work.data->Qf);
     PrintMatrixT(work.data->x0);
-    PrintMatrixT(work.data->X_ref[NHORIZON-5]);
-    PrintMatrixT(work.data->U_ref[NHORIZON-5]);
+    PrintMatrixT(work.data->Xref[NHORIZON-5]);
+    PrintMatrixT(work.data->Uref[NHORIZON-5]);
     PrintMatrixT(work.data->q[NHORIZON-5]);
     PrintMatrixT(work.data->r[NHORIZON-5]);
   }

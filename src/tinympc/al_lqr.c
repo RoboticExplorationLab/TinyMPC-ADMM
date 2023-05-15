@@ -1,12 +1,12 @@
 #include "al_lqr.h"
 
-enum tiny_ErrorCode tiny_ConstrainedForwardPass(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode tiny_ConstrainedForwardPass(tiny_AdmmWorkspace* work) {
   tiny_RollOutClosedLoop(work);  // faster without cost compute
   // tiny_RollOutClosedLoopCost(work);
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_ConstrainedBackwardPass(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode tiny_ConstrainedBackwardPass(tiny_AdmmWorkspace* work) {
   tiny_Model* model = work->data->model;
   int N = model[0].nhorizon;
   // int n = model[0].nstates;
@@ -20,7 +20,7 @@ enum tiny_ErrorCode tiny_ConstrainedBackwardPass(tiny_ADMMWorkspace* work) {
   //========= Goal constraints ==========
   if (work->stgs->en_cstr_goal) {
     // printf("GOAL CONSTRAINTS!\n");
-    slap_Copy(work->Qx, work->data->X_ref[N - 1]);  // h = xg
+    slap_Copy(work->Qx, work->data->Xref[N - 1]);  // h = xg
     slap_SetIdentity(work->Qxx, 1);           // H constant
     slap_MatrixAddition(work->soln->p[N - 2], work->soln->YG, work->Qx, -work->rho);  // (λ - ρ*h)
     slap_MatMulAdd(work->soln->p[N - 1], slap_Transpose(work->Qxx), work->soln->p[N - 2], 1, 1);  // p[N]  += H'*(λ - ρ*h)
@@ -380,7 +380,7 @@ enum tiny_ErrorCode tiny_ConstrainedBackwardPass(tiny_ADMMWorkspace* work) {
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_SolveAlLqr(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode tiny_SolveAlLqr(tiny_AdmmWorkspace* work) {
 
   tiny_ResetWorkspace(work);
 
@@ -437,7 +437,7 @@ enum tiny_ErrorCode tiny_SolveAlLqr(tiny_ADMMWorkspace* work) {
   return TINY_NO_ERROR;
 }
 
-int tiny_CheckRiccati(tiny_ADMMWorkspace* work) {
+int tiny_CheckRiccati(tiny_AdmmWorkspace* work) {
   int N = work->data->model->nhorizon;
   work->info->pri_res = 0.0;
   for (int k = 0; k < N - 1; ++k) {
@@ -452,7 +452,7 @@ int tiny_CheckRiccati(tiny_ADMMWorkspace* work) {
   return 0;
 }
  
-int tiny_CheckAl(tiny_ADMMWorkspace* work) {
+int tiny_CheckAl(tiny_AdmmWorkspace* work) {
   int N = work->data->model->nhorizon;
   work->info->dua_res = 0.0;
   sfloat norm_inf = 0.0;   // temporary var to save inf norm of vector
@@ -485,7 +485,7 @@ int tiny_CheckAl(tiny_ADMMWorkspace* work) {
 
   if (work->stgs->en_cstr_goal) {
     //========= Goal constraints ==========
-    slap_MatrixAddition(work->cg, work->soln->X[N - 1], work->data->X_ref[N - 1], -1);
+    slap_MatrixAddition(work->cg, work->soln->X[N - 1], work->data->Xref[N - 1], -1);
     norm_inf = slap_NormInf(work->cg);
     work->info->dua_res = work->info->dua_res < norm_inf ? norm_inf : work->info->dua_res;
   }    
@@ -496,7 +496,7 @@ int tiny_CheckAl(tiny_ADMMWorkspace* work) {
   return 0;
 }
 
-enum tiny_ErrorCode tiny_ResetWorkspace(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode tiny_ResetWorkspace(tiny_AdmmWorkspace* work) {
   slap_Copy(work->soln->X[0], work->data->x0);
   work->reg = work->stgs->reg_min;
   work->alpha = ALPHA;
@@ -505,7 +505,7 @@ enum tiny_ErrorCode tiny_ResetWorkspace(tiny_ADMMWorkspace* work) {
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_WarmStartInput(tiny_ADMMWorkspace* work, sfloat* U_data) {
+enum tiny_ErrorCode tiny_WarmStartInput(tiny_AdmmWorkspace* work, sfloat* U_data) {
   int N = work->data->model->nhorizon;
   int m = work->data->model->ninputs;
   for (int i = 0; i < N - 1; ++i) {
@@ -514,7 +514,7 @@ enum tiny_ErrorCode tiny_WarmStartInput(tiny_ADMMWorkspace* work, sfloat* U_data
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_UpdateDuals(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode tiny_UpdateDuals(tiny_AdmmWorkspace* work) {
   int N = work->data->model->nhorizon;
   if (work->stgs->en_cstr_inputs) {
     for (int k = 0; k < N - 1; ++k) { 
@@ -536,13 +536,13 @@ enum tiny_ErrorCode tiny_UpdateDuals(tiny_ADMMWorkspace* work) {
   }
   if (work->stgs->en_cstr_goal) {
     // λ -= ρ*h
-    slap_Copy(work->cg, work->data->X_ref[N - 1]);  // h = xg
+    slap_Copy(work->cg, work->data->Xref[N - 1]);  // h = xg
     slap_MatrixAddition(work->soln->YG, work->soln->YG, work->cg, -work->rho);
   }
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_UpdatePenalty(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode tiny_UpdatePenalty(tiny_AdmmWorkspace* work) {
   work->rho = work->rho * work->stgs->rho_mul;
   return TINY_NO_ERROR;
 }

@@ -11,13 +11,11 @@ extern "C" {
 #include "model.h"
 #include "auxil.h"
 
-enum tiny_ErrorCode tiny_RollOutClosedLoopCost(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode tiny_ForwardPass(tiny_AdmmWorkspace* work);
 
-enum tiny_ErrorCode tiny_ForwardPass(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode tiny_BackwardPassGrad(tiny_AdmmWorkspace* work);
 
-enum tiny_ErrorCode tiny_BackwardPassGrad(tiny_ADMMWorkspace* work);
-
-enum tiny_ErrorCode tiny_SolveLqr(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode tiny_SolveLqr(tiny_AdmmWorkspace* work);
 
 
 # ifdef __cplusplus

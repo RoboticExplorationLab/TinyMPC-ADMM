@@ -19,8 +19,7 @@ void LqrLtiTest() {
   sfloat f_data[NSTATES] = {0};
   sfloat x0_data[NSTATES] = {5, 7, 2, -1.4};
   sfloat xg_data[NSTATES] = {2, 5, 0, 0};
-  sfloat Xref_data[NSTATES * NHORIZON] = {0};
-  sfloat Uref_data[NINPUTS * (NHORIZON - 1)] = {0};
+  sfloat ug_data[NINPUTS * (NHORIZON - 1)] = {0};
   sfloat X_data[NSTATES * NHORIZON] = {0};
   sfloat U_data[NINPUTS * (NHORIZON - 1)] = {0};
   sfloat Kinf_data[NINPUTS*NSTATES] = {
@@ -66,45 +65,30 @@ void LqrLtiTest() {
   Matrix p[NHORIZON];
   Matrix q[NHORIZON-1];
   Matrix r[NHORIZON-1];
-  Matrix xg = slap_MatrixFromArray(NSTATES, 1, xg_data);
-
-  sfloat* Xref_ptr = Xref_data;
-  sfloat* Uref_ptr = Uref_data;
-
-  for (int i = 0; i < NHORIZON; ++i) {
-    if (i < NHORIZON - 1) {
-      Uref[i] = slap_MatrixFromArray(NINPUTS, 1, Uref_ptr);
-      Uref_ptr += NINPUTS;
-    }
-    Xref[i] = slap_MatrixFromArray(NSTATES, 1, Xref_ptr);
-    slap_Copy(Xref[i], xg);
-    Xref_ptr += NSTATES;
-  }
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
   // tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
-  tiny_ADMMSettings stgs;
+  tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  tiny_ADMMData data;
-  tiny_ADMMInfo info;
-  tiny_ADMMSolution soln;
-  tiny_ADMMWorkspace work;
+  tiny_AdmmData data;
+  tiny_AdmmInfo info;
+  tiny_AdmmSolution soln;
+  tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   sfloat temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
 
   tiny_InitWorkspaceTempData(&work, 0, 0, 0, 0, temp_data);
-  tiny_LoadPrimalCache(&work, Quu_inv_data, AmBKt_data, coeff_d2p_data);
+  tiny_InitPrimalCache(&work, Quu_inv_data, AmBKt_data, coeff_d2p_data);
   
   tiny_InitModelFromArray(&model, &A, &B, &f, A_data, B_data, f_data);
   tiny_InitSolnTrajFromArray(&work, X, U, X_data, U_data);
   tiny_InitSolnGainsFromArray(&work, d, p, d_data, p_data, Kinf_data, Pinf_data);
 
-  data.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);  
-  data.X_ref = Xref;
-  data.U_ref = Uref;
+  tiny_SetInitialState(&work, x0_data);  
+  tiny_SetGoalReference(&work, Xref, Uref, xg_data, ug_data);
 
   tiny_InitDataQuadCostFromArray(&work, Q_data, R_data);
   slap_SetIdentity(data.Q, 10);  
@@ -123,8 +107,8 @@ void LqrLtiTest() {
     PrintMatrix(work.data->Q);
     PrintMatrix(work.data->R);
     PrintMatrixT(work.data->x0);
-    PrintMatrixT(work.data->X_ref[NHORIZON-5]);
-    PrintMatrixT(work.data->U_ref[NHORIZON-5]);
+    PrintMatrixT(work.data->Xref[NHORIZON-5]);
+    PrintMatrixT(work.data->Uref[NHORIZON-5]);
     PrintMatrixT(work.data->q[NHORIZON-5]);
     PrintMatrixT(work.data->r[NHORIZON-5]);
     PrintMatrixT(work.soln->Kinf);
@@ -132,7 +116,7 @@ void LqrLtiTest() {
  
   tiny_SolveLqr(&work);
 
-  if (1) {
+  if (0) {
     for (int k = 0; k < NHORIZON - 1; ++k) {
       printf("\n=>k = %d\n", k);
       // PrintMatrix(p[k]);

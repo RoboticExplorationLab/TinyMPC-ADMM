@@ -17,6 +17,11 @@
     "limits": "c",
     "algorithm": "c",
     "forward_pass_data.h": "c",
-    "auxil.h": "c"
+    "auxil.h": "c",
+    "lqr_lti_track_data.h": "c",
+    "cost_lqr.h": "c",
+    "test_utils.h": "c",
+    "simpletest.h": "c",
+    "constraint_linear.h": "c"
   }
 }

@@ -39,12 +39,12 @@ void BackPassTest() {
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
-  tiny_ADMMSettings stgs;
+  tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  tiny_ADMMData data;
-  tiny_ADMMInfo info;
-  tiny_ADMMSolution soln;
-  tiny_ADMMWorkspace work;
+  tiny_AdmmData data;
+  tiny_AdmmInfo info;
+  tiny_AdmmSolution soln;
+  tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   sfloat temp_data[work.data_size];
@@ -96,8 +96,8 @@ void BackPassTest() {
   slap_SetIdentity(data.R, 1e-1);
   data.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(data.Qf, 100 * 1e-1);
-  data.X_ref = Xref;
-  data.U_ref = Uref;
+  data.Xref = Xref;
+  data.Uref = Uref;
   data.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);
   data.q = q;
   data.r = r;

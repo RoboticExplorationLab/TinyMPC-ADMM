@@ -24,8 +24,8 @@ sfloat R_data[NINPUTS*NINPUTS] = {0};
 sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
 sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
 
-sfloat X_ref_data[NSTATES] = {0};
-sfloat U_ref_data[NINPUTS] = {0};
+sfloat Xref_data[NSTATES] = {0};
+sfloat Uref_data[NINPUTS] = {0};
 
   Matrix A;
   Matrix B;
@@ -35,8 +35,8 @@ sfloat U_ref_data[NINPUTS] = {0};
   Matrix U[NHORIZON - 1];
   Matrix Kinf;
   Matrix d[NHORIZON - 1];
-  Matrix X_ref[NHORIZON];
-  Matrix U_ref[NHORIZON-1];
+  Matrix Xref[NHORIZON];
+  Matrix Uref[NHORIZON-1];
   Matrix q[NHORIZON-1];
   Matrix r[NHORIZON-1];
 
@@ -45,12 +45,12 @@ void ForwardPassTest() {
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
-  tiny_ADMMSettings stgs;
+  tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  tiny_ADMMData data;
-  tiny_ADMMInfo info;
-  tiny_ADMMSolution soln;
-  tiny_ADMMWorkspace work;
+  tiny_AdmmData data;
+  tiny_AdmmInfo info;
+  tiny_AdmmSolution soln;
+  tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   sfloat temp_data[work.data_size];
@@ -69,8 +69,8 @@ void ForwardPassTest() {
   }
 
   data.x0 = X[0];  // check if possible
-  data.X_ref = X_ref;
-  data.U_ref = U_ref;
+  data.Xref = Xref;
+  data.Uref = Uref;
 
   data.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(data.Q, 1);
@@ -80,11 +80,11 @@ void ForwardPassTest() {
   data.q[1] = slap_MatrixFromArray(NSTATES, 1, &q_data[NSTATES]);
   data.r[0] = slap_MatrixFromArray(NINPUTS, 1, r_data);
   data.r[1] = slap_MatrixFromArray(NINPUTS, 1, &r_data[NINPUTS]);
-  X_ref[0] = slap_MatrixFromArray(NSTATES, 1, X_ref_data);
-  X_ref[1] = slap_MatrixFromArray(NSTATES, 1, X_ref_data);
-  X_ref[2] = slap_MatrixFromArray(NSTATES, 1, X_ref_data);
-  U_ref[0] = slap_MatrixFromArray(NINPUTS, 1, U_ref_data);
-  U_ref[1] = slap_MatrixFromArray(NINPUTS, 1, U_ref_data);
+  Xref[0] = slap_MatrixFromArray(NSTATES, 1, Xref_data);
+  Xref[1] = slap_MatrixFromArray(NSTATES, 1, Xref_data);
+  Xref[2] = slap_MatrixFromArray(NSTATES, 1, Xref_data);
+  Uref[0] = slap_MatrixFromArray(NINPUTS, 1, Uref_data);
+  Uref[1] = slap_MatrixFromArray(NINPUTS, 1, Uref_data);
   tiny_UpdateLinearCost(&work);
 
   uptr = u_data;

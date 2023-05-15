@@ -39,7 +39,7 @@ void DeltaLqrLtvTest() {
   tiny_InitLtvModel(&model);
   tiny_ProblemData prob;
   tiny_InitProblemData(&prob);
-  tiny_ADMMSettings solver;
+  tiny_AdmmSettings solver;
   tiny_InitSettings(&solver);
 
   Matrix X[NHORIZON];
@@ -115,8 +115,8 @@ void DeltaLqrLtvTest() {
   slap_SetIdentity(prob.R, 1e-1);
   prob.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(prob.Qf, 10e-1);
-  prob.X_ref = Xref;
-  prob.U_ref = Uref;
+  prob.Xref = Xref;
+  prob.Uref = Uref;
   prob.x0 = model.x0;
   prob.K = K;
   prob.d = d;
@@ -169,7 +169,7 @@ void AbsLqrLtvTest() {
   tiny_InitLtvModel(&model);
   tiny_ProblemData prob;
   tiny_InitProblemData(&prob);
-  tiny_ADMMSettings solver;
+  tiny_AdmmSettings solver;
   tiny_InitSettings(&solver);
 
   Matrix X[NHORIZON];
@@ -245,8 +245,8 @@ void AbsLqrLtvTest() {
   slap_SetIdentity(prob.R, 1e-1);
   prob.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(prob.Qf, 10e-1);
-  prob.X_ref = Xref;
-  prob.U_ref = Uref;
+  prob.Xref = Xref;
+  prob.Uref = Uref;
   prob.x0 = model.x0;
   prob.K = K;
   prob.d = d;
@@ -298,7 +298,7 @@ void DeltaLqrLtiTest() {
   tiny_InitLtiModel(&model);
   tiny_ProblemData prob;
   tiny_InitProblemData(&prob);
-  tiny_ADMMSettings solver;
+  tiny_AdmmSettings solver;
   tiny_InitSettings(&solver);
 
   Matrix X[NHORIZON];
@@ -362,8 +362,8 @@ void DeltaLqrLtiTest() {
   slap_SetIdentity(prob.R, 1e-1);
   prob.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(prob.Qf, 10e-1);
-  prob.X_ref = Xref;
-  prob.U_ref = Uref;
+  prob.Xref = Xref;
+  prob.Uref = Uref;
   prob.x0 = model.x0;
   prob.K = K;
   prob.d = d;
@@ -414,7 +414,7 @@ void AbsLqrLtiTest() {
   tiny_InitLtiModel(&model);
   tiny_ProblemData prob;
   tiny_InitProblemData(&prob);
-  tiny_ADMMSettings solver;
+  tiny_AdmmSettings solver;
   tiny_InitSettings(&solver);
 
   Matrix X[NHORIZON];
@@ -478,8 +478,8 @@ void AbsLqrLtiTest() {
   slap_SetIdentity(prob.R, 1e-1);
   prob.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(prob.Qf, 100e-1);
-  prob.X_ref = Xref;
-  prob.U_ref = Uref;
+  prob.Xref = Xref;
+  prob.Uref = Uref;
   prob.x0 = model.x0;
   prob.K = K;
   prob.d = d;

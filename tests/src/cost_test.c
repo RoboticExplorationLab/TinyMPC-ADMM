@@ -32,16 +32,16 @@ sfloat ans_gradxf[NSTATES] = {-0.6, -0.65, -0.65, 2.15};
 
 void AddCostTest() {
   const sfloat tol = 1e-6;
-  Matrix U_ref[NHORIZON-1];
-  Matrix X_ref[NHORIZON];
+  Matrix Uref[NHORIZON-1];
+  Matrix Xref[NHORIZON];
   Matrix U[NHORIZON-1];
   Matrix X[NHORIZON];
   sfloat* uptr = u_ref_data;
   sfloat* xptr = x_ref_data;
   for (int i = 0; i < NHORIZON; ++i) {
-    U_ref[i] = slap_MatrixFromArray(NINPUTS, 1, uptr);
+    Uref[i] = slap_MatrixFromArray(NINPUTS, 1, uptr);
     uptr += NINPUTS;
-    X_ref[i] = slap_MatrixFromArray(NSTATES, 1, xptr);
+    Xref[i] = slap_MatrixFromArray(NSTATES, 1, xptr);
     xptr += NSTATES;
   }
   Matrix x = slap_MatrixFromArray(NSTATES, 1, x_data);
@@ -49,12 +49,12 @@ void AddCostTest() {
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
-  tiny_ADMMSettings stgs;
+  tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  tiny_ADMMData data;
-  tiny_ADMMInfo info;
-  tiny_ADMMSolution soln;
-  tiny_ADMMWorkspace work;
+  tiny_AdmmData data;
+  tiny_AdmmInfo info;
+  tiny_AdmmSolution soln;
+  tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   sfloat temp_data[work.data_size];
@@ -68,8 +68,8 @@ void AddCostTest() {
   slap_SetIdentity(data.R, 1);
   soln.Pinf = slap_MatrixFromArray(NSTATES, NSTATES, Pinf_data);
   slap_SetIdentity(soln.Pinf, 0.5);
-  data.X_ref = X_ref;
-  data.U_ref = U_ref;
+  data.Xref = Xref;
+  data.Uref = Uref;
 
   soln.X = X;
   soln.U = U;

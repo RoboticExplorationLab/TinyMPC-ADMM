@@ -9,26 +9,27 @@ extern "C" {
 #include "types.h"
 #include "utils.h"
 #include "lqr.h"
+#include "constraint_linear.h"
 
-enum tiny_ErrorCode tiny_SolveADMM(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work);
 
-enum tiny_ErrorCode UpdatePrimal(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode UpdatePrimal(tiny_AdmmWorkspace* work);
 
-enum tiny_ErrorCode UpdateSlackDual(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode UpdateSlackDual(tiny_AdmmWorkspace* work);
 
-enum tiny_ErrorCode ComputePrimalResidual(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode ComputePrimalResidual(tiny_AdmmWorkspace* work);
 
-enum tiny_ErrorCode ComputeDualResidual(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode ComputeDualResidual(tiny_AdmmWorkspace* work);
 
-enum tiny_ErrorCode ComputeObjectiveValue(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode ComputeObjectiveValue(tiny_AdmmWorkspace* work);
 
-int CheckTermination(tiny_ADMMWorkspace* work);
+int CheckTermination(tiny_AdmmWorkspace* work);
 
-enum tiny_ErrorCode UpdateInfo(tiny_ADMMWorkspace* work,
+enum tiny_ErrorCode UpdateInfo(tiny_AdmmWorkspace* work,
                                 int                 iter,
                                 int                 compute_objective);
 
-enum tiny_ErrorCode tiny_WarmStartInput(tiny_ADMMWorkspace* work, sfloat* U_data);
+enum tiny_ErrorCode tiny_WarmStartInput(tiny_AdmmWorkspace* work, sfloat* U_data);
 
 # ifdef __cplusplus
 }

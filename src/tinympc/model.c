@@ -143,7 +143,7 @@ enum tiny_ErrorCode tiny_EvalModel(Matrix* xn, const Matrix x, const Matrix u,
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_AdmmWorkspace* work) {
   tiny_Model* model = work->data->model;
   int N = model[0].nhorizon;
   int adaptive_horizon = work->stgs->adaptive_horizon;
@@ -153,6 +153,7 @@ enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_ADMMWorkspace* work) {
       // Control input: u = - d - K*x
       slap_Copy(work->soln->U[k], work->soln->d[k]); // u[k] = -d[k]
       slap_MatMulAdd(work->soln->U[k], work->soln->Kinf, work->soln->X[k], -1, -1);  // u[k] -= Kinf * x[k]
+      // slap_MatMulAdd(work->soln->U[k], work->soln->Kinf, work->data->Xref[k], 1, 1);  // u[k] -= Kinf * x[k]
       // slap_MatMulAB(work->soln->U[k], work->soln->Kinf, work->soln->X[k]);
       // slap_MatrixAddition(work->soln->U[k], work->soln->U[k], work->soln->d[k], 1);
       // slap_ScaleByConst(work->soln->U[k], -1);
@@ -185,7 +186,7 @@ enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_ADMMWorkspace* work) {
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_RollOutOpenLoop(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode tiny_RollOutOpenLoop(tiny_AdmmWorkspace* work) {
   tiny_Model* model = work->data->model;
   int N = model[0].nhorizon;
   int adaptive_horizon = work->stgs->adaptive_horizon;
@@ -215,7 +216,7 @@ enum tiny_ErrorCode tiny_RollOutOpenLoop(tiny_ADMMWorkspace* work) {
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_UpdateModelJac(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode tiny_UpdateModelJac(tiny_AdmmWorkspace* work) {
   tiny_Model* model = work->data->model;
   int N = model[0].nhorizon;
   // LTV model
@@ -224,20 +225,20 @@ enum tiny_ErrorCode tiny_UpdateModelJac(tiny_ADMMWorkspace* work) {
       // get A and B
       model[0].get_jacobians(&(model[0].A[i]), 
                              &(model[0].B[i]), 
-                             work->data->X_ref[i], 
-                             work->data->U_ref[i]);
+                             work->data->Xref[i], 
+                             work->data->Uref[i]);
       if (model[0].affine) {
         // get f = x1 - Ax - Bu
         if (model[0].get_nonl_model != TINY_NULL) {
           model[0].get_nonl_model(&(model[0].f[i]),
-                                  work->data->X_ref[i], 
-                                  work->data->U_ref[i]);
+                                  work->data->Xref[i], 
+                                  work->data->Uref[i]);
           slap_MatMulAdd(model[0].f[i], 
                          model[0].A[i], 
-                         work->data->X_ref[i], -1, 1);
+                         work->data->Xref[i], -1, 1);
           slap_MatMulAdd(model[0].f[i], 
                          model[0].B[i], 
-                         work->data->U_ref[i], -1, 1);
+                         work->data->Uref[i], -1, 1);
         }
       }
     }
@@ -247,27 +248,27 @@ enum tiny_ErrorCode tiny_UpdateModelJac(tiny_ADMMWorkspace* work) {
     // get A and B
     model[0].get_jacobians(&(model[0].A[0]), 
                             &(model[0].B[0]), 
-                            work->data->X_ref[N-1],
-                            work->data->U_ref[N-1]);
+                            work->data->Xref[N-1],
+                            work->data->Uref[N-1]);
     if (model[0].affine) {                     
       // get f = x1 - Ax - Bu
       if (model[0].get_nonl_model != TINY_NULL) {
         model[0].get_nonl_model(model[0].f, 
-                                work->data->X_ref[N-1],
-                                work->data->U_ref[N-1]);
+                                work->data->Xref[N-1],
+                                work->data->Uref[N-1]);
         slap_MatMulAdd(model[0].f[0], 
                        model[0].A[0], 
-                       work->data->X_ref[N-1], -1, 1);
+                       work->data->Xref[N-1], -1, 1);
         slap_MatMulAdd(model[0].f[0], 
                        model[0].B[0], 
-                       work->data->U_ref[N-1], -1, 1);
+                       work->data->Uref[N-1], -1, 1);
       }
     }
   }
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_UpdateModelJacAbout(tiny_ADMMWorkspace* work,
+enum tiny_ErrorCode tiny_UpdateModelJacAbout(tiny_AdmmWorkspace* work,
                                              Matrix* X, Matrix* U) {
   tiny_Model* model = work->data->model;
   int N = model[0].nhorizon;
@@ -296,8 +297,8 @@ enum tiny_ErrorCode tiny_UpdateModelJacAbout(tiny_ADMMWorkspace* work,
       // get f = x1 - Ax - Bu
       if (model[0].get_nonl_model != TINY_NULL) {
         model[0].get_nonl_model(model[0].f, 
-                                work->data->X_ref[N-1],
-                                work->data->U_ref[N-1]);
+                                work->data->Xref[N-1],
+                                work->data->Uref[N-1]);
         slap_MatMulAdd(model[0].f[0], model[0].A[0], X[N-1], -1, 1);
         slap_MatMulAdd(model[0].f[0], model[0].B[0], U[N-1], -1, 1);
       }

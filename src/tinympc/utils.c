@@ -1,7 +1,7 @@
 #include "utils.h"
 
-void PrintSolveInfo(tiny_ADMMWorkspace* work) {
-  tiny_ADMMInfo* info = work->info;
+void PrintSolveInfo(tiny_AdmmWorkspace* work) {
+  tiny_AdmmInfo* info = work->info;
   printf("Solve info: \n");
   printf(" Status: %d\n", info->status_val);
   printf(" Iter: %d\n", info->iter);   
@@ -9,6 +9,48 @@ void PrintSolveInfo(tiny_ADMMWorkspace* work) {
   printf(" Primal res: %f, dual res: %f\n", info->pri_res, info->dua_res);
 }
 
+void PrintLine(void) {
+  char  the_line[HEADER_LINE_LEN + 1];
+  int i;
+
+  for (i = 0; i < HEADER_LINE_LEN; ++i) the_line[i] = '-';
+  the_line[HEADER_LINE_LEN] = '\0';
+  printf("%s\n", the_line);
+}
+
+void PrintHeader(void) {
+  // Different indentation required for windows
+  printf("iter   ");
+  // Main information
+  printf("objective    pri res    dua res    rho");
+  printf("\n");
+}
+
+void PrintIteration(tiny_AdmmWorkspace *work) {
+  tiny_AdmmInfo *info;
+
+  info = work->info;
+
+  printf("%4i",     (int)info->iter);
+  printf(" %12.4e", info->obj_val);
+  printf("  %9.2e", info->pri_res);
+  printf("  %9.2e", info->dua_res);
+  printf("  %9.2e", work->rho);
+  printf("\n");
+}
+
+void PrintSummary(tiny_AdmmInfo *info) {
+  printf("\n"); // Add space after iterations
+
+  printf("status:               %i\n", info->status_val);
+
+  printf("number of iterations: %i\n", (int)info->iter);
+
+  if (info->status_val == TINY_SOLVED) {
+    printf("optimal objective:    %.4f\n", info->obj_val);
+  }
+  printf("\n");
+}
 
 // //========================================
 // // Read data from file

@@ -47,7 +47,7 @@ int max_outer_iters = 100;
 int max_search_iters = 10;
 
 void SettingsTest() {
-  tiny_ADMMSettings settings;
+  tiny_AdmmSettings settings;
   tiny_InitSettings(&settings);
 
   TEST(settings.reg_max == (sfloat)REG_MAX);
@@ -63,12 +63,12 @@ void SolutionTest() {
   // int N = NHORIZON;
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, dt);
-  tiny_ADMMSettings stgs;
+  tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  tiny_ADMMData data;
-  tiny_ADMMInfo info;
-  tiny_ADMMSolution soln;
-  tiny_ADMMWorkspace work;
+  tiny_AdmmData data;
+  tiny_AdmmInfo info;
+  tiny_AdmmSolution soln;
+  tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   // int true_size = m*m + m + n*n + n*m + 2*m*(N - 1);
   // TEST(work.data_size == true_size);
@@ -80,12 +80,12 @@ void DataTest() {
   // int N = NHORIZON;
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, dt);
-  tiny_ADMMSettings stgs;
+  tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  tiny_ADMMData data;
-  tiny_ADMMInfo info;
-  tiny_ADMMSolution soln;
-  tiny_ADMMWorkspace work;
+  tiny_AdmmData data;
+  tiny_AdmmInfo info;
+  tiny_AdmmSolution soln;
+  tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   // int true_size = n + n*n*2 + m*m + (N-1)*(n + m) + m + N*n + (N-1)*m;
   // true_size += 2*m*m + 2*m + 2*n*n + 2*n;
@@ -98,12 +98,12 @@ void WorkspaceTest() {
   // int N = NHORIZON;
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, dt);
-  tiny_ADMMSettings stgs;
+  tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  tiny_ADMMData data;
-  tiny_ADMMInfo info;
-  tiny_ADMMSolution soln;
-  tiny_ADMMWorkspace work;
+  tiny_AdmmData data;
+  tiny_AdmmInfo info;
+  tiny_AdmmSolution soln;
+  tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
 
   TEST(work.first_run == 1);
@@ -125,7 +125,7 @@ void WorkspaceTest() {
   TESTAPPROX(work.ZU_new[NHORIZON-2].data[m-1], 1.0, 1e-6);
   TESTAPPROX(work.ZU[NHORIZON-2].data[m-1], 0.0, 1e-6);
 
-  tiny_LoadPrimalCache(&work, Quu_inv_data, AmBKt_data, coeff_d2p_data);
+  tiny_InitPrimalCache(&work, Quu_inv_data, AmBKt_data, coeff_d2p_data);
   TEST((work.Quu_inv.rows == m) && (work.Quu_inv.cols == m));
   TEST((work.coeff_d2p.rows == n) && (work.coeff_d2p.cols == m));
   TESTAPPROX(SumOfSquaredError(work.Quu_inv.data, Quu_inv_data, m*m), 0, 1e-6);

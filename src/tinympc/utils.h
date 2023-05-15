@@ -13,6 +13,26 @@ extern "C" {
 #include <string.h>
 
 #include "types.h"
+#include "constants.h"
+
+void PrintLine(void);
+
+/**
+ * Print header with data to be displayed per iteration
+ */
+void PrintHeader(void);
+
+/**
+ * Print iteration summary
+ * @param work current workspace
+ */
+void PrintIteration(tiny_AdmmWorkspace *work);
+
+/**
+ * Print summary when algorithm terminates
+ * @param info   info structure
+ */
+void PrintSummary(tiny_AdmmInfo *info);
 
 //========================================
 // Print matrix with its name (dummy)
@@ -89,7 +109,7 @@ extern "C" {
     printf(" LTV: %d, affine: %d\n", model.ltv, model.affine); \
   }
 
-void PrintSolveInfo(tiny_ADMMWorkspace* work);
+void PrintSolveInfo(tiny_AdmmWorkspace* work);
 //========================================
 // Read data from file
 //========================================

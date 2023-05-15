@@ -1,6 +1,6 @@
 #include "admm.h"
 
-enum tiny_ErrorCode tiny_SolveADMM(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work) {
 
   tiny_ResetInfo(work);
 
@@ -23,21 +23,22 @@ enum tiny_ErrorCode tiny_SolveADMM(tiny_ADMMWorkspace* work) {
   can_print = work->stgs->verbose;
   compute_cost_function = work->stgs->verbose;
 
-  // if (work->stgs->verbose) {
-  // // Print Header for every column
-  //   print_header();
-  // }
+  if (work->stgs->verbose) {
+  // Print Header for every column
+    PrintHeader();
+  }
 
-  tiny_ForwardPass(work);
-  UpdateSlackDual(work);
-  tiny_UpdateLinearCost(work);
+  // tiny_UpdateLinearCost(work);
+  // tiny_ForwardPass(work);
+  // UpdateSlackDual(work);
+
 
   // Main ADMM algorithm
-  for (iter = 2; iter <= work->stgs->max_iter; iter++) {
+  for (iter = 1; iter <= work->stgs->max_iter; iter++) {
     /* ADMM STEPS */
-
+    // printf("\n=>k = %d\n", iter);
     // Update z_prev (preallocated, no malloc)
-    for (int i = 1; i < N; ++i) {
+    for (int i = 0; i < N - 1; ++i) {
       SwapVectors(&(work->ZU_new[i].data), &(work->ZU[i].data));
     }
 
@@ -48,7 +49,7 @@ enum tiny_ErrorCode tiny_SolveADMM(tiny_ADMMWorkspace* work) {
     UpdateSlackDual(work);
 
     /* Update for next primal solve */
-    tiny_UpdateLinearCost(work);
+    tiny_UpdateConstrainedLinearCost(work);
 
     /* End of ADMM Steps */
 
@@ -57,17 +58,17 @@ enum tiny_ErrorCode tiny_SolveADMM(tiny_ADMMWorkspace* work) {
                             (iter % work->stgs->check_termination == 0);
 
     can_print = work->stgs->verbose &&
-                ((iter % PRINT_INTERVAL == 0) || (iter == 1));
+                ((iter % work->stgs->check_termination == 0) || (iter == 1));
 
     if (can_check_termination || can_print) { // Update status in either of
                                               // these cases
       // Update information
       UpdateInfo(work, iter, compute_cost_function);
 
-      // if (can_print) {
-      //   // Print summary
-      //   PrintSummary(work);
-      // }
+      if (can_print) {
+        // Print summary
+        PrintIteration(work);
+      }
 
       if (can_check_termination) {
         // Check algorithm termination
@@ -85,20 +86,22 @@ enum tiny_ErrorCode tiny_SolveADMM(tiny_ADMMWorkspace* work) {
   if (work->info->status_val == TINY_UNSOLVED) {
     work->info->status_val = TINY_MAX_ITER_REACHED;
   }
+  if (work->stgs->verbose) PrintSummary(work->info);
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode UpdatePrimal(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode UpdatePrimal(tiny_AdmmWorkspace* work) {
   tiny_SolveLqr(work);
+  return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode UpdateSlackDual(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode UpdateSlackDual(tiny_AdmmWorkspace* work) {
   int n = work->data->model[0].ninputs;
   int N = work->data->model[0].nhorizon;
 
   for (int k = 0; k < N - 1; ++k) {
     slap_MatrixAddition(work->soln->YU[k], work->soln->YU[k], work->soln->U[k], 1);
-    for (int i = 0; i < n; ++i) {      
+    for (int i = 0; i < n; ++i) { 
       work->ZU_new[k].data[i] = T_MIN(T_MAX(work->soln->YU[k].data[i],
                                 work->data->lcu.data[i]),  // Between lower
                                 work->data->ucu.data[i]);  // and upper bounds
@@ -108,11 +111,11 @@ enum tiny_ErrorCode UpdateSlackDual(tiny_ADMMWorkspace* work) {
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode ComputePrimalResidual(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode ComputePrimalResidual(tiny_AdmmWorkspace* work) {
   int n = work->data->model[0].ninputs;
   int N = work->data->model[0].nhorizon;
-  
-  for (int k = 0; k < N - 1; ++k) {
+  work->info->pri_res = 0;
+  for (int k = 0; k < N - 1; ++k) {    
     for (int i = 0; i < n; ++i) {      
       work->info->pri_res = T_MAX(work->info->pri_res, 
                     T_ABS(work->soln->U[k].data[i] - work->ZU_new[k].data[i]));
@@ -121,10 +124,10 @@ enum tiny_ErrorCode ComputePrimalResidual(tiny_ADMMWorkspace* work) {
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode ComputeDualResidual(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode ComputeDualResidual(tiny_AdmmWorkspace* work) {
   int n = work->data->model[0].ninputs;
   int N = work->data->model[0].nhorizon;
-  
+  work->info->dua_res = 0;
   for (int k = 0; k < N - 1; ++k) {
     for (int i = 0; i < n; ++i) {      
       work->info->dua_res = T_MAX(work->info->dua_res, 
@@ -135,7 +138,7 @@ enum tiny_ErrorCode ComputeDualResidual(tiny_ADMMWorkspace* work) {
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode ComputeObjectiveValue(tiny_ADMMWorkspace* work) {
+enum tiny_ErrorCode ComputeObjectiveValue(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
   work->info->obj_val = 0.0;
   
@@ -148,8 +151,7 @@ enum tiny_ErrorCode ComputeObjectiveValue(tiny_ADMMWorkspace* work) {
   return TINY_NO_ERROR;
 }
 
-int CheckTermination(tiny_ADMMWorkspace* work) {
-  int exitflag = 0;
+int CheckTermination(tiny_AdmmWorkspace* work) {
   // If residuals are too large, the problem is probably non convex
   if ((work->info->pri_res > TINY_INFTY) ||
       (work->info->dua_res > TINY_INFTY)){
@@ -163,11 +165,12 @@ int CheckTermination(tiny_ADMMWorkspace* work) {
   if ((work->info->pri_res < work->stgs->tol_abs_prim) 
     && (work->info->dua_res < work->stgs->tol_abs_dual)) {
     work->info->status_val = TINY_SOLVED;
+    return 1;
   }
-  return 1;
+  return 0;
 }
 
-enum tiny_ErrorCode UpdateInfo(tiny_ADMMWorkspace* work,
+enum tiny_ErrorCode UpdateInfo(tiny_AdmmWorkspace* work,
                                 int                 iter,
                                 int                 compute_objective) {
 
@@ -178,9 +181,10 @@ enum tiny_ErrorCode UpdateInfo(tiny_ADMMWorkspace* work,
   }  
   ComputePrimalResidual(work);
   ComputeDualResidual(work);
+  return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_WarmStartInput(tiny_ADMMWorkspace* work, sfloat* U_data) {
+enum tiny_ErrorCode tiny_WarmStartInput(tiny_AdmmWorkspace* work, sfloat* U_data) {
   int N = work->data->model->nhorizon;
   int m = work->data->model->ninputs;
   for (int i = 0; i < N - 1; ++i) {

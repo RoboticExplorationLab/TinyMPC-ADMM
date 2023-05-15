@@ -1,6 +1,6 @@
 #include "constraint_linear.h"
 
-enum tiny_ErrorCode tiny_SetInputBound(tiny_ADMMWorkspace* work, sfloat* Ac_data, sfloat* lc_data, sfloat* uc_data) {
+enum tiny_ErrorCode tiny_SetInputBound(tiny_AdmmWorkspace* work, sfloat* Ac_data, sfloat* lc_data, sfloat* uc_data) {
   int n = work->data->model->ninputs;
   work->stgs->en_cstr_inputs = EN_CSTR_INPUTS;
   work->data->Acu = slap_MatrixFromArray(n, n, Ac_data);
@@ -10,7 +10,7 @@ enum tiny_ErrorCode tiny_SetInputBound(tiny_ADMMWorkspace* work, sfloat* Ac_data
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_SetStateBound(tiny_ADMMWorkspace* work, sfloat* Ac_data, sfloat* lc_data, sfloat* uc_data) {
+enum tiny_ErrorCode tiny_SetStateBound(tiny_AdmmWorkspace* work, sfloat* Ac_data, sfloat* lc_data, sfloat* uc_data) {
   int n = work->data->model[0].nstates;
   work->stgs->en_cstr_states = EN_CSTR_STATES;
   work->data->Acx = slap_MatrixFromArray(n, n, Ac_data);
@@ -20,7 +20,7 @@ enum tiny_ErrorCode tiny_SetStateBound(tiny_ADMMWorkspace* work, sfloat* Ac_data
   return TINY_NO_ERROR;
 }
 
-// enum tiny_ErrorCode tiny_ProjectInput(tiny_ADMMWorkspace* work) {
+// enum tiny_ErrorCode tiny_ProjectInput(tiny_AdmmWorkspace* work) {
 //   int n = work->data->model[0].ninputs;
 //   int N = work->data->model[0].ninputs;
 
@@ -35,7 +35,7 @@ enum tiny_ErrorCode tiny_SetStateBound(tiny_ADMMWorkspace* work, sfloat* Ac_data
 //   return TINY_NO_ERROR;
 // }
 
-int IsConstrained(tiny_ADMMWorkspace* work) {
+int IsConstrained(tiny_AdmmWorkspace* work) {
   if (!work->stgs->en_cstr_goal && 
       !work->stgs->en_cstr_inputs && 
       !work->stgs->en_cstr_states) {

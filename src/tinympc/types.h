@@ -46,7 +46,7 @@ typedef struct {
   Matrix YG;      ///< Dual variables for goal constraint
 
   int data_size;
-} tiny_ADMMSolution;
+} tiny_AdmmSolution;
 
 
 /**
@@ -60,7 +60,7 @@ typedef struct {
   sfloat obj_val;     ///< primal objective
   sfloat pri_res;     ///< norm of primal residual
   sfloat dua_res;     ///< norm of dual residual
-} tiny_ADMMInfo;
+} tiny_AdmmInfo;
 
 
 /**********************************
@@ -99,9 +99,9 @@ typedef struct {
   int    check_termination;   ///< Integer, check termination interval; if 0, then termination checking is disabled
   int    warm_start;          ///< boolean, enable warm start
   sfloat time_limit;          ///< Time limit of each MPC step; if 0, disabled
-} tiny_ADMMSettings;
+} tiny_AdmmSettings;
 
-// void tiny_InitSettings(tiny_ADMMSettings* solver);
+// void tiny_InitSettings(tiny_AdmmSettings* solver);
 
 
 /**
@@ -116,8 +116,8 @@ typedef struct {
   Matrix* q;
   Matrix* r;
   
-  Matrix* X_ref;
-  Matrix* U_ref;
+  Matrix* Xref;
+  Matrix* Uref;
 
   Matrix Acx;
   Matrix ucx;
@@ -127,15 +127,15 @@ typedef struct {
   Matrix lcu;
   
   int data_size;
-} tiny_ADMMData;
+} tiny_AdmmData;
 
 // void tiny_InitProblemData(tiny_ProblemData* prob);
 
 typedef struct {
-  tiny_ADMMData*        data;      ///< problem data
-  tiny_ADMMSettings*    stgs;      ///< problem settings
-  tiny_ADMMSolution*    soln;      ///< problem solution
-  tiny_ADMMInfo*        info;      ///< solver information
+  tiny_AdmmData*        data;      ///< problem data
+  tiny_AdmmSettings*    stgs;      ///< problem settings
+  tiny_AdmmSolution*    soln;      ///< problem solution
+  tiny_AdmmInfo*        info;      ///< solver information
 
   sfloat reg;
   sfloat alpha;
@@ -154,7 +154,7 @@ typedef struct {
 
   int data_size;      ///< sum data size of all temporary data //TODO: + model + solution 
   int first_run;      ///< flag indicating whether the solve function has been run before
-} tiny_ADMMWorkspace;
+} tiny_AdmmWorkspace;
 
 
 # ifdef __cplusplus

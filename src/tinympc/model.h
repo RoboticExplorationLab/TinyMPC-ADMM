@@ -40,15 +40,15 @@ enum tiny_ErrorCode tiny_SetModelNonlFunc(
 enum tiny_ErrorCode tiny_EvalModel(Matrix* xn, const Matrix x, const Matrix u,
                                    tiny_Model* model, const int k);
 
-enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_AdmmWorkspace* work);
 
-enum tiny_ErrorCode tiny_RollOutOpenLoop(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode tiny_RollOutOpenLoop(tiny_AdmmWorkspace* work);
 
 // Update Model Jacobians based on get_jacobians, get_nonl_model, Xref, Uref
-enum tiny_ErrorCode tiny_UpdateModelJac(tiny_ADMMWorkspace* work);
+enum tiny_ErrorCode tiny_UpdateModelJac(tiny_AdmmWorkspace* work);
 
 // Update Model Jacobians based on get_jacobians, get_nonl_model, user-input X, U traj
-enum tiny_ErrorCode tiny_UpdateModelJacAbout(tiny_ADMMWorkspace* work,
+enum tiny_ErrorCode tiny_UpdateModelJacAbout(tiny_AdmmWorkspace* work,
                                              Matrix* X, Matrix* U);
 
 

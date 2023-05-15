@@ -66,12 +66,12 @@ void DeltaLqrLtvTest() {
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 1, 0, 0.1);  // feasible reference then
   // affine = 0;
-  tiny_ADMMSettings stgs;
+  tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  tiny_ADMMData data;
-  tiny_ADMMInfo info;
-  tiny_ADMMSolution soln;
-  tiny_ADMMWorkspace work;
+  tiny_AdmmData data;
+  tiny_AdmmInfo info;
+  tiny_AdmmSolution soln;
+  tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   sfloat temp_data[work.data_size];
@@ -123,8 +123,8 @@ void DeltaLqrLtvTest() {
   soln.U = U;
   soln.X = X;
   data.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);  // check if possible  
-  data.X_ref = Xref;
-  data.U_ref = Uref;
+  data.Xref = Xref;
+  data.Uref = Uref;
   data.q = q;
   data.r = r;
   data.qf = slap_MatrixFromArray(NSTATES, 1, qf_data);  
@@ -152,8 +152,8 @@ void DeltaLqrLtvTest() {
     PrintMatrix(work.data->R);
     PrintMatrix(work.data->Qf);
     PrintMatrixT(work.data->x0);
-    PrintMatrixT(work.data->X_ref[NHORIZON-5]);
-    PrintMatrixT(work.data->U_ref[NHORIZON-5]);
+    PrintMatrixT(work.data->Xref[NHORIZON-5]);
+    PrintMatrixT(work.data->Uref[NHORIZON-5]);
     PrintMatrixT(work.data->q[NHORIZON-5]);
     PrintMatrixT(work.data->r[NHORIZON-5]);
   }
@@ -237,15 +237,15 @@ void AbsLqrLtvTest() {
   // Create model and settings first due to essential problem setup
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 1, 1, 0.1);
-  tiny_ADMMSettings stgs;
+  tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
   tiny_SetUnconstrained(&stgs);
 
   // Create workspace
-  tiny_ADMMData data;
-  tiny_ADMMInfo info;
-  tiny_ADMMSolution soln;
-  tiny_ADMMWorkspace work;
+  tiny_AdmmData data;
+  tiny_AdmmInfo info;
+  tiny_AdmmSolution soln;
+  tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
 
   sfloat temp_data[work.data_size];
@@ -259,8 +259,8 @@ void AbsLqrLtvTest() {
 
   tiny_InitSolutionFromMatrix(&work, X, U, P, p, K, d, TINY_NULL, TINY_NULL, TINY_NULL_MAT);
   data.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);  // check if possible  
-  data.X_ref = Xref;
-  data.U_ref = Uref;
+  data.Xref = Xref;
+  data.Uref = Uref;
   data.q = q;
   data.r = r;
   data.qf = slap_MatrixFromArray(NSTATES, 1, qf_data);  
@@ -287,8 +287,8 @@ void AbsLqrLtvTest() {
     PrintMatrix(work.data->R);
     PrintMatrix(work.data->Qf);
     PrintMatrixT(work.data->x0);
-    PrintMatrixT(work.data->X_ref[NHORIZON-5]);
-    PrintMatrixT(work.data->U_ref[NHORIZON-5]);
+    PrintMatrixT(work.data->Xref[NHORIZON-5]);
+    PrintMatrixT(work.data->Uref[NHORIZON-5]);
     PrintMatrixT(work.data->q[NHORIZON-5]);
     PrintMatrixT(work.data->r[NHORIZON-5]);
   }
