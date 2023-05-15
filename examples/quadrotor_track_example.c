@@ -234,7 +234,7 @@ int main() {
 
     // === 1. Setup and solve MPC ===
     for (int j = 0; j < NSTATES; ++j) {
-      X[k].data[j] += X[k].data[j] * T_NOISE(10);
+      X[k].data[j] += X[k].data[j] * T_NOISE(5);
     }
     slap_Copy(work.data->x0, X[k]);  // update current measurement
 
@@ -251,7 +251,7 @@ int main() {
     // tiny_ForwardPassLti(Xhrz, Uhrz, prob, model);
     end = clock();
     cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
-    // printf("solve time: %f\n", cpu_time_used);
+    // printf("solve time:       %f\n", cpu_time_used);
     printf("%f\n", cpu_time_used);
 
     if(work.info->status_val != TINY_SOLVED) {
