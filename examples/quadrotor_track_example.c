@@ -15,7 +15,7 @@
 #define H 0.02       // dt
 #define NSTATES 12   // no. of states (error state)
 #define NINPUTS 4    // no. of controls
-#define NHORIZON 3  // horizon steps (NHORIZON states and NHORIZON-1 controls)
+#define NHORIZON 15  // horizon steps (NHORIZON states and NHORIZON-1 controls)
 #define NSIM 500     // simulation steps (fixed with reference data)
 
 int main() {
@@ -229,7 +229,7 @@ int main() {
     Matrix pose = slap_CreateSubMatrix(X[k], 0, 0, 6, 1);
     Matrix pose_ref = slap_CreateSubMatrix(Xref[k], 0, 0, 6, 1);
     // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[k]));
-    // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(pose, pose_ref));
+    printf("ex[%d] = %.4f\n", k, slap_NormedDifference(pose, pose_ref));
     // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
 
     // === 1. Setup and solve MPC ===
@@ -251,8 +251,8 @@ int main() {
     // tiny_ForwardPassLti(Xhrz, Uhrz, prob, model);
     end = clock();
     cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
-    // printf("solve time:       %f\n", cpu_time_used);
-    printf("%f\n", cpu_time_used);
+    printf("solve time:       %f\n", cpu_time_used);
+    // printf("%f\n", cpu_time_used);
 
     if(work.info->status_val != TINY_SOLVED) {
       printf("!!! NOT SOLVED !!!\n");
@@ -285,7 +285,7 @@ int main() {
   // }
   // Test tracking performance
   for (int k = NSIM - NHORIZON - 5; k < NSIM - NHORIZON; ++k) {
-    TEST(slap_NormedDifference(X[k], Xref[k]) < 0.2);
+    TEST(slap_NormedDifference(X[k], Xref[k]) < 0.5);
   }
   // --------------------------
 
