@@ -19,7 +19,7 @@ enum tiny_ErrorCode tiny_InitDataQuadCostFromArray(tiny_AdmmWorkspace* work,
 sfloat* Q_data, sfloat* R_data);
 
 enum tiny_ErrorCode tiny_InitDataLinearCostFromArray(tiny_AdmmWorkspace* work, 
-Matrix* q, Matrix* r, sfloat* q_data, sfloat* r_data);
+Matrix* q, Matrix* r, Matrix* r_tilde, sfloat* q_data, sfloat* r_data, sfloat* r_tilde_data);
 
 enum tiny_ErrorCode tiny_InitSolnTrajFromArray(tiny_AdmmWorkspace* work,
 Matrix* X, Matrix* U,

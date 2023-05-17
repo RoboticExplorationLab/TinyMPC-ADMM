@@ -27,7 +27,7 @@ enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work) {
   // Print Header for every column
     PrintHeader();
   }
-  
+
   // Main ADMM algorithm
   for (iter = 1; iter <= work->stgs->max_iter; iter++) {
     /* ADMM STEPS */

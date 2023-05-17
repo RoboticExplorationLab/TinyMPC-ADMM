@@ -115,6 +115,7 @@ typedef struct {
   Matrix  R;
   Matrix* q;
   Matrix* r;
+  Matrix* r_tilde;
   
   Matrix* Xref;
   Matrix* Uref;

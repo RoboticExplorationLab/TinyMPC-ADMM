@@ -130,17 +130,19 @@ sfloat* R_data) {
 }
 
 enum tiny_ErrorCode tiny_InitDataLinearCostFromArray(tiny_AdmmWorkspace* work, 
-Matrix* q, Matrix* r, sfloat* q_data, sfloat* r_data) {
+Matrix* q, Matrix* r, Matrix* r_tilde, sfloat* q_data, sfloat* r_data, sfloat* r_tilde_data) {
 
   int N = work->data->model[0].nhorizon;
   int n = work->data->model[0].nstates;
   int m = work->data->model[0].ninputs;
   work->data->q = q;
   work->data->r = r;
+  work->data->r_tilde = r_tilde;
   
   for (int i = 0; i < N - 1; ++i) {
     q[i] = slap_MatrixFromArray(n, 1, &q_data[i * n]);
     r[i] = slap_MatrixFromArray(m, 1, &r_data[i * m]);
+    r_tilde[i] = slap_MatrixFromArray(m, 1, &r_tilde_data[i * m]);
   }
 
   return TINY_NO_ERROR;

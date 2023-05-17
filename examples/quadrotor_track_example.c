@@ -124,9 +124,10 @@ int main() {
   sfloat R_data[NINPUTS * NINPUTS] = {0};
   sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
   sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
+  sfloat r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
 
-  sfloat umin_data[NINPUTS] = {-0.5, -0.5};
-  sfloat umax_data[NINPUTS] = {0.5, 0.5};
+  sfloat umin_data[NINPUTS] = {-0.5, -0.5, -0.5, -0.5};
+  sfloat umax_data[NINPUTS] = {0.5, 0.5, 0.5, 0.5};
   // Put constraints on u, x
   sfloat Acu_data[NINPUTS * NINPUTS] = {0};  
   sfloat YU_data[NINPUTS * (NHORIZON - 1)] = {0};
@@ -144,6 +145,7 @@ int main() {
   Matrix ZU_new[NHORIZON - 1];
   Matrix q[NHORIZON-1];
   Matrix r[NHORIZON-1];
+  Matrix r_tilde[NHORIZON-1];
   Matrix A;
   Matrix B;
   Matrix f;
@@ -192,10 +194,12 @@ int main() {
   slap_SetDiagonal(data.Q, Qdiag, NSTATES);
   slap_SetIdentity(data.R, 1);
   slap_AddIdentity(data.R, work.rho); // \tilde{R}
-  tiny_InitDataLinearCostFromArray(&work, q, r, q_data, r_data);
+  tiny_InitDataLinearCostFromArray(&work, q, r, r_tilde, q_data, r_data, r_tilde_data);
 
   // Set up constraints
   tiny_SetInputBound(&work, Acu_data, umin_data, umax_data);
+
+  tiny_UpdateLinearCost(&work);
 
   if (0) {
     printf("\nProblem Info: \n");
@@ -214,7 +218,7 @@ int main() {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 4;
+  stgs.max_iter = 8;
   stgs.verbose = 0;
   stgs.check_termination = 2;
   stgs.tol_abs_dual = 1e-2;
@@ -233,7 +237,7 @@ int main() {
     Matrix pose = slap_CreateSubMatrix(X[k], 0, 0, 6, 1);
     Matrix pose_ref = slap_CreateSubMatrix(Xref[k], 0, 0, 6, 1);
     // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[k]));
-    // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(pose, pose_ref));
+    printf("ex[%d] = %.4f\n", k, slap_NormedDifference(pose, pose_ref));
     // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
 
     // === 1. Setup and solve MPC ===
@@ -245,6 +249,7 @@ int main() {
     // Update reference
     data.Xref = &Xref[k];
     data.Uref = &Uref[k];
+    tiny_UpdateLinearCost(&work);
 
     clock_t start, end;
     double cpu_time_used;
@@ -255,8 +260,8 @@ int main() {
 
     end = clock();
     cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
-    // printf("solve time:       %f\n", cpu_time_used);
-    printf("%f\n", cpu_time_used);
+    printf("solve time:       %f\n", cpu_time_used);
+    // printf("%f\n", cpu_time_used);
 
     // if(work.info->status_val != TINY_SOLVED) {
     //   printf("!!! STOP AS SOLVER FAILED !!!\n");
@@ -264,11 +269,13 @@ int main() {
     // }
 
     // Test control constraints here (since we didn't save U)
-    // for (int i = 0; i < NINPUTS; ++i) {
-    //   TEST(Uhrz[0].data[i] < umax_data[i] + stgs.tol_abs_dual);
-    //   TEST(Uhrz[0].data[i] > umin_data[i] - stgs.tol_abs_dual);
-    // }
-    // PrintMatrixT(Uhrz[0]);
+    for (int i = 0; i < NINPUTS; ++i) {
+      TEST(Uhrz[0].data[i] < umax_data[i] + stgs.tol_abs_dual);
+      printf("\n%f < %f + %f \n", Uhrz[0].data[i], umax_data[i], stgs.tol_abs_dual);
+      TEST(Uhrz[0].data[i] > umin_data[i] - stgs.tol_abs_dual);
+      printf("\n%f > %f + %f \n", Uhrz[0].data[i], umin_data[i], stgs.tol_abs_dual);
+    }
+    PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
     // PrintMatrixT(pos);
