@@ -1,0 +1,3 @@
+[submodule "ext/slap"]
+	path = ext/slap
+	url = git@github.com:bjack205/slap.git
