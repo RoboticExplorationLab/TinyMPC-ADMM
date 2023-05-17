@@ -132,8 +132,9 @@ enum tiny_ErrorCode tiny_SetModelNonlFunc(
 enum tiny_ErrorCode tiny_EvalModel(Matrix* xn, const Matrix x, const Matrix u,
                                    tiny_Model* model, const int k) {
   if (model->affine) {
-    slap_Copy(*xn, model->f[k]);
-    slap_MatMulAdd(*xn, model->A[k], x, 1, 1);  // x[k+1] += A * x[k]
+    // slap_Copy(*xn, model->f[k]);
+    // slap_MatMulAdd(*xn, model->A[k], x, 1, 1);  // x[k+1] += A * x[k]
+    return TINY_NOT_SUPPORTED;
   }
   else {
     // slap_MatMulAdd(*xn, model->A[k], x, 1, 0);  // x[k+1] += A * x[k]
@@ -151,22 +152,23 @@ enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_AdmmWorkspace* work) {
   int adaptive_horizon = work->stgs->adaptive_horizon;
   
   if (model[0].ltv) {
-    for (int k = 0; k < N - 1; ++k) {
-      // Control input: u = - d - K*x
-      slap_Copy(work->soln->U[k], work->soln->d[k]); // u[k] = -d[k]
-      slap_MatMulAdd(work->soln->U[k], work->soln->Kinf, work->soln->X[k], -1, -1);  // u[k] -= Kinf * x[k]
-      // slap_MatMulAdd(work->soln->U[k], work->soln->Kinf, work->data->Xref[k], 1, 1);  // u[k] -= Kinf * x[k]
-      // slap_MatMulAB(work->soln->U[k], work->soln->Kinf, work->soln->X[k]);
-      // slap_MatrixAddition(work->soln->U[k], work->soln->U[k], work->soln->d[k], 1);
-      // slap_ScaleByConst(work->soln->U[k], -1);
-      // Next state: x = A*x + B*u + f
-      if (adaptive_horizon && k > adaptive_horizon - 1) {
-        tiny_EvalModel(&(work->soln->X[k + 1]), work->soln->X[k], work->soln->U[k], &model[1], k);
-      }
-      else {
-        tiny_EvalModel(&(work->soln->X[k + 1]), work->soln->X[k], work->soln->U[k], &model[0], k);
-      }
-    }    
+    // for (int k = 0; k < N - 1; ++k) {
+    //   // Control input: u = - d - K*x
+    //   slap_Copy(work->soln->U[k], work->soln->d[k]); // u[k] = -d[k]
+    //   slap_MatMulAdd(work->soln->U[k], work->soln->Kinf, work->soln->X[k], -1, -1);  // u[k] -= Kinf * x[k]
+    //   // slap_MatMulAdd(work->soln->U[k], work->soln->Kinf, work->data->Xref[k], 1, 1);  // u[k] -= Kinf * x[k]
+    //   // slap_MatMulAB(work->soln->U[k], work->soln->Kinf, work->soln->X[k]);
+    //   // slap_MatrixAddition(work->soln->U[k], work->soln->U[k], work->soln->d[k], 1);
+    //   // slap_ScaleByConst(work->soln->U[k], -1);
+    //   // Next state: x = A*x + B*u + f
+    //   if (adaptive_horizon && k > adaptive_horizon - 1) {
+    //     tiny_EvalModel(&(work->soln->X[k + 1]), work->soln->X[k], work->soln->U[k], &model[1], k);
+    //   }
+    //   else {
+    //     tiny_EvalModel(&(work->soln->X[k + 1]), work->soln->X[k], work->soln->U[k], &model[0], k);
+    //   }
+    // }    
+    return TINY_NOT_SUPPORTED;
   }
   else {
     for (int k = 0; k < N - 1; ++k) {
@@ -176,8 +178,9 @@ enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_AdmmWorkspace* work) {
       // slap_MatMulAB(work->soln->U[k], work->soln->Kinf, work->soln->X[k]);
       // MatAdd(work->soln->U[k], work->soln->U[k], work->soln->d[k], 1);
       // MatScale(work->soln->U[k], -1);
-      MatCpy(work->soln->U[k], work->soln->d[k]);
-      MatMulAdd(work->soln->U[k], work->soln->Kinf, work->soln->X[k], -1, -1);
+      // MatCpy(work->soln->U[k], work->soln->d[k]);
+      // MatMulAdd(work->soln->U[k], work->soln->Kinf, work->soln->X[k], -1, -1);
+      MatMulAdd2(work->soln->U[k],  work->soln->d[k], work->soln->Kinf, work->soln->X[k], -1, -1);
       // Next state: x = A*x + B*u + f
       if (adaptive_horizon && k > adaptive_horizon - 1) {
         tiny_EvalModel(&(work->soln->X[k + 1]), work->soln->X[k], work->soln->U[k], &model[1], 0);

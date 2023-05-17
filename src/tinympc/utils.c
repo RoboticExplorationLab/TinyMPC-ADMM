@@ -257,3 +257,25 @@ void MatMulAdd(Matrix C, Matrix A, Matrix B, sfloat alpha, sfloat beta) {
     }
   }
 }
+
+void MatMulAdd2(Matrix D, Matrix C, Matrix A, Matrix B, sfloat alpha, sfloat beta) {
+  int n = A.rows;
+  int m = A.cols;
+  int p = B.cols;
+  sfloat Aik;
+  sfloat Bkj;
+  sfloat Cij;
+  int ij;
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < p; ++j) {
+      ij = i + j * n;
+      Cij = 0;
+      for (int k = 0; k < m; ++k) {  // columns of A, rows of B
+        Aik = A.data[i + n * k];
+        Bkj = B.data[k + m * j];
+        Cij += Aik * Bkj;
+      }
+      D.data[ij] = alpha * Cij + beta * C.data[ij];
+    }
+  }
+}

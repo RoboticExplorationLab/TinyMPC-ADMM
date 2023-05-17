@@ -155,6 +155,7 @@ void MatAdd(Matrix C, Matrix A, Matrix B, sfloat alpha);
 void MatCpy(Matrix des, Matrix src);
 void MatScale(Matrix A, sfloat alpha);
 void MatMulAdd(Matrix C, Matrix A, Matrix B, sfloat alpha, sfloat beta);
+void MatMulAdd2(Matrix D, Matrix C, Matrix A, Matrix B, sfloat alpha, sfloat beta);
 
 # ifdef __cplusplus
 }

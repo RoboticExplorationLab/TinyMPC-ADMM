@@ -27,16 +27,11 @@ enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work) {
   // Print Header for every column
     PrintHeader();
   }
-
-  // tiny_UpdateLinearCost(work);
-  // tiny_ForwardPass(work);
-  // UpdateSlackDual(work);
-
-
+  
   // Main ADMM algorithm
   for (iter = 1; iter <= work->stgs->max_iter; iter++) {
     /* ADMM STEPS */
-    // printf("\n=>k = %d\n", iter);
+
     // Update z_prev (preallocated, no malloc)
     for (int i = 0; i < N - 1; ++i) {
       SwapVectors(&(work->ZU_new[i].data), &(work->ZU[i].data));
@@ -51,7 +46,7 @@ enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work) {
     /* Update for next primal solve */
     tiny_UpdateConstrainedLinearCost(work);
 
-    /* End of ADMM Steps */
+    /* End of ADMM STEPS */
 
     // Can we check for termination ?
     can_check_termination = work->stgs->check_termination &&
@@ -177,7 +172,7 @@ enum tiny_ErrorCode UpdateInfo(tiny_AdmmWorkspace* work,
   work->info->iter = iter; // Update iteration number
   // Compute the objective if needed
   if (compute_objective) {
-    ComputeObjectiveValue(work);
+    // ComputeObjectiveValue(work);
   }  
   ComputePrimalResidual(work);
   ComputeDualResidual(work);

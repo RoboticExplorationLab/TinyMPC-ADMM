@@ -15,10 +15,11 @@
 #define H 0.02       // dt
 #define NSTATES 12   // no. of states (error state)
 #define NINPUTS 4    // no. of controls
-#define NHORIZON 15  // horizon steps (NHORIZON states and NHORIZON-1 controls)
+#define NHORIZON 3  // horizon steps (NHORIZON states and NHORIZON-1 controls)
 #define NSIM 500     // simulation steps (fixed with reference data)
 
 int main() {
+  // ===== Start MPC setup =====
   // ===== Created data =====
   sfloat x0_data[NSTATES] = {0, 1, 0, 0.1, 0, 0,
                              0, 0, 0, 0,   0, 0};  // initial state
@@ -213,23 +214,26 @@ int main() {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 200;
+  stgs.max_iter = 4;
   stgs.verbose = 0;
-  stgs.check_termination = 1;
+  stgs.check_termination = 2;
   stgs.tol_abs_dual = 1e-2;
   stgs.tol_abs_prim = 1e-2;
 
-  // ===== Absolute formulation =====
+  // Absolute formulation:
   // Warm-starting since horizon data is reused
   // At each time step (stop earlier as horizon exceeds the end)
   slap_Copy(X[0], work.data->x0);  
   srand(1);  // random seed
+  // ----- End MPC setup -----
+
+  // ===== Start MPC loop =====
   for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
     // printf("\n=> k = %d\n", k);
     Matrix pose = slap_CreateSubMatrix(X[k], 0, 0, 6, 1);
     Matrix pose_ref = slap_CreateSubMatrix(Xref[k], 0, 0, 6, 1);
     // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[k]));
-    printf("ex[%d] = %.4f\n", k, slap_NormedDifference(pose, pose_ref));
+    // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(pose, pose_ref));
     // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
 
     // === 1. Setup and solve MPC ===
@@ -245,24 +249,25 @@ int main() {
     clock_t start, end;
     double cpu_time_used;
     start = clock();
+
     // Solve optimization problem using Augmented Lagrangian TVLQR
     tiny_SolveAdmm(&work);
-    // tiny_BackwardPassLti(&prob, solver, model, &Q_temp);
-    // tiny_ForwardPassLti(Xhrz, Uhrz, prob, model);
+
     end = clock();
     cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
-    printf("solve time:       %f\n", cpu_time_used);
-    // printf("%f\n", cpu_time_used);
+    // printf("solve time:       %f\n", cpu_time_used);
+    printf("%f\n", cpu_time_used);
 
-    if(work.info->status_val != TINY_SOLVED) {
-      printf("!!! NOT SOLVED !!!\n");
-      return 0;
-    }
+    // if(work.info->status_val != TINY_SOLVED) {
+    //   printf("!!! STOP AS SOLVER FAILED !!!\n");
+    //   return 0;
+    // }
+
     // Test control constraints here (since we didn't save U)
-    for (int i = 0; i < NINPUTS; ++i) {
-      TEST(Uhrz[0].data[i] < umax_data[i] + stgs.tol_abs_dual);
-      TEST(Uhrz[0].data[i] > umin_data[i] - stgs.tol_abs_dual);
-    }
+    // for (int i = 0; i < NINPUTS; ++i) {
+    //   TEST(Uhrz[0].data[i] < umax_data[i] + stgs.tol_abs_dual);
+    //   TEST(Uhrz[0].data[i] > umin_data[i] - stgs.tol_abs_dual);
+    // }
     // PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);

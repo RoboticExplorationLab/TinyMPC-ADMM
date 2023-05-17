@@ -23,19 +23,29 @@ enum tiny_ErrorCode tiny_BackwardPassGrad(tiny_AdmmWorkspace* work) {
   // LTI model
   if (!model[0].ltv && !model[0].affine) {
     for (int k = N - 2; k >= 0; --k) {
-      // Qu = B'*p[k+1] + r[k]
+
+      /* Compute  Qu = B'*p[k+1] + r[k] */
+
       // slap_Copy(work->Qu, work->data->r[k]);
       // slap_MatMulAdd(work->Qu, slap_Transpose(model[0].B[0]), work->soln->p[k+1], 1, 1);
       slap_MatMulAtB(work->Qu, model[0].B[0], work->soln->p[k+1]);
       MatAdd(work->Qu, work->Qu, work->data->r[k], 1);
-      // d = Quu\Qu
+
+      /* Compute d = Quu\Qu */
+
       slap_MatMulAB(work->soln->d[k], work->Quu_inv, work->Qu);
       // slap_MatMulAdd(work->soln->d[k], work->Quu_inv, work->Qu, 1, 0);
-      // p[k] .= q[k] + AmBKt*p[k+1] - Kinf'*r[k] + coeff_d2p*d[k]
-      MatCpy(work->soln->p[k], work->data->q[k]);
+
+      /* Compute p[k] .= q[k] + AmBKt*p[k+1] - Kinf'*r[k] + coeff_d2p*d[k] */
+
+      // MatMulAdd2(work->soln->p[k], work->data->q[k], work->AmBKt, work->soln->p[k+1], 1, 1);
+      // slap_MatMulAdd(work->soln->p[k], slap_Transpose(work->soln->Kinf), work->data->r[k], -1, 1);
+      // MatMulAdd(work->soln->p[k], work->coeff_d2p, work->soln->d[k], 1, 1);
+
+      slap_MatMulAtB(work->soln->p[k], work->soln->Kinf, work->data->r[k]);
+      MatMulAdd(work->soln->p[k], work->coeff_d2p, work->soln->d[k], 1, -1);
       MatMulAdd(work->soln->p[k], work->AmBKt, work->soln->p[k+1], 1, 1);
-      slap_MatMulAdd(work->soln->p[k], slap_Transpose(work->soln->Kinf), work->data->r[k], -1, 1);
-      MatMulAdd(work->soln->p[k], work->coeff_d2p, work->soln->d[k], 1, 1);
+      MatAdd(work->soln->p[k],work->soln->p[k], work->data->q[k], 1);      
     }
   }
   return TINY_NO_ERROR;
