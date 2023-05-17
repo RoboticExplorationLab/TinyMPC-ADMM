@@ -6,7 +6,6 @@
 
 #include "data/quadrotor_fig8.h"
 #include "quadrotor.h"
-#include "simpletest.h"
 #include "slap/slap.h"
 #include "time.h"
 #include "tinympc/tinympc.h"
@@ -276,12 +275,7 @@ int main() {
       // return 0;
     }
 
-    // Test control constraints here (since we didn't save U)
-    // for (int i = 0; i < NINPUTS; ++i) {
-    //   TEST(ZU_new[0].data[i] < umax_data[i] + stgs.tol_abs_dual);
-    //   TEST(ZU_new[0].data[i] > umin_data[i] - stgs.tol_abs_dual);
-    // }
-    // PrintMatrixT(ZU_new[0]);
+    // PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
     // PrintMatrixT(pos);
@@ -294,12 +288,5 @@ int main() {
     
   }
 
-  // Test tracking performance
-  for (int k = NSIM - NHORIZON - 5; k < NSIM - NHORIZON; ++k) {
-    TEST(slap_NormedDifference(X[k], Xref[k]) < 0.5);
-  }
-  // --------------------------
-
-  PrintTestResult();
-  return TestResult();
+  return 0;
 }

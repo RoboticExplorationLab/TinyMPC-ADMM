@@ -16,10 +16,10 @@ set(CMAKE_C_EXTENSIONS NO)
 include(CMakePrintHelpers)
 include(GNUInstallDirs)
 # include(Functions)
-include(FetchContent)
+# include(FetchContent)
 
 # Add CPM Dependency Manager
-include(FindCPM)
+# include(FindCPM)
 
 # Handle default build type
 set(TINY_DEFAULT_BUILD_TYPE "Release")
@@ -51,34 +51,9 @@ option(TINY_PROFILE "Compile with -pg" OFF)
 # Dependencies
 ##############################
 
-# slap
-if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-FetchContent_Declare(slap
-  GIT_REPOSITORY https://github.com/bjack205/slap
-  GIT_TAG main
-  )
 set(SLAP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(SLAP_VECTORIZE ${TINY_VECTORIZE} CACHE BOOL "" FORCE)
 set(SLAP_FLOAT ${TINY_FLOAT} CACHE STRING "" FORCE)
-FetchContent_MakeAvailable(slap)
-endif ()
-
-# Google Test
-# if (TINY_BUILD_TESTS)
-#   CPMAddPackage(
-#       NAME googletest
-#       GITHUB_REPOSITORY google/googletest
-#       VERSION 1.13.0
-#       DOWNLOAD_EXTRACT_TIMESTAMP
-#       OPTIONS
-#       "INSTALL_GTEST OFF"
-#       "gtest_force_shared_crt ON"
-#   )
-#   add_library(gtest::gtest ALIAS gtest_main)
-#   enable_testing()
-#   include(GoogleTest)
-#   include(CTest)
-# endif ()
 
 ##############################
 # Main build targets
@@ -121,6 +96,8 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 
 # Build source files
 add_subdirectory(src/tinympc)
+
+add_subdirectory(ext/slap)
 
 ##############################
 # Tests
