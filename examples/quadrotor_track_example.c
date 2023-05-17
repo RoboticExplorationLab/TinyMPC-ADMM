@@ -271,11 +271,9 @@ int main() {
     // Test control constraints here (since we didn't save U)
     for (int i = 0; i < NINPUTS; ++i) {
       TEST(Uhrz[0].data[i] < umax_data[i] + stgs.tol_abs_dual);
-      printf("\n%f < %f + %f \n", Uhrz[0].data[i], umax_data[i], stgs.tol_abs_dual);
       TEST(Uhrz[0].data[i] > umin_data[i] - stgs.tol_abs_dual);
-      printf("\n%f > %f + %f \n", Uhrz[0].data[i], umin_data[i], stgs.tol_abs_dual);
     }
-    PrintMatrixT(Uhrz[0]);
+    // PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
     // PrintMatrixT(pos);
