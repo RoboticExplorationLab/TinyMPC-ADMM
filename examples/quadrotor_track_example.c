@@ -218,7 +218,7 @@ int main() {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 8;
+  stgs.max_iter = 10;
   stgs.verbose = 0;
   stgs.check_termination = 2;
   stgs.tol_abs_dual = 1e-2;
@@ -237,13 +237,18 @@ int main() {
     Matrix pose = slap_CreateSubMatrix(X[k], 0, 0, 6, 1);
     Matrix pose_ref = slap_CreateSubMatrix(Xref[k], 0, 0, 6, 1);
     // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[k]));
-    printf("ex[%d] = %.4f\n", k, slap_NormedDifference(pose, pose_ref));
+    printf("ex[%d] =  %.4f\n", k, slap_NormedDifference(pose, pose_ref));
     // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
 
-    // === 1. Setup and solve MPC ===
+    // Put noise on measurement
     for (int j = 0; j < NSTATES; ++j) {
       X[k].data[j] += X[k].data[j] * T_NOISE(5);
     }
+
+    clock_t start, end;
+    double cpu_time_used;
+    start = clock();
+
     slap_Copy(work.data->x0, X[k]);  // update current measurement
 
     // Update reference
@@ -251,9 +256,8 @@ int main() {
     data.Uref = &Uref[k];
     tiny_UpdateLinearCost(&work);
 
-    clock_t start, end;
-    double cpu_time_used;
-    start = clock();
+    // Warm-start by previous solution
+    tiny_ShiftFill(Uhrz, T_ARRAY_SIZE(Uhrz));
 
     // Solve optimization problem using Augmented Lagrangian TVLQR
     tiny_SolveAdmm(&work);
@@ -263,10 +267,10 @@ int main() {
     printf("solve time:       %f\n", cpu_time_used);
     // printf("%f\n", cpu_time_used);
 
-    // if(work.info->status_val != TINY_SOLVED) {
-    //   printf("!!! STOP AS SOLVER FAILED !!!\n");
-    //   return 0;
-    // }
+    if(work.info->status_val != TINY_SOLVED) {
+      printf("!!! STOP AS SOLVER FAILED !!!\n");
+      return 0;
+    }
 
     // Test control constraints here (since we didn't save U)
     for (int i = 0; i < NINPUTS; ++i) {
@@ -282,7 +286,7 @@ int main() {
     // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uref[k]);
     tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uhrz[0]);
     // tiny_DynamicsLti(&X[k + 1], X[k], Uref[k], model);
-    tiny_ShiftFill(Uhrz, T_ARRAY_SIZE(Uhrz));
+    
   }
 
   // ========== Test ==========
