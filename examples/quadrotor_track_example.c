@@ -160,7 +160,7 @@ int main() {
 
   /* Create TinyMPC struct and problem data*/
   tiny_Model model;
-  tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.02);
+  tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
   tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);
   stgs.rho_init = 1e0;  // Important (select offline, associated with precomp.)
@@ -185,7 +185,6 @@ int main() {
   tiny_SetInitialState(&work, x0_data);  
   data.Xref = Xref;
   data.Uref = Uref;
-
   /* Set up LQR cost */
   tiny_InitDataQuadCostFromArray(&work, Q_data, R_data);
   // slap_SetIdentity(prob.Q, 1000e-1);
@@ -230,20 +229,19 @@ int main() {
   // Stop earlier as horizon exceeds the end
   slap_Copy(X[0], work.data->x0);  
   srand(1);  // random seed
-  
+
   /* End of MPC initialization*/
 
   /* Start MPC loop */
 
   for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
-    // printf("\n=> k = %d\n", k);
     Matrix pose = slap_CreateSubMatrix(X[k], 0, 0, 6, 1);
     Matrix pose_ref = slap_CreateSubMatrix(Xref[k], 0, 0, 6, 1);
     // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[k]));
     printf("ex[%d] =  %.4f\n", k, slap_NormedDifference(pose, pose_ref));
     // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
 
-    // Put noise on measurement
+    // Inject noise into measurement
     for (int j = 0; j < NSTATES; ++j) {
       X[k].data[j] += X[k].data[j] * T_NOISE(0);
     }
@@ -267,7 +265,7 @@ int main() {
 
     end = clock();
     cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
-    printf("solve time:       %f\n", cpu_time_used);
+    printf("solve time:        %f\n", cpu_time_used);
     // printf("%f\n", cpu_time_used);
 
     if(work.info->status_val != TINY_SOLVED) {
