@@ -47,7 +47,7 @@ enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work) {
     tiny_UpdateConstrainedLinearCost(work);
 
     /* End of ADMM STEPS */
-
+    // print()
     // Can we check for termination ?
     can_check_termination = work->stgs->check_termination &&
                             (iter % work->stgs->check_termination == 0);
@@ -172,7 +172,7 @@ enum tiny_ErrorCode UpdateInfo(tiny_AdmmWorkspace* work,
   work->info->iter = iter; // Update iteration number
   // Compute the objective if needed
   if (compute_objective) {
-    // ComputeObjectiveValue(work);
+    ComputeObjectiveValue(work);
   }  
   ComputePrimalResidual(work);
   ComputeDualResidual(work);

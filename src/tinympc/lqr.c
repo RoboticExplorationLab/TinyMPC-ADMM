@@ -29,7 +29,7 @@ enum tiny_ErrorCode tiny_BackwardPassGrad(tiny_AdmmWorkspace* work) {
       // slap_Copy(work->Qu, work->data->r[k]);
       // slap_MatMulAdd(work->Qu, slap_Transpose(model[0].B[0]), work->soln->p[k+1], 1, 1);
       slap_MatMulAtB(work->Qu, model[0].B[0], work->soln->p[k+1]);
-      MatAdd(work->Qu, work->Qu, work->data->r[k], 1);
+      MatAdd(work->Qu, work->Qu, work->data->r_tilde[k], 1);
 
       /* Compute d = Quu\Qu */
 
@@ -42,7 +42,7 @@ enum tiny_ErrorCode tiny_BackwardPassGrad(tiny_AdmmWorkspace* work) {
       // slap_MatMulAdd(work->soln->p[k], slap_Transpose(work->soln->Kinf), work->data->r[k], -1, 1);
       // MatMulAdd(work->soln->p[k], work->coeff_d2p, work->soln->d[k], 1, 1);
 
-      slap_MatMulAtB(work->soln->p[k], work->soln->Kinf, work->data->r[k]);
+      slap_MatMulAtB(work->soln->p[k], work->soln->Kinf, work->data->r_tilde[k]);
       MatMulAdd(work->soln->p[k], work->coeff_d2p, work->soln->d[k], 1, -1);
       MatMulAdd(work->soln->p[k], work->AmBKt, work->soln->p[k+1], 1, 1);
       MatAdd(work->soln->p[k],work->soln->p[k], work->data->q[k], 1);      

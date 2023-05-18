@@ -18,7 +18,7 @@ sfloat x_data[NSTATES] = {1.1, 1.2, 1.3, -4.3};
 sfloat u_data[NINPUTS] = {-2.1, 1.1};
 sfloat x_ref_data[NSTATES * NHORIZON] = {1.1, 1.2, 1.3, -4.2,
                                          1.2, 1.3, 1.3, -4.3};
-sfloat u_ref_data[NINPUTS * (NHORIZON - 1)] = {-2.1, 1.4};
+sfloat u_ref_data[NINPUTS * NHORIZON] = {-2.1, 1.4, 1};
 sfloat Q_data[NSTATES * NSTATES] = {0};  // NOLINT
 sfloat R_data[NINPUTS * NINPUTS] = {0};  // NOLINT
 sfloat q_data[NSTATES*NHORIZON] = {0};            // NOLINT
@@ -32,7 +32,7 @@ sfloat ans_gradxf[NSTATES] = {-0.6, -0.65, -0.65, 2.15};
 
 void AddCostTest() {
   const sfloat tol = 1e-6;
-  Matrix Uref[NHORIZON-1];
+  Matrix Uref[NHORIZON];
   Matrix Xref[NHORIZON];
   Matrix U[NHORIZON-1];
   Matrix X[NHORIZON];

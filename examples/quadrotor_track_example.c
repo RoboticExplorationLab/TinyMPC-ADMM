@@ -19,7 +19,7 @@
 
 int main() {
   /* Start MPC initialization*/
-  
+
   // Create data array 
   sfloat x0_data[NSTATES] = {0, 1, 0, 0.1, 0, 0,
                              0, 0, 0, 0,   0, 0};  // initial state
@@ -126,8 +126,8 @@ int main() {
   sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
   sfloat r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
 
-  sfloat umin_data[NINPUTS] = {-0.5, -0.5, -0.5, -0.5};
-  sfloat umax_data[NINPUTS] = {0.5, 0.5, 0.5, 0.5};
+  sfloat umin_data[NINPUTS] = {0};
+  sfloat umax_data[NINPUTS] = {0};
   // Put constraints on u, x
   sfloat Acu_data[NINPUTS * NINPUTS] = {0};  
   sfloat YU_data[NINPUTS * (NHORIZON - 1)] = {0};
@@ -162,7 +162,7 @@ int main() {
 
   /* Create TinyMPC struct and problem data*/
   tiny_Model model;
-  tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
+  tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.02);
   tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);
   stgs.rho_init = 1e0;  // Important (select offline, associated with precomp.)
@@ -199,6 +199,8 @@ int main() {
 
   /* Set up constraints */
   tiny_SetInputBound(&work, Acu_data, umin_data, umax_data);
+  slap_SetConst(data.ucu, 0.1);
+  slap_SetConst(data.lcu, -0.1);
 
   tiny_UpdateLinearCost(&work);
 
@@ -220,8 +222,8 @@ int main() {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 10;           // limit this if needed
-  stgs.verbose = 0;
+  stgs.max_iter = 100;           // limit this if needed
+  stgs.verbose = 1;
   stgs.check_termination = 2;
   stgs.tol_abs_dual = 1e-2;
   stgs.tol_abs_prim = 1e-2;
@@ -252,7 +254,7 @@ int main() {
     double cpu_time_used;
     start = clock();
 
-    slap_Copy(work.data->x0, X[k]);  // update current measurement
+    MatCpy(work.data->x0, X[k]);  // update current measurement
 
     // Update reference
     data.Xref = &Xref[k];
@@ -275,7 +277,7 @@ int main() {
       return 0;
     }
 
-    // PrintMatrixT(Uhrz[0]);
+    PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
     // PrintMatrixT(pos);

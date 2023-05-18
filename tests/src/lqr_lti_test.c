@@ -53,6 +53,7 @@ void LqrLtiTest() {
   sfloat R_data[NINPUTS * NINPUTS] = {0};
   sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
   sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
+  sfloat r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
 
   Matrix A;
   Matrix B;
@@ -65,6 +66,7 @@ void LqrLtiTest() {
   Matrix p[NHORIZON];
   Matrix q[NHORIZON-1];
   Matrix r[NHORIZON-1];
+  Matrix r_tilde[NHORIZON-1];
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
@@ -94,7 +96,7 @@ void LqrLtiTest() {
   slap_SetIdentity(data.Q, 10);  
   slap_SetIdentity(data.R, 0.1);
   slap_AddIdentity(data.R, work.rho); // \tilde{R}
-  tiny_InitDataLinearCostFromArray(&work, q, r, q_data, r_data);
+  tiny_InitDataLinearCostFromArray(&work, q, r, r_tilde, q_data, r_data, r_tilde_data);
 
   tiny_SetUnconstrained(&stgs);
   tiny_UpdateLinearCost(&work);

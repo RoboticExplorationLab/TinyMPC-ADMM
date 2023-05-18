@@ -51,6 +51,7 @@ sfloat Q_data[NSTATES * NSTATES] = {0};
 sfloat R_data[NINPUTS * NINPUTS] = {0};
 sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
 sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
+sfloat r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
 
 sfloat umin_data[NINPUTS] = {-1, -1};
 sfloat umax_data[NINPUTS] = {1, 1};
@@ -77,6 +78,7 @@ Matrix ZU[NHORIZON - 1];
 Matrix ZU_new[NHORIZON - 1];
 Matrix q[NHORIZON-1];
 Matrix r[NHORIZON-1];
+Matrix r_tilde[NHORIZON-1];
 Matrix A;
 Matrix B;
 Matrix f;
@@ -111,7 +113,7 @@ void CheckTerminationTest() {
   slap_SetIdentity(data.Q, 10);  
   slap_SetIdentity(data.R, 0.1);
   slap_AddIdentity(data.R, work.rho); // \tilde{R}
-  tiny_InitDataLinearCostFromArray(&work, q, r, q_data, r_data);
+  tiny_InitDataLinearCostFromArray(&work, q, r, r_tilde, q_data, r_data, r_tilde_data);
 
   tiny_SetInputBound(&work, Acu_data, umin_data, umax_data);
 
@@ -159,10 +161,10 @@ void CheckTerminationTest() {
   TEST(work.info->status_val == TINY_SOLVED);
 
   UpdateSlackDual(&work);
-  PrintMatrix(work.ZU_new[0]);
-  PrintMatrix(work.ZU_new[1]);
-  PrintMatrix(work.soln->YU[0]);
-  PrintMatrix(work.soln->YU[1]);
+  // PrintMatrix(work.ZU_new[0]);
+  // PrintMatrix(work.ZU_new[1]);
+  // PrintMatrix(work.soln->YU[0]);
+  // PrintMatrix(work.soln->YU[1]);
 }
 
 int main() {
