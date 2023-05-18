@@ -20,8 +20,10 @@ int main() {
   /* Start MPC initialization*/
 
   // Create data array 
-  sfloat x0_data[NSTATES] = {0, 1, 1, 0.1, 0, 0,
-                             0, 0, 0, 0,   0, 0};  // initial state
+  // sfloat x0_data[NSTATES] = {0, 1, 1, 1, 0, 0,
+                            //  0, 0, 0, 0, 0, 0};  // initial state
+  sfloat x0_data[NSTATES] = {0, 1, 1, 0.7, 0.7, 0,
+                             0, 0, 0, 0, 0, 0};  // initial state
   sfloat xg_data[NSTATES] = {0};  
   sfloat ug_data[NINPUTS] = {0};      // goal input if needed
   sfloat Xhrz_data[NSTATES * NHORIZON] = {0};      // save X for one horizon
@@ -192,8 +194,8 @@ int main() {
 
   /* Set up constraints */
   tiny_SetInputBound(&work, Acu_data, umin_data, umax_data);
-  slap_SetConst(data.ucu, 0.5);
-  slap_SetConst(data.lcu, -0.5);
+  slap_SetConst(data.ucu, 0.3);
+  slap_SetConst(data.lcu, -0.3);
 
   tiny_UpdateLinearCost(&work);
 
@@ -214,10 +216,10 @@ int main() {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 200;           // limit this if needed
-  stgs.verbose = 1;
-  stgs.check_termination = 2;
-  stgs.tol_abs_dual = 1e-2;
+  stgs.max_iter = 10;           // limit this if needed
+  stgs.verbose = 0;
+  stgs.check_termination = 4;
+  stgs.tol_abs_dual = 1e-1;
   stgs.tol_abs_prim = 1e-2;
 
   // Absolute formulation:
@@ -234,12 +236,12 @@ int main() {
     Matrix pose = slap_CreateSubMatrix(X[k], 0, 0, 6, 1);
     Matrix pose_ref = slap_CreateSubMatrix(Xref[0], 0, 0, 6, 1);
     // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[0]));
-    printf("ex[%d] =  %.4f\n", k, slap_NormedDifference(pose, pose_ref));
-    // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
+    // printf("ex[%d] =  %.4f\n", k, slap_NormedDifference(pose, pose_ref));
+    printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
 
     // Inject noise into measurement
     for (int j = 0; j < NSTATES; ++j) {
-      X[k].data[j] += X[k].data[j] * T_NOISE(0);
+      X[k].data[j] += X[k].data[j] * T_NOISE(5);
     }
 
     clock_t start, end;
@@ -256,15 +258,15 @@ int main() {
 
     end = clock();
     cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
-    printf("solve time:        %f\n", cpu_time_used);
+    // printf("solve time:        %f\n", cpu_time_used);
     // printf("%f\n", cpu_time_used);
 
-    if(work.info->status_val != TINY_SOLVED) {
-      printf("!!! STOP AS SOLVER FAILED !!!\n");
-      // return 0;
-    }
+    // if(work.info->status_val != TINY_SOLVED) {
+    //   printf("!!! STOP AS SOLVER FAILED !!!\n");
+    //   return 0;
+    // }
 
-    PrintMatrixT(Uhrz[0]);
+    // PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
     // PrintMatrixT(pos);
