@@ -15,12 +15,13 @@
 #define H 0.02       // dt
 #define NSTATES 12   // no. of states (error state)
 #define NINPUTS 4    // no. of controls
-#define NHORIZON 3  // horizon steps (NHORIZON states and NHORIZON-1 controls)
+#define NHORIZON 10  // horizon steps (NHORIZON states and NHORIZON-1 controls)
 #define NSIM 500     // simulation steps (fixed with reference data)
 
 int main() {
-  // ===== Start MPC setup =====
-  // ===== Created data =====
+  /* Start MPC initialization*/
+
+  // Create data array 
   sfloat x0_data[NSTATES] = {0, 1, 0, 0.1, 0, 0,
                              0, 0, 0, 0,   0, 0};  // initial state
   sfloat ug_data[NINPUTS] = {0., 0., 0., 0.};      // goal input if needed
@@ -126,13 +127,13 @@ int main() {
   sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
   sfloat r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
 
-  sfloat umin_data[NINPUTS] = {-0.5, -0.5, -0.5, -0.5};
-  sfloat umax_data[NINPUTS] = {0.5, 0.5, 0.5, 0.5};
+  sfloat umin_data[NINPUTS] = {0};
+  sfloat umax_data[NINPUTS] = {0};
   // Put constraints on u, x
   sfloat Acu_data[NINPUTS * NINPUTS] = {0};  
   sfloat YU_data[NINPUTS * (NHORIZON - 1)] = {0};
 
-  // ===== Created matrices =====
+  // Created matrices
   Matrix X[NSIM];
   Matrix Xref[NSIM];
   Matrix Uref[NSIM - 1];
@@ -153,20 +154,17 @@ int main() {
   for (int i = 0; i < NSIM; ++i) {
     if (i < NSIM - 1) {
       Uref[i] = slap_MatrixFromArray(NINPUTS, 1, ug_data);
-      // PrintMatrix(Uref[i]);
     }
     X[i] = slap_MatrixFromArray(NSTATES, 1, &X_data[i * NSTATES]);
     Xref[i] = slap_MatrixFromArray(NSTATES, 1, &Xref_data[i * NSTATES]);
-    // PrintMatrix(Xref[i]);
   }
 
-  // ===== Created tinyMPC struct =====
+  /* Create TinyMPC struct and problem data*/
   tiny_Model model;
-  tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
-  // tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
+  tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.02);
   tiny_AdmmSettings stgs;
-  tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  stgs.rho_init = 1e0;
+  tiny_InitSettings(&stgs);
+  stgs.rho_init = 1e0;  // Important (select offline, associated with precomp.)
 
   tiny_AdmmData data;
   tiny_AdmmInfo info;
@@ -174,7 +172,7 @@ int main() {
   tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
-  // ===== Fill in the remaining struct =====
+  // Fill in the remaining struct 
   sfloat temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
   tiny_InitWorkspaceTempData(&work, ZU, ZU_new, 0, 0, temp_data);
@@ -188,6 +186,8 @@ int main() {
   tiny_SetInitialState(&work, x0_data);  
   data.Xref = Xref;
   data.Uref = Uref;
+
+  /* Set up LQR cost */
   tiny_InitDataQuadCostFromArray(&work, Q_data, R_data);
   // slap_SetIdentity(prob.Q, 1000e-1);
   sfloat Qdiag[NSTATES] = {10, 10, 10, 1, 1, 1, 1, 1, 1, 0.1, 0.1, 0.1};
@@ -196,8 +196,10 @@ int main() {
   slap_AddIdentity(data.R, work.rho); // \tilde{R}
   tiny_InitDataLinearCostFromArray(&work, q, r, r_tilde, q_data, r_data, r_tilde_data);
 
-  // Set up constraints
+  /* Set up constraints */
   tiny_SetInputBound(&work, Acu_data, umin_data, umax_data);
+  slap_SetConst(data.ucu, 0.1);
+  slap_SetConst(data.lcu, -0.1);
 
   tiny_UpdateLinearCost(&work);
 
@@ -205,7 +207,6 @@ int main() {
     printf("\nProblem Info: \n");
     PrintMatrix(work.data->model->A[0]);
     PrintMatrix(work.data->model->B[0]);
-    // PrintMatrix(work.data->model->f[0]);
     PrintMatrix(work.data->Q);
     PrintMatrix(work.data->R);
     PrintMatrixT(work.data->x0);
@@ -215,23 +216,26 @@ int main() {
     PrintMatrixT(work.data->r[NHORIZON-5]);
   }
 
+  /* Solver settings */
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 10;
-  stgs.verbose = 0;
+  stgs.max_iter = 50;           // limit this if needed
+  stgs.verbose = 1;
   stgs.check_termination = 2;
   stgs.tol_abs_dual = 1e-2;
   stgs.tol_abs_prim = 1e-2;
 
   // Absolute formulation:
   // Warm-starting since horizon data is reused
-  // At each time step (stop earlier as horizon exceeds the end)
+  // Stop earlier as horizon exceeds the end
   slap_Copy(X[0], work.data->x0);  
   srand(1);  // random seed
-  // ----- End MPC setup -----
+  
+  /* End of MPC initialization*/
 
-  // ===== Start MPC loop =====
+  /* Start MPC loop */
+
   for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
     // printf("\n=> k = %d\n", k);
     Matrix pose = slap_CreateSubMatrix(X[k], 0, 0, 6, 1);
@@ -242,14 +246,14 @@ int main() {
 
     // Put noise on measurement
     for (int j = 0; j < NSTATES; ++j) {
-      X[k].data[j] += X[k].data[j] * T_NOISE(5);
+      X[k].data[j] += X[k].data[j] * T_NOISE(0);
     }
 
     clock_t start, end;
     double cpu_time_used;
     start = clock();
 
-    slap_Copy(work.data->x0, X[k]);  // update current measurement
+    MatCpy(work.data->x0, X[k]);  // update current measurement
 
     // Update reference
     data.Xref = &Xref[k];
@@ -269,34 +273,27 @@ int main() {
 
     if(work.info->status_val != TINY_SOLVED) {
       printf("!!! STOP AS SOLVER FAILED !!!\n");
-      return 0;
+      // return 0;
     }
 
     // Test control constraints here (since we didn't save U)
-    for (int i = 0; i < NINPUTS; ++i) {
-      TEST(Uhrz[0].data[i] < umax_data[i] + stgs.tol_abs_dual);
-      TEST(Uhrz[0].data[i] > umin_data[i] - stgs.tol_abs_dual);
-    }
-    // PrintMatrixT(Uhrz[0]);
+    // for (int i = 0; i < NINPUTS; ++i) {
+    //   TEST(ZU_new[0].data[i] < umax_data[i] + stgs.tol_abs_dual);
+    //   TEST(ZU_new[0].data[i] > umin_data[i] - stgs.tol_abs_dual);
+    // }
+    // PrintMatrixT(ZU_new[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
     // PrintMatrixT(pos);
 
     // === 2. Simulate dynamics using the first control solution ===
     // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uref[k]);
-    tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uhrz[0]);
+    // tiny_Clamp(ZU_new[0].data, umin_data[0], umax_data[0], NINPUTS);
+    tiny_QuadNonlinearDynamics(&X[k + 1], X[k], ZU_new[0]);
     // tiny_DynamicsLti(&X[k + 1], X[k], Uref[k], model);
     
   }
 
-  // ========== Test ==========
-  // Test state constraints
-  // for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
-  //   for (int i = 0; i < NSTATES; ++i) {
-  //     TEST(X[k].data[i] < bcx_data[i] + stgs.tol_abs_dual);
-  //     TEST(X[k].data[i] > -bcx_data[i] - stgs.tol_abs_dual);
-  //   }
-  // }
   // Test tracking performance
   for (int k = NSIM - NHORIZON - 5; k < NSIM - NHORIZON; ++k) {
     TEST(slap_NormedDifference(X[k], Xref[k]) < 0.5);

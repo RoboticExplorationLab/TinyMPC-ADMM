@@ -139,9 +139,7 @@ enum tiny_ErrorCode ComputeObjectiveValue(tiny_AdmmWorkspace* work) {
   
   for (int k = 0; k < N - 1; ++k) {
     tiny_AddStageCost(work, k);
-    // printf("%f\n", work->info->obj_val);
   } 
-  // printf("%f\n", work->info->obj_val);
   tiny_AddTerminalCost(work);       
   return TINY_NO_ERROR;
 }

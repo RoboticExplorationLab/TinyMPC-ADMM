@@ -55,7 +55,7 @@ enum tiny_ErrorCode {
 # define ALPHA (1)
 
 // Max iteration
-# define MAX_ITER (500)
+# define MAX_ITER (100)
 # define MAX_ITER_RICCATI (10)
 # define MAX_ITER_LS (10)
 
@@ -63,14 +63,14 @@ enum tiny_ErrorCode {
 # define TOL_ABS_PRIM (1e-2)
 # define TOL_ABS_DUAL (1e-2)
 
-# define EN_CSTR_STATES (1)
+# define EN_CSTR_STATES (0)
 # define EN_CSTR_INPUTS (1)
-# define EN_CSTR_GOAL (1)
+# define EN_CSTR_GOAL (0)
 
 # define VERBOSE (1)
 # define ADAPTIVE_HORIZON (0)
 # define CHECK_RICCATI (0)
-# define CHECK_TERMINATION (10)
+# define CHECK_TERMINATION (2)
 # define WARM_START (1)
 # define TIME_LIMIT (0.0)
 

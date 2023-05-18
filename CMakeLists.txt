@@ -30,7 +30,7 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif ()
 
 # Enable testing
-option(TINY_BUILD_TESTS "Build tests for TinyMPC" OFF)
+option(TINY_BUILD_TESTS "Build tests for TinyMPC" ON)
 
 # Enable clang-tidy analysis
 option(TINY_CLANG_TIDY "Run clang-tidy analyzer on the source code." OFF)
