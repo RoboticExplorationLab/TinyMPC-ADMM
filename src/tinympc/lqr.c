@@ -36,7 +36,10 @@ enum tiny_ErrorCode tiny_BackwardPassGrad(tiny_AdmmWorkspace* work) {
       // slap_MatMulAdd(work->soln->p[k], slap_Transpose(work->soln->Kinf), work->data->r[k], -1, 1);
       // MatMulAdd(work->soln->p[k], work->coeff_d2p, work->soln->d[k], 1, 1);
 
+<<<<<<< HEAD
 >>>>>>> up
+=======
+>>>>>>> 0217be68af3b15f0033ed2d127058bf98ed27ce3
       slap_MatMulAtB(work->soln->p[k], work->soln->Kinf, work->data->r_tilde[k]);
       MatMulAdd(work->soln->p[k], work->coeff_d2p, work->soln->d[k], 1, -1);
       MatMulAdd(work->soln->p[k], work->AmBKt, work->soln->p[k+1], 1, 1);

@@ -134,12 +134,10 @@ void MpcLtiTest() {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 100;
-  stgs.verbose = 0;
+  stgs.max_iter = 200;
+  stgs.verbose = 1;
   stgs.check_termination = 10;
-  stgs.tol_abs_dual = 1e-2;
-  stgs.tol_abs_prim = 1e-2;
-
+  
   clock_t start, end;
   double cpu_time_used;
   start = clock();

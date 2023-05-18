@@ -185,6 +185,10 @@ int main() {
   tiny_SetInitialState(&work, x0_data);  
   data.Xref = Xref;
   data.Uref = Uref;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0217be68af3b15f0033ed2d127058bf98ed27ce3
   /* Set up LQR cost */
   tiny_InitDataQuadCostFromArray(&work, Q_data, R_data);
   // slap_SetIdentity(prob.Q, 1000e-1);
@@ -219,10 +223,14 @@ int main() {
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
   stgs.max_iter = 50;           // limit this if needed
 =======
   stgs.max_iter = 100;           // limit this if needed
 >>>>>>> up
+=======
+  stgs.max_iter = 100;           // limit this if needed
+>>>>>>> 0217be68af3b15f0033ed2d127058bf98ed27ce3
   stgs.verbose = 1;
   stgs.check_termination = 2;
   stgs.tol_abs_dual = 1e-2;
@@ -233,11 +241,19 @@ int main() {
   // Stop earlier as horizon exceeds the end
   slap_Copy(X[0], work.data->x0);  
   srand(1);  // random seed
+<<<<<<< HEAD
 
   /* End of MPC initialization*/
 
   /* Start MPC loop */
 
+=======
+  
+  /* End of MPC initialization*/
+
+  /* Start MPC loop */
+
+>>>>>>> 0217be68af3b15f0033ed2d127058bf98ed27ce3
   for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
     Matrix pose = slap_CreateSubMatrix(X[k], 0, 0, 6, 1);
     Matrix pose_ref = slap_CreateSubMatrix(Xref[k], 0, 0, 6, 1);
@@ -284,10 +300,15 @@ int main() {
 
     // === 2. Simulate dynamics using the first control solution ===
     // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uref[k]);
+<<<<<<< HEAD
     // tiny_Clamp(ZU_new[0].data, umin_data[0], umax_data[0], NINPUTS);
     tiny_QuadNonlinearDynamics(&X[k + 1], X[k], ZU_new[0]);
     // tiny_DynamicsLti(&X[k + 1], X[k], Uref[k], model);
     
+=======
+    tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uhrz[0]);
+    // tiny_DynamicsLti(&X[k + 1], X[k], Uref[k], model);    
+>>>>>>> 0217be68af3b15f0033ed2d127058bf98ed27ce3
   }
 
   return 0;
