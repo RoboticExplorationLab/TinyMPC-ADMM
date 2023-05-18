@@ -160,7 +160,7 @@ int main() {
 
   /* Create TinyMPC struct and problem data*/
   tiny_Model model;
-  tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
+  tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.02);
   tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);
   stgs.rho_init = 1e0;  // Important (select offline, associated with precomp.)
@@ -218,7 +218,11 @@ int main() {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
+<<<<<<< HEAD
   stgs.max_iter = 50;           // limit this if needed
+=======
+  stgs.max_iter = 100;           // limit this if needed
+>>>>>>> up
   stgs.verbose = 1;
   stgs.check_termination = 2;
   stgs.tol_abs_dual = 1e-2;
@@ -273,7 +277,7 @@ int main() {
       // return 0;
     }
 
-    // PrintMatrixT(Uhrz[0]);
+    PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
     // PrintMatrixT(pos);

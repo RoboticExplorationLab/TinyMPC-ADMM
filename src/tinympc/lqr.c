@@ -29,6 +29,14 @@ enum tiny_ErrorCode tiny_BackwardPassGrad(tiny_AdmmWorkspace* work) {
       slap_MatMulAB(work->soln->d[k], work->Quu_inv, work->Qu);
 
       /* Compute p[k] .= q[k] + AmBKt*p[k+1] - Kinf'*r[k] + coeff_d2p*d[k] */
+<<<<<<< HEAD
+=======
+
+      // MatMulAdd2(work->soln->p[k], work->data->q[k], work->AmBKt, work->soln->p[k+1], 1, 1);
+      // slap_MatMulAdd(work->soln->p[k], slap_Transpose(work->soln->Kinf), work->data->r[k], -1, 1);
+      // MatMulAdd(work->soln->p[k], work->coeff_d2p, work->soln->d[k], 1, 1);
+
+>>>>>>> up
       slap_MatMulAtB(work->soln->p[k], work->soln->Kinf, work->data->r_tilde[k]);
       MatMulAdd(work->soln->p[k], work->coeff_d2p, work->soln->d[k], 1, -1);
       MatMulAdd(work->soln->p[k], work->AmBKt, work->soln->p[k+1], 1, 1);

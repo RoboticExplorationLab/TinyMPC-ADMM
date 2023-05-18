@@ -19,10 +19,10 @@ void MpcLtiTest() {
                                       0.1, 0, 1, 0, 0, 0.1, 0, 1};
   sfloat B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
   sfloat f_data[NSTATES] = {0};
-  // sfloat x0_data[NSTATES] = {5, 7, 2, -1.4};
-  sfloat x0_data[NSTATES] = {1, 0, 0, 1.0};  
-  // sfloat xg_data[NSTATES] = {2, 5, 0, 0};
-  sfloat xg_data[NSTATES] = {0};
+  sfloat x0_data[NSTATES] = {5, 7, 2, -1.4};
+  // sfloat x0_data[NSTATES] = {1, 0, 0, 1.0};  
+  sfloat xg_data[NSTATES] = {2, 5, 0, 0};
+  // sfloat xg_data[NSTATES] = {0};
   sfloat ug_data[NINPUTS] = {0};
   sfloat X_data[NSTATES * NHORIZON] = {0};
   sfloat U_data[NINPUTS * (NHORIZON - 1)] = {0};
@@ -60,8 +60,8 @@ void MpcLtiTest() {
   sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
   sfloat r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
 
-  sfloat umin_data[NINPUTS] = {-1, -1.0};
-  sfloat umax_data[NINPUTS] = {1, 1.0};
+  sfloat umin_data[NINPUTS] = {-1, -1};
+  sfloat umax_data[NINPUTS] = {1, 1};
   sfloat Acu_data[NINPUTS * NINPUTS] = {0};  
   sfloat YU_data[NINPUTS * (NHORIZON - 1)] = {0};
 
@@ -139,7 +139,7 @@ void MpcLtiTest() {
   stgs.check_termination = 10;
   stgs.tol_abs_dual = 1e-2;
   stgs.tol_abs_prim = 1e-2;
-  
+
   clock_t start, end;
   double cpu_time_used;
   start = clock();

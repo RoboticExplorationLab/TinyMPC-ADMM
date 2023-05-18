@@ -22,8 +22,6 @@ function(add_my_test name)
   add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
 endfunction()
 
-# add_subdirectory(data)
-
 # Add tests
 add_my_test(model bicycle_5d.h bicycle_5d.c)
 add_my_test(setup_prob)
