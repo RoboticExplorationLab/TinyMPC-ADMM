@@ -20,7 +20,7 @@ int main() {
   /* Start MPC initialization*/
 
   // Create data array 
-  sfloat x0_data[NSTATES] = {0, 1, 0, 0.1, 0, 0,
+  sfloat x0_data[NSTATES] = {0, 1, 1, 0.1, 0, 0,
                              0, 0, 0, 0,   0, 0};  // initial state
   sfloat xg_data[NSTATES] = {0};  
   sfloat ug_data[NINPUTS] = {0};      // goal input if needed
@@ -192,8 +192,8 @@ int main() {
 
   /* Set up constraints */
   tiny_SetInputBound(&work, Acu_data, umin_data, umax_data);
-  slap_SetConst(data.ucu, 0.2);
-  slap_SetConst(data.lcu, -0.2);
+  slap_SetConst(data.ucu, 0.5);
+  slap_SetConst(data.lcu, -0.5);
 
   tiny_UpdateLinearCost(&work);
 
@@ -256,7 +256,7 @@ int main() {
 
     end = clock();
     cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
-    // printf("solve time:        %f\n", cpu_time_used);
+    printf("solve time:        %f\n", cpu_time_used);
     // printf("%f\n", cpu_time_used);
 
     if(work.info->status_val != TINY_SOLVED) {
@@ -264,7 +264,7 @@ int main() {
       // return 0;
     }
 
-    // PrintMatrixT(Uhrz[0]);
+    PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
     // PrintMatrixT(pos);
