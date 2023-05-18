@@ -19,10 +19,10 @@ void MpcLtiTest() {
                                       0.1, 0, 1, 0, 0, 0.1, 0, 1};
   sfloat B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
   sfloat f_data[NSTATES] = {0};
-  sfloat x0_data[NSTATES] = {5, 7, 2, -1.4};
-  // sfloat x0_data[NSTATES] = {1, 0, 0, 1.0};  
-  sfloat xg_data[NSTATES] = {2, 5, 0, 0};
-  // sfloat xg_data[NSTATES] = {0};
+  // sfloat x0_data[NSTATES] = {5, 7, 2, -1.4};
+  sfloat x0_data[NSTATES] = {1, 0, 0, 1.0};  
+  // sfloat xg_data[NSTATES] = {2, 5, 0, 0};
+  sfloat xg_data[NSTATES] = {0};
   sfloat ug_data[NINPUTS] = {0};
   sfloat X_data[NSTATES * NHORIZON] = {0};
   sfloat U_data[NINPUTS * (NHORIZON - 1)] = {0};
@@ -135,7 +135,7 @@ void MpcLtiTest() {
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
   stgs.max_iter = 200;
-  stgs.verbose = 1;
+  stgs.verbose = 0;
   stgs.check_termination = 10;
   
   clock_t start, end;
