@@ -27,30 +27,30 @@ void MpcLtiTest() {
   sfloat X_data[NSTATES * NHORIZON] = {0};
   sfloat U_data[NINPUTS * (NHORIZON - 1)] = {0};
   sfloat Kinf_data[NINPUTS*NSTATES] = {
-    2.483925f,0.000000f,
-    0.000000f,2.483925f,
-    3.337324f,0.000000f,
-    0.000000f,3.337324f,
+    1.255647f,0.000000f,
+    0.000000f,1.255647f,
+    2.021867f,0.000000f,
+    0.000000f,2.021867f,
   };
   sfloat Pinf_data[NSTATES*NSTATES] = {
-    134.356886f,0.000000f,33.541020f,0.000000f,
-    0.000000f,134.356886f,0.000000f,33.541020f,
-    33.541020f,0.000000f,48.387619f,0.000000f,
-    0.000000f,33.541020f,0.000000f,48.387619f,
+    161.021861f,0.000000f,71.589105f,0.000000f,
+    0.000000f,161.021861f,0.000000f,71.589105f,
+    71.589105f,0.000000f,116.694654f,0.000000f,
+    0.000000f,71.589105f,0.000000f,116.694654f,
   };
   sfloat Quu_inv_data[NINPUTS*NINPUTS] = {
-    0.616988f,0.000000f,
-    0.000000f,0.616988f,
+    0.157665f,0.000000f,
+    0.000000f,0.157665f,
   };
   sfloat AmBKt_data[NSTATES*NSTATES] = {
-    0.987580f,0.000000f,0.083313f,0.000000f,
-    0.000000f,0.987580f,0.000000f,0.083313f,
-    -0.248393f,0.000000f,0.666268f,0.000000f,
-    0.000000f,-0.248393f,0.000000f,0.666268f,
+    0.993722f,0.000000f,0.089891f,0.000000f,
+    0.000000f,0.993722f,0.000000f,0.089891f,
+    -0.125565f,0.000000f,0.797813f,0.000000f,
+    0.000000f,-0.125565f,0.000000f,0.797813f,
   };
   sfloat coeff_d2p_data[NSTATES*NINPUTS] = {
-    -0.000000f,0.000000f,-0.000000f,0.000000f,
-    0.000000f,-0.000000f,0.000000f,-0.000000f,
+    0.000000f,0.000000f,-0.000000f,0.000000f,
+    0.000000f,0.000000f,0.000000f,-0.000000f,
   };
   sfloat d_data[NINPUTS * (NHORIZON - 1)] = {0};
   sfloat p_data[NSTATES * NHORIZON] = {0};
@@ -58,17 +58,12 @@ void MpcLtiTest() {
   sfloat R_data[NINPUTS * NINPUTS] = {0};
   sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
   sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
+  sfloat r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
 
-  sfloat umin_data[NINPUTS] = {-1, -1};
-  sfloat umax_data[NINPUTS] = {1, 1};
-  // sfloat xmin_data[NSTATES] = {-2, -2, -2, -2};
-  // sfloat xmax_data[NSTATES] = {6, 8, 3, 2};
-  // Put constraints on u, x
+  sfloat umin_data[NINPUTS] = {-1, -1.0};
+  sfloat umax_data[NINPUTS] = {1, 1.0};
   sfloat Acu_data[NINPUTS * NINPUTS] = {0};  
-  // sfloat Acx_data[NSTATES * NSTATES] = {0};  
   sfloat YU_data[NINPUTS * (NHORIZON - 1)] = {0};
-  // sfloat YX_data[NSTATES * (NHORIZON)] = {0};
-  // sfloat YG_data[NSTATES] = {0};
 
   Matrix X[NHORIZON];
   Matrix U[NHORIZON - 1];
@@ -82,16 +77,16 @@ void MpcLtiTest() {
   Matrix ZU_new[NHORIZON - 1];
   Matrix q[NHORIZON-1];
   Matrix r[NHORIZON-1];
+  Matrix r_tilde[NHORIZON-1];
   Matrix A;
   Matrix B;
   Matrix f;
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
-  // tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
   tiny_AdmmSettings stgs;
   tiny_InitSettings(&stgs);  //if switch on/off during run, initialize all
-  stgs.rho_init = 1e0;
+  stgs.rho_init = 5.0;
   tiny_AdmmData data;
   tiny_AdmmInfo info;
   tiny_AdmmSolution soln;
@@ -116,9 +111,10 @@ void MpcLtiTest() {
   slap_SetIdentity(data.Q, 10);  
   slap_SetIdentity(data.R, 0.1);
   slap_AddIdentity(data.R, work.rho); // \tilde{R}
-  tiny_InitDataLinearCostFromArray(&work, q, r, q_data, r_data);
+  tiny_InitDataLinearCostFromArray(&work, q, r, r_tilde, q_data, r_data, r_tilde_data);
 
   tiny_SetInputBound(&work, Acu_data, umin_data, umax_data);
+  tiny_UpdateLinearCost(&work);
 
   if (0) {
     printf("\nProblem Info: \n");
@@ -138,10 +134,12 @@ void MpcLtiTest() {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 200;
-  stgs.verbose = 1;
+  stgs.max_iter = 100;
+  stgs.verbose = 0;
   stgs.check_termination = 10;
-
+  stgs.tol_abs_dual = 1e-2;
+  stgs.tol_abs_prim = 1e-2;
+  
   clock_t start, end;
   double cpu_time_used;
   start = clock();
@@ -150,13 +148,13 @@ void MpcLtiTest() {
   cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;
   printf("time: %f\n", cpu_time_used);
 
-  if (1) {
+  if (0) {
     for (int k = 0; k < NHORIZON - 1; ++k) {
       printf("\n=>k = %d\n", k);
       // PrintMatrix(p[k]);
       // PrintMatrixT(Xref[k]);
       PrintMatrixT(U[k]);
-      // PrintMatrixT(X[k]);
+      PrintMatrixT(X[k]);
     }
     PrintMatrixT(X[NHORIZON - 1]);
   }  
