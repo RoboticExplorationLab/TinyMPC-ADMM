@@ -1,8 +1,3 @@
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "data/back_pass_data.h"
 #include "simpletest.h"
 #include "slap/slap.h"

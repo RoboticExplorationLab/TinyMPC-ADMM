@@ -2,7 +2,7 @@
 // Scenerio: make Crazyflie hovering
 //
 
-#include <stdlib.h>
+// #include <stdlib.h>
 
 #include "quadrotor.h"
 #include "slap/slap.h"
@@ -14,7 +14,7 @@
 #define NSTATES 12   // no. of states (error state)
 #define NINPUTS 4    // no. of controls
 #define NHORIZON 5  // horizon steps (NHORIZON states and NHORIZON-1 controls)
-#define NSIM 100     // simulation steps (fixed with reference data)
+#define NSIM 150     // simulation steps (fixed with reference data)
 
 int main() {
   /* Start MPC initialization*/
@@ -194,8 +194,8 @@ int main() {
 
   /* Set up constraints */
   tiny_SetInputBound(&work, Acu_data, umin_data, umax_data);
-  slap_SetConst(data.ucu, 0.3);
-  slap_SetConst(data.lcu, -0.3);
+  slap_SetConst(data.ucu, 0.5);
+  slap_SetConst(data.lcu, -0.5);
 
   tiny_UpdateLinearCost(&work);
 
@@ -216,7 +216,7 @@ int main() {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 10;           // limit this if needed
+  stgs.max_iter = 1;           // limit this if needed
   stgs.verbose = 0;
   stgs.check_termination = 4;
   stgs.tol_abs_dual = 1e-1;
@@ -225,7 +225,7 @@ int main() {
   // Absolute formulation:
   // Warm-starting since horizon data is reused
   // Stop earlier as horizon exceeds the end
-  slap_Copy(X[0], work.data->x0);  
+  MatCpy(X[0], work.data->x0);  
   srand(1);  // random seed
 
   /* End of MPC initialization*/
@@ -266,7 +266,7 @@ int main() {
     //   return 0;
     // }
 
-    // PrintMatrixT(Uhrz[0]);
+    PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
     // PrintMatrixT(pos);
