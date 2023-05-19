@@ -11,7 +11,7 @@ extern "C" {
 #include "slap/slap.h"
 
 //========================================
-// Full 3D quadrotor model
+// Full 3D quadrotor model (Crazyflie 2.1)
 // X = [x; y; z; qw; qx; qy; qz; vx; vy; vz; omega_x; omega_y; omega_z]
 // Velocities in body frame
 // U = [pwm1; pwm2; pwm3; pwm4] : pwm of four motors

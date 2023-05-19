@@ -5,10 +5,6 @@
 extern "C" {
 # endif // ifdef __cplusplus
 
-
-// #include <errno.h>
-// #include <math.h>
-// #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -110,31 +106,32 @@ void PrintSummary(tiny_AdmmInfo *info);
   }
 
 void PrintSolveInfo(tiny_AdmmWorkspace* work);
-//========================================
-// Read data from file
-//========================================
-int tiny_ReadData(const char* filename, sfloat* des, const int size,
-                  bool verbose);
 
-//========================================
-// Read data from file and copy the last knot point into
-// remaining space of the array. Useful for extend horizon at the end.
-//========================================
-int tiny_ReadData_Extend(const char* filename, sfloat* des, const int stride,
-                         const int size, bool verbose);
+// //========================================
+// // Read data from file
+// //========================================
+// int tiny_ReadData(const char* filename, sfloat* des, const int size,
+//                   bool verbose);
 
-//========================================
-// Read data from file and copy the goal state into
-// remaining space of the array. Useful for extend horizon at the end.
-//========================================
-int tiny_ReadData_ExtendGoal(const char* filename, sfloat* des,
-                             const sfloat* xf, const int stride, const int size,
-                             bool verbose);
+// //========================================
+// // Read data from file and copy the last knot point into
+// // remaining space of the array. Useful for extend horizon at the end.
+// //========================================
+// int tiny_ReadData_Extend(const char* filename, sfloat* des, const int stride,
+//                          const int size, bool verbose);
 
-//========================================
-// Clamp the inputs to within min max value,
-// will modify the provided array
-//========================================
+// //========================================
+// // Read data from file and copy the goal state into
+// // remaining space of the array. Useful for extend horizon at the end.
+// //========================================
+// int tiny_ReadData_ExtendGoal(const char* filename, sfloat* des,
+//                              const sfloat* xf, const int stride, const int size,
+//                              bool verbose);
+
+// //========================================
+// // Clamp the inputs to within min max value,
+// // will modify the provided array
+// //========================================
 void tiny_Clamps(sfloat* arr, const sfloat* min, const sfloat* max,
                  const int N);
 
