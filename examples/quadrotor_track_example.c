@@ -2,7 +2,7 @@
 // Scenerio: drive the Crazyflie quadrotor to track fig-8 reference (easy)
 //
 
-#include "data/quadrotor_fig8.h"
+#include "data/traj_fig8.h"
 #include "quadrotor.h"
 #include "slap/slap.h"
 #include "time.h"
@@ -170,11 +170,7 @@ int main() {
 
   /* Set up LQR cost */
   tiny_InitDataQuadCostFromArray(&work, Q_data, R_data);
-  // slap_SetIdentity(prob.Q, 1000e-1);
-  sfloat Qdiag[NSTATES] = {10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-  slap_SetDiagonal(data.Q, Qdiag, NSTATES);
-  slap_SetIdentity(data.R, 1);
-  slap_AddIdentity(data.R, work.rho); // \tilde{R}
+  // slap_AddIdentity(data.R, work.rho); // \tilde{R}
   tiny_InitDataLinearCostFromArray(&work, q, r, r_tilde, q_data, r_data, r_tilde_data);
 
   /* Set up constraints */
@@ -256,7 +252,7 @@ int main() {
       // return 0;
     }
 
-    PrintMatrixT(Uhrz[0]);
+    // PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
     // PrintMatrixT(pos);
@@ -264,8 +260,8 @@ int main() {
     // === 2. Simulate dynamics using the first control solution ===
     // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uref[k]);
     // tiny_Clamp(ZU_new[0].data, umin_data[0], umax_data[0], NINPUTS);
-    tiny_QuadNonlinearDynamics(&X[k + 1], X[k], ZU_new[0]);
-    // tiny_DynamicsLti(&X[k + 1], X[k], Uref[k], model);
+    // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], ZU_new[0]);
+    tiny_EvalModel(&X[k + 1], X[k], ZU_new[0], &model, 0);
   }
 
   return 0;

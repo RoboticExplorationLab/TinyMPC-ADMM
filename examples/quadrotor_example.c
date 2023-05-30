@@ -12,13 +12,13 @@
 #define NSTATES 12   // no. of states (error state)
 #define NINPUTS 4    // no. of controls
 #define NHORIZON 3  // horizon steps (NHORIZON states and NHORIZON-1 controls)
-#define NSIM 100     // simulation steps (fixed with reference data)
+#define NSIM 200     // simulation steps (fixed with reference data)
 
 int main() {
   /* Start MPC initialization*/
 
   // Create data array 
-  sfloat x0_data[NSTATES] = {0, 0, 0, 0.1, 0, 0,
+  sfloat x0_data[NSTATES] = {0, 0, 0, 1, 0, 0,
                              0, 0, 0, 0, 0, 0};  // initial state
   sfloat xg_data[NSTATES] = {0};  
   sfloat ug_data[NINPUTS] = {0};      // goal input if needed
@@ -212,8 +212,8 @@ sfloat R_data[NINPUTS*NINPUTS] = {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 3;           // limit this if needed
-  stgs.verbose = 1;
+  stgs.max_iter = 100;           // limit this if needed
+  stgs.verbose = 0;
   stgs.check_termination = 1;
   stgs.tol_abs_dual = 5e-2;
   stgs.tol_abs_prim = 5e-2;
@@ -262,7 +262,7 @@ sfloat R_data[NINPUTS*NINPUTS] = {
     //   return 0;
     // }
 
-    PrintMatrixT(Uhrz[0]);
+    // PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
     // PrintMatrixT(pos);
