@@ -43,7 +43,7 @@ target_include_directories(tinympc
 
 target_link_libraries(tinympc
   PRIVATE
-  slap::slap
+
   )
 
 add_library(tinympc::tinympc ALIAS tinympc)

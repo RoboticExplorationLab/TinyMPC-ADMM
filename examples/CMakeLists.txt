@@ -6,7 +6,7 @@ function(add_example name)
     )
   target_link_libraries(${EXAMPLE_NAME}
     PRIVATE
-    slap::slap
+
     tinympc::tinympc
     )
 endfunction()
