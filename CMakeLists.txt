@@ -35,11 +35,8 @@ option(TINY_BUILD_TESTS "Build tests for TinyMPC" ON)
 # Enable clang-tidy analysis
 option(TINY_CLANG_TIDY "Run clang-tidy analyzer on the source code." OFF)
 
-# Floating point precision
-set(TINY_FLOAT float CACHE STRING "Floating point precision (float,double).")
-
 # Build examples
-option(TINY_BUILD_EXAMPLES "Build examples for TinyMPC." ON)
+option(TINY_BUILD_EXAMPLES "Build examples for TinyMPC." OFF)
 
 # Build with -march=native
 option(TINY_VECTORIZE "Compile with -march=native" ON)
@@ -50,10 +47,7 @@ option(TINY_PROFILE "Compile with -pg" OFF)
 ##############################
 # Dependencies
 ##############################
-
-set(SLAP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(SLAP_VECTORIZE ${TINY_VECTORIZE} CACHE BOOL "" FORCE)
-set(SLAP_FLOAT ${TINY_FLOAT} CACHE STRING "" FORCE)
+include_directories(ext/Eigen)
 
 ##############################
 # Main build targets
@@ -82,8 +76,6 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 
 # Build source files
 add_subdirectory(src/tinympc)
-
-add_subdirectory(ext/slap)
 
 ##############################
 # Tests
