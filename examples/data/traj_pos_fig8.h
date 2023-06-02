@@ -8,7 +8,7 @@ extern "C" {
 
 #include <slap/slap.h>
 
-static sfloat X_ref_data[] = {
+static float X_ref_data[] = {
   0.0,1.0,0.1,
   0.0,1.0,0.1,
   0.0,1.0,0.2,

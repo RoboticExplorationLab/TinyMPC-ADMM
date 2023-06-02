@@ -8,41 +8,41 @@
 #define NINPUTS 1
 #define NHORIZON 3
 
-sfloat dt = 0.1;
-sfloat A_data[NSTATES * NSTATES] = {1, 0, 1, 1};  // NOLINT
-sfloat B_data[NSTATES * NINPUTS] = {1, 2};        // NOLINT
-sfloat f_data[NSTATES] = {4, 5};                  // NOLINT
-sfloat x0_data[NSTATES] = {0.1, 0.2};
-sfloat xg_data[NSTATES] = {0};
-sfloat Xref_data[NSTATES * NHORIZON] = {0.2, 1.1, 2.5, 3.7, 2.1, 4.5};
-sfloat Uref_data[NINPUTS * (NHORIZON - 1)] = {1, 2};
-sfloat Kinf_data[NINPUTS * NSTATES] = {0};
-sfloat d_data[NINPUTS * (NHORIZON - 1)] = {0};
-sfloat Pinf_data[NSTATES * NSTATES] = {0};
-sfloat p_data[NSTATES * NHORIZON] = {0};
-sfloat Q_data[NSTATES * NSTATES] = {1, 0, 0, 1};  // NOLINT
-sfloat R_data[NINPUTS * NINPUTS] = {1};           // NOLINT
-sfloat q_data[NSTATES] = {0.1, 0.2};              // NOLINT
-sfloat r_data[NINPUTS] = {-0.6};                  // NOLINT
-sfloat Acu_data[NINPUTS * NINPUTS] = {0};  // A1*u <= b1
-sfloat Acx_data[NSTATES * NSTATES] = {0};  // A2*x <= b2
-sfloat ucu_data[NINPUTS] = {1.1};
-sfloat lcu_data[NINPUTS] = {-1.1};
-sfloat ucx_data[NSTATES] = {1.6, 1.7};
-sfloat lcx_data[NSTATES] = {-1.6, -1.7};
-sfloat YU_data[NINPUTS * (NHORIZON - 1)] = {1, 2};
-sfloat YX_data[NSTATES * (NHORIZON)] = {1, 2, 3, 4, 5, 6};
-sfloat YG_data[NSTATES] = {1, 2};
+float dt = 0.1;
+float A_data[NSTATES * NSTATES] = {1, 0, 1, 1};  // NOLINT
+float B_data[NSTATES * NINPUTS] = {1, 2};        // NOLINT
+float f_data[NSTATES] = {4, 5};                  // NOLINT
+float x0_data[NSTATES] = {0.1, 0.2};
+float xg_data[NSTATES] = {0};
+float Xref_data[NSTATES * NHORIZON] = {0.2, 1.1, 2.5, 3.7, 2.1, 4.5};
+float Uref_data[NINPUTS * (NHORIZON - 1)] = {1, 2};
+float Kinf_data[NINPUTS * NSTATES] = {0};
+float d_data[NINPUTS * (NHORIZON - 1)] = {0};
+float Pinf_data[NSTATES * NSTATES] = {0};
+float p_data[NSTATES * NHORIZON] = {0};
+float Q_data[NSTATES * NSTATES] = {1, 0, 0, 1};  // NOLINT
+float R_data[NINPUTS * NINPUTS] = {1};           // NOLINT
+float q_data[NSTATES] = {0.1, 0.2};              // NOLINT
+float r_data[NINPUTS] = {-0.6};                  // NOLINT
+float Acu_data[NINPUTS * NINPUTS] = {0};  // A1*u <= b1
+float Acx_data[NSTATES * NSTATES] = {0};  // A2*x <= b2
+float ucu_data[NINPUTS] = {1.1};
+float lcu_data[NINPUTS] = {-1.1};
+float ucx_data[NSTATES] = {1.6, 1.7};
+float lcx_data[NSTATES] = {-1.6, -1.7};
+float YU_data[NINPUTS * (NHORIZON - 1)] = {1, 2};
+float YX_data[NSTATES * (NHORIZON)] = {1, 2, 3, 4, 5, 6};
+float YG_data[NSTATES] = {1, 2};
 
-sfloat Quu_inv_data[NINPUTS * NINPUTS] = {10.1};
-sfloat AmBKt_data[NSTATES * NSTATES] = {1.2, 2.3, 21.1, 12.3};
-sfloat coeff_d2p_data[NSTATES * NINPUTS] = {1.2, 2.3};
+float Quu_inv_data[NINPUTS * NINPUTS] = {10.1};
+float AmBKt_data[NSTATES * NSTATES] = {1.2, 2.3, 21.1, 12.3};
+float coeff_d2p_data[NSTATES * NINPUTS] = {1.2, 2.3};
 
-sfloat reg = 1e-6;
-sfloat reg_min = 1;
-sfloat reg_max = 100;
-sfloat rho_max = 1e5;
-sfloat rho_mul = 1;
+float reg = 1e-6;
+float reg_min = 1;
+float reg_max = 100;
+float rho_max = 1e5;
+float rho_mul = 1;
 int max_outer_iters = 100;
 int max_search_iters = 10;
 
@@ -50,11 +50,11 @@ void SettingsTest() {
   tiny_AdmmSettings settings;
   tiny_InitSettings(&settings);
 
-  TEST(settings.reg_max == (sfloat)REG_MAX);
+  TEST(settings.reg_max == (float)REG_MAX);
   TEST(settings.max_iter == MAX_ITER);
 
-  settings.reg_max = (sfloat)10.5;
-  TEST(settings.reg_max == (sfloat)10.5);
+  settings.reg_max = (float)10.5;
+  TEST(settings.reg_max == (float)10.5);
 }
 
 void SolutionTest() {
@@ -111,7 +111,7 @@ void WorkspaceTest() {
   int true_size = m + 2*m*(NHORIZON - 1);
   TEST(work.data_size == true_size);
   
-  sfloat temp_data[work.data_size];
+  float temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
   temp_data[work.data_size-1] = 1.0;
   Matrix ZU[NHORIZON-1];

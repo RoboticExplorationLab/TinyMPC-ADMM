@@ -22,39 +22,39 @@
 #define NHORIZON 41
 
 void AbsLqrLtvTest() {
-  sfloat x0_data[NSTATES] = {1, -1, 0, 0, 0};
-  // sfloat xg_data[NSTATES] = {0};
-  // sfloat ug_data[NINPUTS] = {0};
-  sfloat Q_data[NSTATES * NSTATES] = {0};
-  sfloat R_data[NINPUTS * NINPUTS] = {0};
-  sfloat Qf_data[NSTATES * NSTATES] = {0};
-  sfloat X_data[NSTATES * NHORIZON] = {0};
-  sfloat U_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat K_data[NINPUTS * NSTATES * (NHORIZON - 1)] = {0};
-  sfloat d_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat P_data[NSTATES * NSTATES * (NHORIZON)] = {0};
-  sfloat p_data[NSTATES * NHORIZON] = {0};
-  sfloat A_data[NSTATES * NSTATES * (NHORIZON - 1)] = {0};
-  sfloat B_data[NSTATES * NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat f_data[NSTATES * (NHORIZON - 1)] = {0};
-  sfloat input_dual_data[2 * NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat state_dual_data[2 * NSTATES * (NHORIZON)] = {0};
-  sfloat goal_dual_data[NSTATES] = {0};
-  sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
-  sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
-  sfloat qf_data[NSTATES] = {0};  
-  // sfloat umin_data[NINPUTS] = {-5, -2};
-  // sfloat umax_data[NINPUTS] = {5, 2};
-  // sfloat xmin_data[NSTATES] = {-100, -100, -100, -100, -100};
-  // sfloat xmax_data[NSTATES] = {100, 100, 100, 100, 100};
+  float x0_data[NSTATES] = {1, -1, 0, 0, 0};
+  // float xg_data[NSTATES] = {0};
+  // float ug_data[NINPUTS] = {0};
+  float Q_data[NSTATES * NSTATES] = {0};
+  float R_data[NINPUTS * NINPUTS] = {0};
+  float Qf_data[NSTATES * NSTATES] = {0};
+  float X_data[NSTATES * NHORIZON] = {0};
+  float U_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float K_data[NINPUTS * NSTATES * (NHORIZON - 1)] = {0};
+  float d_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float P_data[NSTATES * NSTATES * (NHORIZON)] = {0};
+  float p_data[NSTATES * NHORIZON] = {0};
+  float A_data[NSTATES * NSTATES * (NHORIZON - 1)] = {0};
+  float B_data[NSTATES * NINPUTS * (NHORIZON - 1)] = {0};
+  float f_data[NSTATES * (NHORIZON - 1)] = {0};
+  float input_dual_data[2 * NINPUTS * (NHORIZON - 1)] = {0};
+  float state_dual_data[2 * NSTATES * (NHORIZON)] = {0};
+  float goal_dual_data[NSTATES] = {0};
+  float q_data[NSTATES*(NHORIZON-1)] = {0};
+  float r_data[NINPUTS*(NHORIZON-1)] = {0};
+  float qf_data[NSTATES] = {0};  
+  // float umin_data[NINPUTS] = {-5, -2};
+  // float umax_data[NINPUTS] = {5, 2};
+  // float xmin_data[NSTATES] = {-100, -100, -100, -100, -100};
+  // float xmax_data[NSTATES] = {100, 100, 100, 100, 100};
 
   // Put constraints on u, x4, x5
-  sfloat Acstr_input_data[2 * NINPUTS * NINPUTS] = {0};
-  sfloat Acstr_state_data[2 * NSTATES * NSTATES] = {0};
+  float Acstr_input_data[2 * NINPUTS * NINPUTS] = {0};
+  float Acstr_state_data[2 * NSTATES * NSTATES] = {0};
   // [u_max, -u_min]
-  sfloat bcstr_input_data[2 * NINPUTS] = {2.0, 0.9, 2.0, 0.9};
+  float bcstr_input_data[2 * NINPUTS] = {2.0, 0.9, 2.0, 0.9};
   // [x_max, -x_min]
-  sfloat bcstr_state_data[2 * NSTATES] = {100, 100, 100, 4.0, 0.55,
+  float bcstr_state_data[2 * NSTATES] = {100, 100, 100, 4.0, 0.55,
                                           100, 100, 100, 4.0, 0.55};
                                           
   Matrix X[NHORIZON];
@@ -73,21 +73,21 @@ void AbsLqrLtvTest() {
   Matrix q[NHORIZON-1];
   Matrix r[NHORIZON-1];
 
-  sfloat* Xptr = X_data;
-  sfloat* Xref_ptr = Xref_data;
-  sfloat* Uptr = U_data;
-  sfloat* Uref_ptr = Uref_data;
-  sfloat* Kptr = K_data;
-  sfloat* dptr = d_data;
-  sfloat* Pptr = P_data;
-  sfloat* pptr = p_data;
-  sfloat* Aptr = A_data;
-  sfloat* Bptr = B_data;
-  sfloat* fptr = f_data;
-  sfloat* udual_ptr = input_dual_data;
-  sfloat* xdual_ptr = state_dual_data;
-  sfloat* qptr = q_data;
-  sfloat* rptr = r_data;
+  float* Xptr = X_data;
+  float* Xref_ptr = Xref_data;
+  float* Uptr = U_data;
+  float* Uref_ptr = Uref_data;
+  float* Kptr = K_data;
+  float* dptr = d_data;
+  float* Pptr = P_data;
+  float* pptr = p_data;
+  float* Aptr = A_data;
+  float* Bptr = B_data;
+  float* fptr = f_data;
+  float* udual_ptr = input_dual_data;
+  float* xdual_ptr = state_dual_data;
+  float* qptr = q_data;
+  float* rptr = r_data;
 
   for (int i = 0; i < NHORIZON; ++i) {
     if (i < NHORIZON - 1) {
@@ -139,7 +139,7 @@ void AbsLqrLtvTest() {
   tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
 
-  sfloat temp_data[work.data_size];
+  float temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
   tiny_InitWorkspaceTempData(&work, temp_data);
 

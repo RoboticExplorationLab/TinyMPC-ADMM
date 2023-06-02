@@ -9,9 +9,9 @@ extern "C" {
 #include <math.h>
 #include "slap/slap.h"
 
-sfloat SumOfSquaredError(const sfloat* x, const sfloat* y, const int len);
+float SumOfSquaredError(const float* x, const float* y, const int len);
 
-sfloat SumOfSquaredErrorMatrices(const sfloat* x, Matrix* Y, const int num);
+float SumOfSquaredErrorMatrices(const float* x, Matrix* Y, const int num);
 
 
 #ifdef __cplusplus

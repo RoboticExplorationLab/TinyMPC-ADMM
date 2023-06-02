@@ -19,13 +19,13 @@ int main() {
   /* Start MPC initialization*/
 
   // Create data array 
-  sfloat x0_data[NSTATES] = {0, 1, 0, 0.1, 0, 0,
+  float x0_data[NSTATES] = {0, 1, 0, 0.1, 0, 0,
                              0, 0, 0, 0,   0, 0};  // initial state
-  sfloat ug_data[NINPUTS] = {0., 0., 0., 0.};      // goal input if needed
-  sfloat Xhrz_data[NSTATES * NHORIZON] = {0};      // save X for one horizon
-  sfloat X_data[NSTATES * NSIM] = {0};             // save X for the whole run
-  sfloat Uhrz_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat A_data[NSTATES*NSTATES]= {
+  float ug_data[NINPUTS] = {0., 0., 0., 0.};      // goal input if needed
+  float Xhrz_data[NSTATES * NHORIZON] = {0};      // save X for one horizon
+  float X_data[NSTATES * NSIM] = {0};             // save X for the whole run
+  float Uhrz_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float A_data[NSTATES*NSTATES]= {
     1.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,
     0.000000f,1.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,
     0.000000f,0.000000f,1.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,
@@ -39,14 +39,14 @@ int main() {
     0.000013f,0.000000f,0.000000f,0.000000f,0.010000f,0.000000f,0.001999f,0.000000f,0.000000f,0.000000f,1.000000f,0.000000f,
     0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.010000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,1.000000f,
   };
-  sfloat B_data[NSTATES*NINPUTS]= {
+  float B_data[NSTATES*NINPUTS]= {
     0.000019f,0.000019f,0.000962f,-0.029620f,0.030207f,-0.004066f,0.004101f,0.004021f,0.096236f,-5.923901f,6.041486f,-0.813298f,
     -0.000018f,0.000017f,0.000962f,-0.027140f,-0.027503f,0.005295f,-0.003734f,0.003685f,0.096236f,-5.428009f,-5.500535f,1.059020f,
     -0.000019f,-0.000019f,0.000962f,0.029845f,-0.029577f,-0.001855f,-0.004016f,-0.004052f,0.096236f,5.968959f,-5.915321f,-0.370998f,
     0.000017f,-0.000017f,0.000962f,0.026915f,0.026872f,0.000626f,0.003648f,-0.003654f,0.096236f,5.382950f,5.374370f,0.125275f,
   };
-  sfloat f_data[NSTATES] = {0};
-  sfloat Kinf_data[NINPUTS*NSTATES] = {
+  float f_data[NSTATES] = {0};
+  float Kinf_data[NINPUTS*NSTATES] = {
     0.074926f,-0.087307f,-0.170980f,0.183361f,
     0.142503f,0.116560f,-0.104167f,-0.154896f,
     1.397135f,1.397135f,1.397135f,1.397135f,
@@ -60,7 +60,7 @@ int main() {
     0.025881f,-0.030376f,-0.062909f,0.067404f,
     -0.287018f,0.285076f,-0.290085f,0.292027f,
   };
-  sfloat Pinf_data[NSTATES*NSTATES] = {
+  float Pinf_data[NSTATES*NSTATES] = {
     376.096473f,-0.013921f,0.000000f,0.061321f,338.072148f,0.081573f,112.687691f,-0.010361f,0.000000f,0.004544f,1.647141f,0.084648f,
     -0.013921f,376.082931f,-0.000000f,-338.012160f,-0.061321f,-0.032658f,-0.010361f,112.677580f,0.000000f,-1.642698f,-0.004544f,-0.033889f,
     -0.000000f,-0.000000f,208.790813f,0.000000f,-0.000000f,-0.000000f,-0.000000f,-0.000000f,16.505696f,0.000000f,-0.000000f,-0.000000f,
@@ -74,13 +74,13 @@ int main() {
     1.647141f,-0.004544f,-0.000000f,0.021058f,7.199401f,0.030932f,1.217014f,-0.003439f,-0.000000f,0.001687f,1.045421f,0.032567f,
     0.084648f,-0.033889f,-0.000000f,0.159773f,0.399039f,0.949901f,0.064496f,-0.025822f,-0.000000f,0.013041f,0.032567f,1.495774f,
   };
-  sfloat Quu_inv_data[NINPUTS*NINPUTS] = {
+  float Quu_inv_data[NINPUTS*NINPUTS] = {
     0.172741f,0.050332f,0.167886f,0.047495f,
     0.050332f,0.171730f,0.049139f,0.167253f,
     0.167886f,0.049139f,0.175090f,0.046339f,
     0.047495f,0.167253f,0.046339f,0.177367f,
   };
-  sfloat AmBKt_data[NSTATES*NSTATES] = {
+  float AmBKt_data[NSTATES*NSTATES] = {
     0.999991f,-0.000000f,-0.000000f,0.000000f,0.003807f,0.000000f,0.019993f,-0.000000f,-0.000000f,0.000000f,0.000009f,0.000000f,
     -0.000000f,0.999991f,-0.000000f,-0.003806f,-0.000000f,-0.000000f,-0.000000f,0.019993f,-0.000000f,-0.000009f,-0.000000f,-0.000000f,
     -0.000000f,-0.000000f,0.994622f,0.000000f,-0.000000f,-0.000000f,-0.000000f,-0.000000f,0.017754f,0.000000f,-0.000000f,-0.000000f,
@@ -94,25 +94,25 @@ int main() {
     -2.929753f,-0.003504f,-0.000000f,0.014963f,-13.378707f,0.016071f,-2.203712f,-0.002565f,-0.000000f,0.001107f,-0.057819f,0.016676f,
     0.066993f,-0.026783f,-0.000000f,0.115450f,0.288773f,-0.644926f,0.049258f,-0.019693f,-0.000000f,0.008569f,0.021434f,0.320463f,
   };
-  sfloat coeff_d2p_data[NSTATES*NINPUTS] = {
+  float coeff_d2p_data[NSTATES*NINPUTS] = {
     0.074927f,0.142503f,1.397135f,-0.653575f,0.334852f,-0.271611f,0.055876f,0.107376f,0.583418f,-0.051908f,0.025881f,-0.287010f,
     -0.087308f,0.116561f,1.397135f,-0.529393f,-0.391547f,0.269611f,-0.065200f,0.087485f,0.583418f,-0.041623f,-0.030376f,0.285066f,
     -0.170980f,-0.104168f,1.397135f,0.472648f,-0.788090f,-0.274808f,-0.129091f,-0.078153f,0.583418f,0.037125f,-0.062909f,-0.290080f,
     0.183361f,-0.154896f,1.397135f,0.710321f,0.844785f,0.276807f,0.138414f,-0.116708f,0.583418f,0.056407f,0.067403f,0.292024f,
   };
-  sfloat d_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat p_data[NSTATES * NHORIZON] = {0};
-  sfloat Q_data[NSTATES * NSTATES] = {0};
-  sfloat R_data[NINPUTS * NINPUTS] = {0};
-  sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
-  sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
-  sfloat r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
+  float d_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float p_data[NSTATES * NHORIZON] = {0};
+  float Q_data[NSTATES * NSTATES] = {0};
+  float R_data[NINPUTS * NINPUTS] = {0};
+  float q_data[NSTATES*(NHORIZON-1)] = {0};
+  float r_data[NINPUTS*(NHORIZON-1)] = {0};
+  float r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
 
-  sfloat umin_data[NINPUTS] = {0};
-  sfloat umax_data[NINPUTS] = {0};
+  float umin_data[NINPUTS] = {0};
+  float umax_data[NINPUTS] = {0};
   // Put constraints on u, x
-  sfloat Acu_data[NINPUTS * NINPUTS] = {0};  
-  sfloat YU_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float Acu_data[NINPUTS * NINPUTS] = {0};  
+  float YU_data[NINPUTS * (NHORIZON - 1)] = {0};
 
   // Created matrices
   Matrix X[NSIM];
@@ -154,7 +154,7 @@ int main() {
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   // Fill in the remaining struct 
-  sfloat temp_data[work.data_size];
+  float temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
   tiny_InitWorkspaceTempData(&work, ZU, ZU_new, 0, 0, temp_data);
   tiny_InitPrimalCache(&work, Quu_inv_data, AmBKt_data, coeff_d2p_data);

@@ -21,7 +21,7 @@ void tiny_InitModel_Test() {
   tiny_Model ltv_model2;
   true_size = NSTATES*(NSTATES + NINPUTS)*(NHORIZON-1);
   TEST(tiny_InitModel(&ltv_model2, NSTATES, NINPUTS, NHORIZON, 1, 0, 0.1) == TINY_NO_ERROR);
-  TEST(ltv_model2.dt == (sfloat)(0.1) && ltv_model2.affine == 0 && 
+  TEST(ltv_model2.dt == (float)(0.1) && ltv_model2.affine == 0 && 
        true_size == ltv_model2.data_size);
 
   tiny_Model lti_model2;
@@ -36,13 +36,13 @@ void tiny_InitModel_Test() {
 }
 
 void tiny_InitModelFromArray_Test() {
-  const sfloat tol = 1e-6;
+  const float tol = 1e-6;
   const int NSTATES = 2;
   const int NINPUTS = 2;
   const int NHORIZON = 3;
-  sfloat A_data[] = {1, 2, 3, 4, 5, 6, 7, 8};  
-  sfloat B_data[] = {1.1, 2.2, 1.3, 2.3};        
-  sfloat f_data[] = {2.1, 1.2, 3.3, 1.3};     
+  float A_data[] = {1, 2, 3, 4, 5, 6, 7, 8};  
+  float B_data[] = {1.1, 2.2, 1.3, 2.3};        
+  float f_data[] = {2.1, 1.2, 3.3, 1.3};     
   Matrix A[NHORIZON-1];
   Matrix B[NHORIZON-1];     
   Matrix f[NHORIZON-1];        
@@ -79,9 +79,9 @@ void tiny_InitModelFromArray_Test() {
   TEST(SumOfSquaredErrorMatrices(B_data, ltv_model2.B, NHORIZON-1) < tol);
   TEST(ltv_model2.f == TINY_NULL);
 
-  sfloat A2_data[] = {1, 2, 3, 4};  
-  sfloat B2_data[] = {1.1, 2.2};        
-  sfloat f2_data[] = {2.1, 1.2};     
+  float A2_data[] = {1, 2, 3, 4};  
+  float B2_data[] = {1.1, 2.2};        
+  float f2_data[] = {2.1, 1.2};     
   Matrix A2;
   Matrix B2;     
   Matrix f2;      
@@ -120,22 +120,22 @@ void tiny_InitModelFromArray_Test() {
 }
 
 // void tiny_InitModelDataMatrix_Test() {
-//   const sfloat tol = 1e-8;
+//   const float tol = 1e-8;
 //   const int NSTATES = 2;
 //   const int NINPUTS = 2;
 //   const int NHORIZON = 3;
-//   sfloat A_data[] = {1, 2, 3, 4, 5, 6, 7, 8};  
-//   sfloat B_data[] = {1.1, 2.2, 1.3, 2.3};        
-//   sfloat f_data[] = {2.1, 1.2, 3.3, 1.3};     
+//   float A_data[] = {1, 2, 3, 4, 5, 6, 7, 8};  
+//   float B_data[] = {1.1, 2.2, 1.3, 2.3};        
+//   float f_data[] = {2.1, 1.2, 3.3, 1.3};     
 //   Matrix A[NHORIZON-1];
 //   Matrix B[NHORIZON-1];     
 //   Matrix f[NHORIZON-1];        
 //   tiny_Model model;
 //   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 1, 0.1);
 
-//   sfloat* A_ptr = A_data;
-//   sfloat* B_ptr = B_data;
-//   sfloat* f_ptr = f_data;
+//   float* A_ptr = A_data;
+//   float* B_ptr = B_data;
+//   float* f_ptr = f_data;
 
 //   for (int k = 0; k < model.nhorizon-1; ++k) {
 //     A[k] = slap_MatrixFromArray(model.nstates, model.nstates, A_ptr);
@@ -172,17 +172,17 @@ void tiny_InitModelFromArray_Test() {
 // }
 
 // void tiny_InitModelMemory_Test() {
-//   const sfloat tol = 1e-8;
+//   const float tol = 1e-8;
 //   const int NSTATES = 2;
 //   const int NINPUTS = 2;
 //   const int NHORIZON = 3;
-//   sfloat A_data[] = {1, 2, 3, 4, 5, 6, 7, 8};  
-//   sfloat B_data[] = {1.1, 2.2, 1.3, 2.3};        
-//   sfloat f_data[] = {2.1, 1.2, 3.3, 1.3};  
+//   float A_data[] = {1, 2, 3, 4, 5, 6, 7, 8};  
+//   float B_data[] = {1.1, 2.2, 1.3, 2.3};        
+//   float f_data[] = {2.1, 1.2, 3.3, 1.3};  
                     
 //   tiny_Model model;
 //   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 1, 0.1);
-//   sfloat data[model.data_size];  // data
+//   float data[model.data_size];  // data
 //   Matrix mats[(NHORIZON-1)*3];  // array of matrices A, B, f
 //   tiny_InitModelMemory(&model, mats, data);
 
@@ -206,7 +206,7 @@ void tiny_InitModelFromArray_Test() {
 
 //   tiny_Model model_not_affine;
 //   tiny_InitModel(&model_not_affine, NSTATES, NINPUTS, NHORIZON, 0, 0.1);
-//   sfloat data2[model_not_affine.data_size];  // data
+//   float data2[model_not_affine.data_size];  // data
 //   Matrix mats2[(NHORIZON-1)*2];  // array of matrices A and B
 //   tiny_InitModelMemory(&model_not_affine, mats2, data2);
 //   tiny_FillModelMemory(&model_not_affine, A_data, B_data, f_data);  

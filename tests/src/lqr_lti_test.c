@@ -13,47 +13,47 @@
 #define NHORIZON 100
 // U, X, Psln
 void LqrLtiTest() {
-  sfloat A_data[NSTATES * NSTATES] = {1,   0, 0, 0, 0, 1,   0, 0,
+  float A_data[NSTATES * NSTATES] = {1,   0, 0, 0, 0, 1,   0, 0,
                                       0.1, 0, 1, 0, 0, 0.1, 0, 1};
-  sfloat B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
-  sfloat f_data[NSTATES] = {0};
-  sfloat x0_data[NSTATES] = {5, 7, 2, -1.4};
-  sfloat xg_data[NSTATES] = {2, 5, 0, 0};
-  sfloat ug_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat X_data[NSTATES * NHORIZON] = {0};
-  sfloat U_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat Kinf_data[NINPUTS*NSTATES] = {
+  float B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
+  float f_data[NSTATES] = {0};
+  float x0_data[NSTATES] = {5, 7, 2, -1.4};
+  float xg_data[NSTATES] = {2, 5, 0, 0};
+  float ug_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float X_data[NSTATES * NHORIZON] = {0};
+  float U_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float Kinf_data[NINPUTS*NSTATES] = {
     2.483925f,0.000000f,
     0.000000f,2.483925f,
     3.337324f,0.000000f,
     0.000000f,3.337324f,
-  };sfloat Pinf_data[NSTATES*NSTATES] = {
+  };float Pinf_data[NSTATES*NSTATES] = {
     134.356886f,0.000000f,33.541020f,0.000000f,
     0.000000f,134.356886f,0.000000f,33.541020f,
     33.541020f,0.000000f,48.387619f,0.000000f,
     0.000000f,33.541020f,0.000000f,48.387619f,
   };
-  sfloat Quu_inv_data[NINPUTS*NINPUTS] = {
+  float Quu_inv_data[NINPUTS*NINPUTS] = {
     0.616988f,0.000000f,
     0.000000f,0.616988f,
   };
-  sfloat AmBKt_data[NSTATES*NSTATES] = {
+  float AmBKt_data[NSTATES*NSTATES] = {
     0.987580f,0.000000f,0.083313f,0.000000f,
     0.000000f,0.987580f,0.000000f,0.083313f,
     -0.248393f,0.000000f,0.666268f,0.000000f,
     0.000000f,-0.248393f,0.000000f,0.666268f,
   };
-  sfloat coeff_d2p_data[NSTATES*NINPUTS] = {
+  float coeff_d2p_data[NSTATES*NINPUTS] = {
     -0.000000f,0.000000f,-0.000000f,0.000000f,
     0.000000f,-0.000000f,0.000000f,-0.000000f,
   };
-  sfloat d_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat p_data[NSTATES * NHORIZON] = {0};
-  sfloat Q_data[NSTATES * NSTATES] = {0};
-  sfloat R_data[NINPUTS * NINPUTS] = {0};
-  sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
-  sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
-  sfloat r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
+  float d_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float p_data[NSTATES * NHORIZON] = {0};
+  float Q_data[NSTATES * NSTATES] = {0};
+  float R_data[NINPUTS * NINPUTS] = {0};
+  float q_data[NSTATES*(NHORIZON-1)] = {0};
+  float r_data[NINPUTS*(NHORIZON-1)] = {0};
+  float r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
 
   Matrix A;
   Matrix B;
@@ -79,7 +79,7 @@ void LqrLtiTest() {
   tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
-  sfloat temp_data[work.data_size];
+  float temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
 
   tiny_InitWorkspaceTempData(&work, 0, 0, 0, 0, temp_data);

@@ -9,18 +9,18 @@
 #define NINPUTS 2
 #define NHORIZON 3
 
-sfloat A_data[NSTATES * NSTATES] = {1,   0, 0, 0, 0, 1,   0, 0,
+float A_data[NSTATES * NSTATES] = {1,   0, 0, 0, 0, 1,   0, 0,
                                     0.1, 0, 1, 0, 0, 0.1, 0, 1};
-sfloat B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
-sfloat f_data[NSTATES] = {0, 0, 0, 0};
-// sfloat x0_data[NSTATES] = {5,7,2,-1.4};
-sfloat Q_data[NSTATES*NSTATES] = {0};
-sfloat R_data[NINPUTS*NINPUTS] = {0};
-sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
-sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
+float B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
+float f_data[NSTATES] = {0, 0, 0, 0};
+// float x0_data[NSTATES] = {5,7,2,-1.4};
+float Q_data[NSTATES*NSTATES] = {0};
+float R_data[NINPUTS*NINPUTS] = {0};
+float q_data[NSTATES*(NHORIZON-1)] = {0};
+float r_data[NINPUTS*(NHORIZON-1)] = {0};
 
-sfloat Xref_data[NSTATES] = {0};
-sfloat Uref_data[NINPUTS] = {0};
+float Xref_data[NSTATES] = {0};
+float Uref_data[NINPUTS] = {0};
 
   Matrix A;
   Matrix B;
@@ -36,7 +36,7 @@ sfloat Uref_data[NINPUTS] = {0};
   Matrix r[NHORIZON-1];
 
 void ForwardPassTest() {
-  const sfloat tol = 1e-6;
+  const float tol = 1e-6;
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
@@ -48,7 +48,7 @@ void ForwardPassTest() {
   tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
-  sfloat temp_data[work.data_size];
+  float temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
 
   tiny_InitWorkspaceTempData(&work, 0, 0, 0, 0, temp_data);
@@ -57,7 +57,7 @@ void ForwardPassTest() {
   tiny_InitSolnTrajFromArray(&work, X, U, x_data, u_data);
   tiny_InitSolnGainsFromArray(&work, d, 0, d_data, 0, K_data, 0);
 
-  sfloat* xsol_ptr = xsol_data;
+  float* xsol_ptr = xsol_data;
   for (int i = 0; i < NHORIZON; ++i) {
     Xsln[i] = slap_MatrixFromArray(NSTATES, 1, xsol_ptr);
     xsol_ptr += NSTATES;

@@ -15,15 +15,15 @@
 #define NHORIZON 51
 // NO GRADIENT VANISHING/EXPLOSION WHEN NHORIZON = 91
 
-sfloat x0_data[NSTATES] = {1, -1, 0, 0, 0};
-sfloat xg_data[NSTATES] = {0};
-sfloat ug_data[NINPUTS] = {0};
-sfloat Q_data[NSTATES * NSTATES] = {0};
-sfloat R_data[NINPUTS * NINPUTS] = {0};
-sfloat Qf_data[NSTATES * NSTATES] = {0};
-sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
-sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
-sfloat qf_data[NSTATES] = {0};
+float x0_data[NSTATES] = {1, -1, 0, 0, 0};
+float xg_data[NSTATES] = {0};
+float ug_data[NINPUTS] = {0};
+float Q_data[NSTATES * NSTATES] = {0};
+float R_data[NINPUTS * NINPUTS] = {0};
+float Qf_data[NSTATES * NSTATES] = {0};
+float q_data[NSTATES*(NHORIZON-1)] = {0};
+float r_data[NINPUTS*(NHORIZON-1)] = {0};
+float qf_data[NSTATES] = {0};
 
 Matrix X[NHORIZON];
 Matrix U[NHORIZON - 1];
@@ -42,26 +42,26 @@ Matrix q[NHORIZON-1];
 Matrix r[NHORIZON-1];
 
 void DeltaLqrLtvTest() {
-  sfloat X_data[NSTATES * NHORIZON] = {0};
-  sfloat U_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat K_data[NINPUTS * NSTATES * (NHORIZON - 1)] = {0};
-  sfloat d_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat P_data[NSTATES * NSTATES * (NHORIZON)] = {0};
-  sfloat p_data[NSTATES * NHORIZON] = {0};
-  sfloat A_data[NSTATES * NSTATES * (NHORIZON - 1)] = {0};
-  sfloat B_data[NSTATES * NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat* Xptr = X_data;
-  sfloat* Xref_ptr = Xref_data;
-  sfloat* Uptr = U_data;
-  sfloat* Uref_ptr = Uref_data;
-  sfloat* Kptr = K_data;
-  sfloat* dptr = d_data;
-  sfloat* Pptr = P_data;
-  sfloat* pptr = p_data;
-  sfloat* Aptr = A_data;
-  sfloat* Bptr = B_data;
-  sfloat* qptr = q_data;
-  sfloat* rptr = r_data;
+  float X_data[NSTATES * NHORIZON] = {0};
+  float U_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float K_data[NINPUTS * NSTATES * (NHORIZON - 1)] = {0};
+  float d_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float P_data[NSTATES * NSTATES * (NHORIZON)] = {0};
+  float p_data[NSTATES * NHORIZON] = {0};
+  float A_data[NSTATES * NSTATES * (NHORIZON - 1)] = {0};
+  float B_data[NSTATES * NINPUTS * (NHORIZON - 1)] = {0};
+  float* Xptr = X_data;
+  float* Xref_ptr = Xref_data;
+  float* Uptr = U_data;
+  float* Uref_ptr = Uref_data;
+  float* Kptr = K_data;
+  float* dptr = d_data;
+  float* Pptr = P_data;
+  float* pptr = p_data;
+  float* Aptr = A_data;
+  float* Bptr = B_data;
+  float* qptr = q_data;
+  float* rptr = r_data;
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 1, 0, 0.1);  // feasible reference then
@@ -74,7 +74,7 @@ void DeltaLqrLtvTest() {
   tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
-  sfloat temp_data[work.data_size];
+  float temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
 
   tiny_InitWorkspaceTempData(&work, temp_data);
@@ -179,28 +179,28 @@ void DeltaLqrLtvTest() {
 
 void AbsLqrLtvTest() {
   // Allocate all neccesarry memory
-  sfloat X_data[NSTATES * NHORIZON] = {0};
-  sfloat U_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat K_data[NINPUTS * NSTATES * (NHORIZON - 1)] = {0};
-  sfloat d_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat P_data[NSTATES * NSTATES * (NHORIZON)] = {0};
-  sfloat p_data[NSTATES * NHORIZON] = {0};
-  sfloat A_data[NSTATES * NSTATES * (NHORIZON - 1)] = {0};
-  sfloat B_data[NSTATES * NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat f_data[NSTATES * (NHORIZON - 1)] = {0};
-  sfloat* Xptr = X_data;
-  sfloat* Xref_ptr = Xref_data;
-  sfloat* Uptr = U_data;
-  sfloat* Uref_ptr = Uref_data;
-  sfloat* Kptr = K_data;
-  sfloat* dptr = d_data;
-  sfloat* Pptr = P_data;
-  sfloat* pptr = p_data;
-  sfloat* Aptr = A_data;
-  sfloat* Bptr = B_data;
-  sfloat* fptr = f_data;
-  sfloat* qptr = q_data;
-  sfloat* rptr = r_data;
+  float X_data[NSTATES * NHORIZON] = {0};
+  float U_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float K_data[NINPUTS * NSTATES * (NHORIZON - 1)] = {0};
+  float d_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float P_data[NSTATES * NSTATES * (NHORIZON)] = {0};
+  float p_data[NSTATES * NHORIZON] = {0};
+  float A_data[NSTATES * NSTATES * (NHORIZON - 1)] = {0};
+  float B_data[NSTATES * NINPUTS * (NHORIZON - 1)] = {0};
+  float f_data[NSTATES * (NHORIZON - 1)] = {0};
+  float* Xptr = X_data;
+  float* Xref_ptr = Xref_data;
+  float* Uptr = U_data;
+  float* Uref_ptr = Uref_data;
+  float* Kptr = K_data;
+  float* dptr = d_data;
+  float* Pptr = P_data;
+  float* pptr = p_data;
+  float* Aptr = A_data;
+  float* Bptr = B_data;
+  float* fptr = f_data;
+  float* qptr = q_data;
+  float* rptr = r_data;
 
   for (int i = 0; i < NHORIZON; ++i) {
     if (i < NHORIZON - 1) {
@@ -248,7 +248,7 @@ void AbsLqrLtvTest() {
   tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
 
-  sfloat temp_data[work.data_size];
+  float temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
   tiny_InitWorkspaceTempData(&work, temp_data);
 

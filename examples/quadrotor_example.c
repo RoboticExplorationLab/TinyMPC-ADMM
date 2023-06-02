@@ -18,14 +18,14 @@ int main() {
   /* Start MPC initialization*/
 
   // Create data array 
-  sfloat x0_data[NSTATES] = {0, 0, 0, 1, 0, 0,
+  float x0_data[NSTATES] = {0, 0, 0, 1, 0, 0,
                              0, 0, 0, 0, 0, 0};  // initial state
-  sfloat xg_data[NSTATES] = {0};  
-  sfloat ug_data[NINPUTS] = {0};      // goal input if needed
-  sfloat Xhrz_data[NSTATES * NHORIZON] = {0};      // save X for one horizon
-  sfloat X_data[NSTATES * NSIM] = {0};             // save X for the whole run
-  sfloat Uhrz_data[NINPUTS * (NHORIZON - 1)] = {0};
-sfloat A_data[NSTATES*NSTATES] = {
+  float xg_data[NSTATES] = {0};  
+  float ug_data[NINPUTS] = {0};      // goal input if needed
+  float Xhrz_data[NSTATES * NHORIZON] = {0};      // save X for one horizon
+  float X_data[NSTATES * NSIM] = {0};             // save X for the whole run
+  float Uhrz_data[NINPUTS * (NHORIZON - 1)] = {0};
+float A_data[NSTATES*NSTATES] = {
   1.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,
   0.000000f,1.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,
   0.000000f,0.000000f,1.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,
@@ -40,15 +40,15 @@ sfloat A_data[NSTATES*NSTATES] = {
   0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.005000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,1.000000f,
 };
 
-sfloat B_data[NSTATES*NINPUTS] = {
+float B_data[NSTATES*NINPUTS] = {
   -0.000001f,0.000001f,0.000241f,-0.006729f,-0.006718f,-0.000157f,-0.000456f,0.000457f,0.048118f,-2.691475f,-2.687185f,-0.062638f,
   0.000001f,0.000001f,0.000241f,-0.007461f,0.007394f,0.000464f,0.000502f,0.000507f,0.048118f,-2.984480f,2.957661f,0.185499f,
   0.000001f,-0.000001f,0.000241f,0.006785f,0.006876f,-0.001324f,0.000467f,-0.000461f,0.048118f,2.714004f,2.750267f,-0.529510f,
   -0.000001f,-0.000001f,0.000241f,0.007405f,-0.007552f,0.001017f,-0.000513f,-0.000503f,0.048118f,2.961950f,-3.020743f,0.406649f,
 };
-  sfloat f_data[NSTATES] = {0};
+  float f_data[NSTATES] = {0};
 
-sfloat Kinf_data[NINPUTS*NSTATES] = {
+float Kinf_data[NINPUTS*NSTATES] = {
   -0.141668f,0.140640f,0.084249f,-0.083221f,
   0.126596f,0.103198f,-0.104505f,-0.125288f,
   1.542556f,1.542556f,1.542556f,1.542556f,
@@ -62,7 +62,7 @@ sfloat Kinf_data[NINPUTS*NSTATES] = {
   -0.057398f,0.056417f,0.031262f,-0.030281f,
   -0.225917f,0.251652f,-0.316332f,0.290597f,
 };
-sfloat Pinf_data[NSTATES*NSTATES] = {
+float Pinf_data[NSTATES*NSTATES] = {
   8789.322258f,-12.626764f,0.000000f,63.952679f,7521.021129f,240.248353f,2577.368956f,-11.116774f,0.000000f,4.499760f,61.868897f,97.516668f,
   -12.626764f,8777.858717f,0.000000f,-7462.140483f,-63.963994f,-92.720769f,-11.117516f,2567.216299f,0.000000f,-57.724868f,-4.500876f,-37.637455f,
   -0.000000f,0.000000f,327662.866955f,-0.000000f,-0.000000f,-0.000000f,-0.000000f,0.000000f,32043.163369f,-0.000000f,-0.000000f,-0.000000f,
@@ -76,13 +76,13 @@ sfloat Pinf_data[NSTATES*NSTATES] = {
   61.868897f,-4.500876f,0.000000f,24.843787f,315.794800f,103.455293f,54.362070f,-4.062576f,0.000000f,2.000591f,29.219562f,44.108880f,
   97.516668f,-37.637455f,-0.000000f,210.172462f,541.690966f,2579.674924f,88.176819f,-34.095133f,-0.000000f,17.193802f,44.108880f,1281.585482f,
 };
-sfloat Quu_inv_data[NINPUTS*NINPUTS] = {
+float Quu_inv_data[NINPUTS*NINPUTS] = {
   0.000718f,0.000039f,0.000149f,0.000046f,
   0.000039f,0.000690f,0.000064f,0.000159f,
   0.000149f,0.000064f,0.000654f,0.000085f,
   0.000046f,0.000159f,0.000085f,0.000662f,
 };
-sfloat AmBKt_data[NSTATES*NSTATES] = {
+float AmBKt_data[NSTATES*NSTATES] = {
   0.999999f,-0.000000f,0.000000f,0.000000f,0.000960f,0.000000f,0.010000f,-0.000000f,0.000000f,0.000000f,0.000001f,0.000000f,
   -0.000000f,0.999999f,0.000000f,-0.000960f,-0.000000f,-0.000000f,-0.000000f,0.010000f,0.000000f,-0.000001f,-0.000000f,-0.000000f,
   -0.000000f,-0.000000f,0.998516f,-0.000000f,-0.000000f,0.000000f,0.000000f,-0.000000f,0.009514f,-0.000000f,0.000000f,-0.000000f,
@@ -96,13 +96,13 @@ sfloat AmBKt_data[NSTATES*NSTATES] = {
   -1.279752f,-0.056083f,0.000000f,0.267042f,-6.596131f,0.978138f,-1.128262f,-0.048161f,-0.000000f,0.018652f,0.501446f,0.396432f,
   0.043490f,-0.015602f,-0.000000f,0.075663f,0.210584f,-0.823915f,0.037578f,-0.013489f,-0.000000f,0.005323f,0.014807f,0.653496f,
 };
-sfloat coeff_d2p_data[NSTATES*NINPUTS] = {
+float coeff_d2p_data[NSTATES*NINPUTS] = {
   0.032891f,-0.030505f,-0.000003f,0.043732f,0.048005f,0.219590f,0.013422f,-0.012356f,-0.000001f,0.000412f,0.000532f,0.003710f,
   -0.033762f,-0.028101f,-0.000003f,0.038800f,-0.048985f,-0.279279f,-0.013738f,-0.011207f,-0.000001f,0.000227f,-0.000523f,-0.004084f,
   -0.024565f,0.027276f,-0.000003f,-0.037878f,-0.032999f,0.439999f,-0.009701f,0.010909f,-0.000001f,-0.000235f,-0.000087f,0.005100f,
   0.025436f,0.031329f,-0.000003f,-0.044655f,0.033979f,-0.380310f,0.010017f,0.012653f,-0.000001f,-0.000403f,0.000078f,-0.004726f,
 };
-sfloat Q_data[NSTATES*NSTATES] = {
+float Q_data[NSTATES*NSTATES] = {
   100.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,
   0.000000f,100.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,
   0.000000f,0.000000f,10000.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,
@@ -116,24 +116,24 @@ sfloat Q_data[NSTATES*NSTATES] = {
   0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,11.111111f,0.000000f,
   0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,0.000000f,400.000000f,
 };
-sfloat R_data[NINPUTS*NINPUTS] = {
+float R_data[NINPUTS*NINPUTS] = {
   900.000000f,0.000000f,0.000000f,0.000000f,
   0.000000f,900.000000f,0.000000f,0.000000f,
   0.000000f,0.000000f,900.000000f,0.000000f,
   0.000000f,0.000000f,0.000000f,900.000000f,
 };
 
-  sfloat d_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat p_data[NSTATES * NHORIZON] = {0};
-  sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
-  sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
-  sfloat r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
+  float d_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float p_data[NSTATES * NHORIZON] = {0};
+  float q_data[NSTATES*(NHORIZON-1)] = {0};
+  float r_data[NINPUTS*(NHORIZON-1)] = {0};
+  float r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
 
-  sfloat umin_data[NINPUTS] = {0};
-  sfloat umax_data[NINPUTS] = {0};
+  float umin_data[NINPUTS] = {0};
+  float umax_data[NINPUTS] = {0};
   // Put constraints on u, x
-  sfloat Acu_data[NINPUTS * NINPUTS] = {0};  
-  sfloat YU_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float Acu_data[NINPUTS * NINPUTS] = {0};  
+  float YU_data[NINPUTS * (NHORIZON - 1)] = {0};
 
   // Created matrices
   Matrix X[NSIM];
@@ -171,7 +171,7 @@ sfloat R_data[NINPUTS*NINPUTS] = {
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
   // Fill in the remaining struct 
-  sfloat temp_data[work.data_size];
+  float temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
   tiny_InitWorkspaceTempData(&work, ZU, ZU_new, 0, 0, temp_data);
   tiny_InitPrimalCache(&work, Quu_inv_data, AmBKt_data, coeff_d2p_data);

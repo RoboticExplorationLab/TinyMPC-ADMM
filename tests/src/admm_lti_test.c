@@ -15,55 +15,55 @@
 #define NHORIZON 51
 
 void MpcLtiTest() {
-  sfloat A_data[NSTATES * NSTATES] = {1,   0, 0, 0, 0, 1,   0, 0,
+  float A_data[NSTATES * NSTATES] = {1,   0, 0, 0, 0, 1,   0, 0,
                                       0.1, 0, 1, 0, 0, 0.1, 0, 1};
-  sfloat B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
-  sfloat f_data[NSTATES] = {0};
-  // sfloat x0_data[NSTATES] = {5, 7, 2, -1.4};
-  sfloat x0_data[NSTATES] = {1, 0, 0, 1.0};  
-  // sfloat xg_data[NSTATES] = {2, 5, 0, 0};
-  sfloat xg_data[NSTATES] = {0};
-  sfloat ug_data[NINPUTS] = {0};
-  sfloat X_data[NSTATES * NHORIZON] = {0};
-  sfloat U_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat Kinf_data[NINPUTS*NSTATES] = {
+  float B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
+  float f_data[NSTATES] = {0};
+  // float x0_data[NSTATES] = {5, 7, 2, -1.4};
+  float x0_data[NSTATES] = {1, 0, 0, 1.0};  
+  // float xg_data[NSTATES] = {2, 5, 0, 0};
+  float xg_data[NSTATES] = {0};
+  float ug_data[NINPUTS] = {0};
+  float X_data[NSTATES * NHORIZON] = {0};
+  float U_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float Kinf_data[NINPUTS*NSTATES] = {
     1.255647f,0.000000f,
     0.000000f,1.255647f,
     2.021867f,0.000000f,
     0.000000f,2.021867f,
   };
-  sfloat Pinf_data[NSTATES*NSTATES] = {
+  float Pinf_data[NSTATES*NSTATES] = {
     161.021861f,0.000000f,71.589105f,0.000000f,
     0.000000f,161.021861f,0.000000f,71.589105f,
     71.589105f,0.000000f,116.694654f,0.000000f,
     0.000000f,71.589105f,0.000000f,116.694654f,
   };
-  sfloat Quu_inv_data[NINPUTS*NINPUTS] = {
+  float Quu_inv_data[NINPUTS*NINPUTS] = {
     0.157665f,0.000000f,
     0.000000f,0.157665f,
   };
-  sfloat AmBKt_data[NSTATES*NSTATES] = {
+  float AmBKt_data[NSTATES*NSTATES] = {
     0.993722f,0.000000f,0.089891f,0.000000f,
     0.000000f,0.993722f,0.000000f,0.089891f,
     -0.125565f,0.000000f,0.797813f,0.000000f,
     0.000000f,-0.125565f,0.000000f,0.797813f,
   };
-  sfloat coeff_d2p_data[NSTATES*NINPUTS] = {
+  float coeff_d2p_data[NSTATES*NINPUTS] = {
     0.000000f,0.000000f,-0.000000f,0.000000f,
     0.000000f,0.000000f,0.000000f,-0.000000f,
   };
-  sfloat d_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat p_data[NSTATES * NHORIZON] = {0};
-  sfloat Q_data[NSTATES * NSTATES] = {0};
-  sfloat R_data[NINPUTS * NINPUTS] = {0};
-  sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
-  sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
-  sfloat r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
+  float d_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float p_data[NSTATES * NHORIZON] = {0};
+  float Q_data[NSTATES * NSTATES] = {0};
+  float R_data[NINPUTS * NINPUTS] = {0};
+  float q_data[NSTATES*(NHORIZON-1)] = {0};
+  float r_data[NINPUTS*(NHORIZON-1)] = {0};
+  float r_tilde_data[NINPUTS*(NHORIZON-1)] = {0};
 
-  sfloat umin_data[NINPUTS] = {-1, -1};
-  sfloat umax_data[NINPUTS] = {1, 1};
-  sfloat Acu_data[NINPUTS * NINPUTS] = {0};  
-  sfloat YU_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float umin_data[NINPUTS] = {-1, -1};
+  float umax_data[NINPUTS] = {1, 1};
+  float Acu_data[NINPUTS * NINPUTS] = {0};  
+  float YU_data[NINPUTS * (NHORIZON - 1)] = {0};
 
   Matrix X[NHORIZON];
   Matrix U[NHORIZON - 1];
@@ -93,7 +93,7 @@ void MpcLtiTest() {
   tiny_AdmmWorkspace work;  
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
-  sfloat temp_data[work.data_size];
+  float temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
 
   tiny_InitWorkspaceTempData(&work, ZU, ZU_new, 0, 0, temp_data);

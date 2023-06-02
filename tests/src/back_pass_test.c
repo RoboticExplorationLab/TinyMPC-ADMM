@@ -10,27 +10,27 @@
 #define NHORIZON 3
 // U, X, Psln
 void BackPassTest() {
-  sfloat A_data[NSTATES * NSTATES] = {1,   0, 0, 0, 0, 1,   0, 0,
+  float A_data[NSTATES * NSTATES] = {1,   0, 0, 0, 0, 1,   0, 0,
                                       0.1, 0, 1, 0, 0, 0.1, 0, 1};
-  sfloat B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
-  sfloat f_data[NSTATES] = {0};
-  sfloat x0_data[NSTATES] = {5, 7, 2, -1.4};
-  sfloat Xref_data[NSTATES * NHORIZON] = {0};
-  sfloat Uref_data[NINPUTS * (NHORIZON - 1)] = {0};
-  // sfloat X_data[NSTATES*NHORIZON] = {0};
-  // sfloat U_data[NINPUTS*(NHORIZON-1)] = {0};
-  sfloat K_data[NINPUTS * NSTATES * (NHORIZON - 1)] = {0};
-  sfloat d_data[NINPUTS * (NHORIZON - 1)] = {0};
-  sfloat P_data[NSTATES * NSTATES * (NHORIZON)] = {0};
-  sfloat p_data[NSTATES * NHORIZON] = {0};
-  sfloat Q_data[NSTATES * NSTATES] = {0};
-  sfloat R_data[NINPUTS * NINPUTS] = {0};
-  sfloat Qf_data[NSTATES * NSTATES] = {0};
-  sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
-  sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
-  sfloat qf_data[NSTATES] = {0};
+  float B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
+  float f_data[NSTATES] = {0};
+  float x0_data[NSTATES] = {5, 7, 2, -1.4};
+  float Xref_data[NSTATES * NHORIZON] = {0};
+  float Uref_data[NINPUTS * (NHORIZON - 1)] = {0};
+  // float X_data[NSTATES*NHORIZON] = {0};
+  // float U_data[NINPUTS*(NHORIZON-1)] = {0};
+  float K_data[NINPUTS * NSTATES * (NHORIZON - 1)] = {0};
+  float d_data[NINPUTS * (NHORIZON - 1)] = {0};
+  float P_data[NSTATES * NSTATES * (NHORIZON)] = {0};
+  float p_data[NSTATES * NHORIZON] = {0};
+  float Q_data[NSTATES * NSTATES] = {0};
+  float R_data[NINPUTS * NINPUTS] = {0};
+  float Qf_data[NSTATES * NSTATES] = {0};
+  float q_data[NSTATES*(NHORIZON-1)] = {0};
+  float r_data[NINPUTS*(NHORIZON-1)] = {0};
+  float qf_data[NSTATES] = {0};
 
-  // const sfloat tol = 1e-6;
+  // const float tol = 1e-6;
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
@@ -42,7 +42,7 @@ void BackPassTest() {
   tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
-  sfloat temp_data[work.data_size];
+  float temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
 
   tiny_InitWorkspaceTempData(&work, temp_data);
@@ -61,12 +61,12 @@ void BackPassTest() {
   Matrix q[NHORIZON-1];
   Matrix r[NHORIZON-1];
 
-  sfloat* Xref_ptr = Xref_data;
-  sfloat* Uref_ptr = Uref_data;
-  sfloat* Kptr = K_data;
-  sfloat* dptr = d_data;
-  sfloat* Pptr = P_data;
-  sfloat* pptr = p_data;
+  float* Xref_ptr = Xref_data;
+  float* Uref_ptr = Uref_data;
+  float* Kptr = K_data;
+  float* dptr = d_data;
+  float* Pptr = P_data;
+  float* pptr = p_data;
 
   for (int i = 0; i < NHORIZON; ++i) {
     if (i < NHORIZON - 1) {
