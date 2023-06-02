@@ -144,7 +144,7 @@ void MpcLtiTest() {
   tiny_SolveAdmm(&work);
   end = clock();
   cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;
-  printf("time: %f\n", cpu_time_used);
+  // printf("time: %f ms\n", cpu_time_used);
 
   if (0) {
     for (int k = 0; k < NHORIZON - 1; ++k) {
