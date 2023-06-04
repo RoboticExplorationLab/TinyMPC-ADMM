@@ -14,11 +14,10 @@ enum tiny_ErrorCode tiny_AddStageCost(tiny_AdmmWorkspace* work, const int k) {
   // Matrix du = slap_MatrixFromArray(m, 1, dx_data);
   // MatAdd(du, work->soln->U[k], work->data->Uref[k], -1);
   // work->info->obj_val += 0.5 * slap_QuadraticForm(du, work->data->R, du);
-  work->info->obj_val += float(0.5 * (work->soln->X[k] - work->data->Xref[k]).transpose() * 
+  work->info->obj_val = (0.5 * (work->soln->X[k] - work->data->Xref[k]).transpose() * 
                          work->data->Q * (work->soln->X[k] - work->data->Xref[k]) +
                          0.5 * (work->soln->U[k] - work->data->Uref[k]).transpose() * 
-                         work->data->R * (work->soln->U[k] - work->data->Uref[k]));
-
+                         work->data->R * (work->soln->U[k] - work->data->Uref[k]))(0);
   return TINY_NO_ERROR;
 }
 

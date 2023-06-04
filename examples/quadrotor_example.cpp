@@ -18,8 +18,10 @@ int main() {
 
   // Create data array 
   float x0_data[NSTATES] = {0, 0, 0, 1, 0, 0,
-                             0, 0, 0, 0, 0, 0};  // initial state
-  float xg_data[NSTATES] = {0};  
+                            0, 0, 0, 0, 0, 0};  // initial state
+  float xg_data[NSTATES] = {1, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0}; 
+  // float xg_data[NSTATES] = {0}; 
   float ug_data[NINPUTS] = {0};      // goal input if needed
   float Xhrz_data[NSTATES * NHORIZON] = {0};      // save X for one horizon
   float X_data[NSTATES * NSIM] = {0};             // save X for the whole run
@@ -201,12 +203,13 @@ int main() {
     PrintMatrix(work.data->Q);
     PrintMatrix(work.data->R);
     PrintMatrixT(work.data->x0);
-    PrintMatrixT(work.data->Xref[NHORIZON-5]);
-    PrintMatrixT(work.data->Uref[NHORIZON-5]);
-    PrintMatrixT(work.data->q[NHORIZON-5]);
-    PrintMatrixT(work.data->r[NHORIZON-5]);
+    PrintMatrixT(work.data->Xref[0]);
+    PrintMatrixT(work.data->Uref[0]);
+    PrintMatrixT(work.data->q[0]);
+    PrintMatrixT(work.data->r[0]);
   }
-
+  tiny_AddStageCost(&work, 0);
+  printf("%f\n",info.obj_val);
   // /* Solver settings */
   // stgs.en_cstr_goal = 0;
   // stgs.en_cstr_inputs = 1;
