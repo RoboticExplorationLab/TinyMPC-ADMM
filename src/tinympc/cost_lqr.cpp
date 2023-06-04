@@ -37,15 +37,15 @@ enum tiny_ErrorCode tiny_UpdateLinearCost(tiny_AdmmWorkspace* work) {
   for (int k = 0; k < N - 1; ++k) {
     /* Compute q[k] = -Q*Xref[k] */  
     // MatMulAdd(work->data->q[k], work->data->Q, work->data->Xref[k], -1, 0);
-    work->data->q[k] = -work->data->Q * work->data->Xref[k];
+    (work->data->q[k]).noalias() = -(work->data->Q).lazyProduct(work->data->Xref[k]);
 
     /* Compute r[k] = -R*Uref[k] */ 
     // MatMulAdd(work->data->r[k], work->data->R, work->data->Uref[k], -1, 0);
-    work->data->r[k] = -work->data->R * work->data->Uref[k];
+    (work->data->r[k]).noalias() = -(work->data->R).lazyProduct(work->data->Uref[k]);
   }
   /* Compute q[N-1] = -Pinf*Xref[N-1] */ 
   // MatMulAdd(work->soln->p[N-1], work->soln->Pinf, work->data->Xref[N-1], -1, 0);
-  work->soln->p[N-1] = -work->soln->Pinf * work->data->Xref[N-1];
+  (work->soln->p[N-1]).noalias() = -(work->soln->Pinf).lazyProduct(work->data->Xref[N-1]);
   return TINY_NO_ERROR;
 }
 

@@ -214,14 +214,6 @@ void PrintSummary(tiny_AdmmInfo *info) {
 //   slap_CopyFromArray(mats[length - 1], x);
 // }
 
-void SwapVectors(float **a, float **b) {
-  float *temp;
-
-  temp = *b;
-  *b   = *a;
-  *a   = temp;
-}
-
 #ifdef __cplusplus
 }
 #endif

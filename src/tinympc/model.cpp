@@ -113,7 +113,7 @@ enum tiny_ErrorCode tiny_EvalModel(Eigen::VectorNf* xn, Eigen::VectorNf* x, Eige
   //   slap_MatMulAB(*xn, model->A[k], x);
   // }
   // MatMulAdd(*xn, model->B[k], u, 1, 1);  // x[k+1] += B * u[k]
-  (*xn) = (model->A[k]).lazyProduct(*x) + (model->B[k]).lazyProduct(*u);
+  (*xn).noalias() = (model->A[k]).lazyProduct(*x) + (model->B[k]).lazyProduct(*u);
   return TINY_NO_ERROR;
 }
 
@@ -129,7 +129,8 @@ enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_AdmmWorkspace* work) {
     for (int k = 0; k < N - 1; ++k) {
       // Control input: u = - d - K*x
       // MatMulAdd2(work->soln->U[k],  work->soln->d[k], work->soln->Kinf, work->soln->X[k], -1, -1);
-      work->soln->U[k] = -work->soln->d[k] - (work->soln->Kinf).lazyProduct(work->soln->X[k]);
+      (work->soln->U[k]) = -work->soln->d[k];
+      (work->soln->U[k]).noalias() -= (work->soln->Kinf).lazyProduct(work->soln->X[k]);
       // Next state: x = A*x + B*u + f
       if (adaptive_horizon && k > adaptive_horizon - 1) {
         tiny_EvalModel(&(work->soln->X[k + 1]), &(work->soln->X[k]), &(work->soln->U[k]), &model[1], 0);

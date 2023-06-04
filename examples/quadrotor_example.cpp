@@ -199,7 +199,7 @@ int main() {
 
   tiny_UpdateLinearCost(&work);
 
-  if (1) {
+  if (0) {
     printf("\nProblem Info: \n");
     PrintMatrix(work.data->model->A[0]);
     PrintMatrix(work.data->model->B[0]);
