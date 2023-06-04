@@ -51,7 +51,7 @@ option(TINY_PROFILE "Compile with -pg" OFF)
 # Dependencies
 ##############################
 include_directories(ext/Eigen)
-add_compile_options(-fno-math-errno -ffast-math -O3 -DNDEBUG)
+add_compile_options(-fno-math-errno -ffast-math -Ofast -DNDEBUG)
 
 ##############################
 # Main build targets
