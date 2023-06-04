@@ -25,7 +25,7 @@ include(GNUInstallDirs)
 # include(FindCPM)
 
 # Handle default build type
-set(TINY_DEFAULT_BUILD_TYPE "Debug")
+set(TINY_DEFAULT_BUILD_TYPE "Release")
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "No build type specified. Setting CMAKE_BUILD_TYPE to ${TINY_DEFAULT_BUILD_TYPE}")
   set(CMAKE_BUILD_TYPE ${TINY_DEFAULT_BUILD_TYPE} CACHE STRING "Choose the type of build." FORCE)
@@ -51,6 +51,7 @@ option(TINY_PROFILE "Compile with -pg" OFF)
 # Dependencies
 ##############################
 include_directories(ext/Eigen)
+add_compile_options(-fno-math-errno -ffast-math -O3 -DNDEBUG)
 
 ##############################
 # Main build targets
@@ -64,7 +65,7 @@ if (NOT WIN32)
   #                     -Wwrite-strings -Wstrict-prototypes -Wold-style-definition 
   #                     -Wredundant-decls -Wnested-externs -Wmissing-include-dirs)
   if (TINY_VECTORIZE)
-    add_compile_options(-march=native)
+    add_compile_options(-march=native -mfma)
   endif()
   # if (TINY_PROFILE)
   #   add_compile_options(-pd)

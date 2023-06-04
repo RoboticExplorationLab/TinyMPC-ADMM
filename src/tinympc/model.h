@@ -14,11 +14,11 @@ enum tiny_ErrorCode tiny_InitModel(tiny_Model* model, const int nstates,
 
 // User provides array of slap matrices
 enum tiny_ErrorCode tiny_InitModelDataMatrix(tiny_Model* model, 
-    Eigen::Matrix12f* A, Eigen::Matrix12x4f* B, Eigen::Vector12f* f);
+    Eigen::MatrixNf* A, Eigen::MatrixNMf* B, Eigen::VectorNf* f);
 
 // User provides matrix as column-major array
-enum tiny_ErrorCode tiny_InitModelFromArray(tiny_Model* model, Eigen::Matrix12f* A, 
-    Eigen::Matrix12x4f* B, Eigen::Vector12f* f, float* A_array, float* B_array, float* f_array);
+enum tiny_ErrorCode tiny_InitModelFromArray(tiny_Model* model, Eigen::MatrixNf* A, 
+    Eigen::MatrixNMf* B, Eigen::VectorNf* f, float* A_array, float* B_array, float* f_array);
 
 // enum tiny_ErrorCode tiny_InitModelMemory(tiny_Model* model, Eigen::MatrixXf* mats,
 //     float* data);
@@ -36,7 +36,7 @@ enum tiny_ErrorCode tiny_InitModelFromArray(tiny_Model* model, Eigen::Matrix12f*
 //     void (*get_nonl_model)(Eigen::VectorXf*, Eigen::VectorXf*, Eigen::VectorXf*));
 
 // k = 0 to use LTI model
-enum tiny_ErrorCode tiny_EvalModel(Eigen::Vector12f* xn, Eigen::Vector12f* x, Eigen::Vector4f* u,
+enum tiny_ErrorCode tiny_EvalModel(Eigen::VectorNf* xn, Eigen::VectorNf* x, Eigen::VectorMf* u,
                                    tiny_Model* model, const int k);
 
 enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_AdmmWorkspace* work);

@@ -29,14 +29,14 @@ add_library(tinympc
   cost_lqr.h
   cost_lqr.cpp
 
-  # lqr.h
-  # lqr.cpp
+  lqr.h
+  lqr.cpp
 
   constraint_linear.h
   constraint_linear.cpp
 
-  # admm.h
-  # admm.cpp
+  admm.h
+  admm.cpp
   )
 
 target_include_directories(tinympc

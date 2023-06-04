@@ -11,9 +11,9 @@
 #include "model.h"
 #include "auxil.h"
 #include "cost_lqr.h"
-// #include "lqr.h"
+#include "lqr.h"
 #include "constraint_linear.h"
-// #include "admm.h"
+#include "admm.h"
 
 // #include "lqr_lti.h"
 // #include "lqr_ltv.h"

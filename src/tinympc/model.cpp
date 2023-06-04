@@ -40,7 +40,7 @@ enum tiny_ErrorCode tiny_InitModel(tiny_Model* model, const int nstates,
 
 // User provides array of slap matrices
 enum tiny_ErrorCode tiny_InitModelDataMatrix(tiny_Model* model, 
-    Eigen::Matrix12f* A, Eigen::Matrix12x4f* B, Eigen::Vector12f* f) {
+    Eigen::MatrixNf* A, Eigen::MatrixNMf* B, Eigen::VectorNf* f) {
   model->A = A;
   model->B = B;
   if (model->affine) {
@@ -52,8 +52,8 @@ enum tiny_ErrorCode tiny_InitModelDataMatrix(tiny_Model* model,
 }
 
 // // User provides matrix as column-major array
-enum tiny_ErrorCode tiny_InitModelFromArray(tiny_Model* model, Eigen::Matrix12f* A, 
-    Eigen::Matrix12x4f* B, Eigen::Vector12f* f, float* A_array, float* B_array, float* f_array) {
+enum tiny_ErrorCode tiny_InitModelFromArray(tiny_Model* model, Eigen::MatrixNf* A, 
+    Eigen::MatrixNMf* B, Eigen::VectorNf* f, float* A_array, float* B_array, float* f_array) {
 
   model->A = A;
   model->B = B;
@@ -62,9 +62,9 @@ enum tiny_ErrorCode tiny_InitModelFromArray(tiny_Model* model, Eigen::Matrix12f*
     float* A_ptr = A_array;
     float* B_ptr = B_array;
     for (int k = 0; k < model->nhorizon-1; ++k) {
-      model->A[k] = Eigen::Map<Eigen::Matrix12f>(A_ptr); 
+      model->A[k] = Eigen::Map<Eigen::MatrixNf>(A_ptr); 
       A_ptr += model->nstates * model->nstates;
-      model->B[k] = Eigen::Map<Eigen::Matrix12x4f>(B_ptr); 
+      model->B[k] = Eigen::Map<Eigen::MatrixNMf>(B_ptr); 
       B_ptr += model->nstates * model->ninputs; 
     }
     if (model->affine) {
@@ -72,19 +72,19 @@ enum tiny_ErrorCode tiny_InitModelFromArray(tiny_Model* model, Eigen::Matrix12f*
         model->f = f;
         float* f_ptr = f_array;
         for (int k = 0; k < model->nhorizon-1; ++k) {
-          model->f[k] = Eigen::Map<Eigen::Vector12f>(f_ptr); 
+          model->f[k] = Eigen::Map<Eigen::VectorNf>(f_ptr); 
           f_ptr += model->nstates;     
         }
       }
     }  
   }
   else {
-    model->A[0] = Eigen::Map<Eigen::Matrix12f>(A_array); 
-    model->B[0] = Eigen::Map<Eigen::Matrix12x4f>(B_array); 
+    model->A[0] = Eigen::Map<Eigen::MatrixNf>(A_array); 
+    model->B[0] = Eigen::Map<Eigen::MatrixNMf>(B_array); 
     if (model->affine) {
       if (f && f_array) {
         model->f = f;
-        model->f[0] = Eigen::Map<Eigen::Vector12f>(f_array);
+        model->f[0] = Eigen::Map<Eigen::VectorNf>(f_array);
       }
     }
   }
@@ -105,8 +105,7 @@ enum tiny_ErrorCode tiny_InitModelFromArray(tiny_Model* model, Eigen::Matrix12f*
 //   return TINY_NO_ERROR;    
 // }
 
-enum tiny_ErrorCode tiny_EvalModel(Eigen::Vector12f* xn, Eigen::Vector12f* x, Eigen::Vector4f* u,
-                                   tiny_Model* model, const int k) {
+enum tiny_ErrorCode tiny_EvalModel(Eigen::VectorNf* xn, Eigen::VectorNf* x, Eigen::VectorMf* u, tiny_Model* model, const int k) {
   // if (model->affine) {
   //   return TINY_NOT_SUPPORTED;
   // }

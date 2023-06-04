@@ -1499,7 +1499,7 @@ struct unary_evaluator<Reverse<ArgType, Direction> >
 
     Flags = int(Flags0) & (HereditaryBits | PacketAccessBit | LinearAccess),
     
-    Alignment = 0 // FIXME in some rare cases, Alignment could be preserved, like a Vector4f.
+    Alignment = 0 // FIXME in some rare cases, Alignment could be preserved, like a VectorMf.
   };
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE

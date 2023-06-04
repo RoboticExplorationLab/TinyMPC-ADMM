@@ -13,6 +13,13 @@ int main()
   m(0,1) = -1;
   m(1,1) = m(1,0) + m(0,1);
   std::cout << m << std::endl;
+
+  Eigen::Vector2f vec, ub, lb;
+  vec << -3, 3;
+  ub << 1, 2;
+  lb << -2, -1;
+  vec = vec.cwiseMin(ub).cwiseMax(lb); 
+  std::cout << vec << std::endl;
 }
 
 #ifdef __cplusplus

@@ -27,8 +27,8 @@ extern "C" {
 void tiny_Bicycle5dNonlinearDynamics_Raw(float* xn, const float* x,
                                          const float* u);
 
-void tiny_Bicycle5dNonlinearDynamics(Eigen::Matrix12f* xn, Eigen::Matrix12f* x,
-                                     Eigen::Matrix4f* u);
+void tiny_Bicycle5dNonlinearDynamics(Eigen::MatrixNf* xn, Eigen::MatrixNf* x,
+                                     Eigen::MatrixMf* u);
 
 //========================================
 // Codes generated from julia/bicycle_tvlqr
@@ -40,8 +40,8 @@ void tiny_Bicycle5dGetJacobianA_Raw(float* A, const float* x,
 void tiny_Bicycle5dGetJacobianB_Raw(float* B, const float* x,
                                     const float* u);
 
-void tiny_Bicycle5dGetJacobians(Eigen::Matrix12f* A, Eigen::Matrix12x4f* B, Eigen::Matrix12f* x,
-                                Eigen::Matrix4f* u);
+void tiny_Bicycle5dGetJacobians(Eigen::MatrixNf* A, Eigen::MatrixNMf* B, Eigen::MatrixNf* x,
+                                Eigen::MatrixMf* u);
 
 
 # ifdef __cplusplus

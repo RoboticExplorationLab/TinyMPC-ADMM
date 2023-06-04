@@ -8,10 +8,13 @@
 
 // Macro variables
 #define DT 0.01       // dt
-#define NSTATES 12   // no. of states (error state)
-#define NINPUTS 4    // no. of controls
+// #define NSTATES 12   // no. of states (error state)
+// #define NINPUTS 4    // no. of controls
+// These are already defined in `constants.h`
 #define NHORIZON 3  // horizon steps (NHORIZON states and NHORIZON-1 controls)
-#define NSIM 200     // simulation steps (fixed with reference data)
+#define NSIM 10     // simulation steps (fixed with reference data)
+
+using namespace Eigen;
 
 int main() {
   /* Start MPC initialization*/
@@ -19,9 +22,9 @@ int main() {
   // Create data array 
   float x0_data[NSTATES] = {0, 0, 0, 1, 0, 0,
                             0, 0, 0, 0, 0, 0};  // initial state
-  float xg_data[NSTATES] = {1, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0}; 
-  // float xg_data[NSTATES] = {0}; 
+  // float xg_data[NSTATES] = {1, 0, 0, 0, 0, 0,
+  //                           0, 0, 0, 0, 0, 0}; 
+  float xg_data[NSTATES] = {0}; 
   float ug_data[NINPUTS] = {0};      // goal input if needed
   float Xhrz_data[NSTATES * NHORIZON] = {0};      // save X for one horizon
   float X_data[NSTATES * NSIM] = {0};             // save X for the whole run
@@ -137,25 +140,25 @@ int main() {
   float YU_data[NINPUTS * (NHORIZON - 1)] = {0};
 
   // Created matrices
-  Eigen::Vector12f    X[NSIM];
-  Eigen::Vector12f    Xref[NSIM];
-  Eigen::Vector4f     Uref[NSIM - 1];
-  Eigen::Vector12f    Xhrz[NHORIZON];
-  Eigen::Vector4f     Uhrz[NHORIZON - 1];
-  Eigen::Vector4f     d[NHORIZON - 1];
-  Eigen::Vector12f    p[NHORIZON];
-  Eigen::Vector4f     YU[NHORIZON - 1];
-  Eigen::Vector4f     ZU[NHORIZON - 1];
-  Eigen::Vector4f     ZU_new[NHORIZON - 1];
-  Eigen::Vector12f    q[NHORIZON-1];
-  Eigen::Vector4f     r[NHORIZON-1];
-  Eigen::Vector4f     r_tilde[NHORIZON-1];
-  Eigen::Matrix12f    A;
-  Eigen::Matrix12x4f  B;
-  Eigen::Vector12f    f;
+  VectorNf    X[NSIM];
+  VectorNf    Xref[NSIM];
+  VectorMf     Uref[NSIM - 1];
+  VectorNf    Xhrz[NHORIZON];
+  VectorMf     Uhrz[NHORIZON - 1];
+  VectorMf     d[NHORIZON - 1];
+  VectorNf    p[NHORIZON];
+  VectorMf     YU[NHORIZON - 1];
+  VectorMf     ZU[NHORIZON - 1];
+  VectorMf     ZU_new[NHORIZON - 1];
+  VectorNf    q[NHORIZON-1];
+  VectorMf     r[NHORIZON-1];
+  VectorMf     r_tilde[NHORIZON-1];
+  MatrixNf    A;
+  MatrixNMf  B;
+  VectorNf    f;
 
   for (int i = 0; i < NSIM; ++i) {
-    X[i] = Eigen::Map<Eigen::Vector12f>(&X_data[i * NSTATES]);
+    X[i] = Map<VectorNf>(&X_data[i * NSTATES]);
   }
 
   /* Create TinyMPC struct and problem data*/
@@ -208,74 +211,73 @@ int main() {
     PrintMatrixT(work.data->q[0]);
     PrintMatrixT(work.data->r[0]);
   }
-  tiny_AddStageCost(&work, 0);
-  printf("%f\n",info.obj_val);
-  // /* Solver settings */
-  // stgs.en_cstr_goal = 0;
-  // stgs.en_cstr_inputs = 1;
-  // stgs.en_cstr_states = 0;
-  // stgs.max_iter = 100;           // limit this if needed
-  // stgs.verbose = 0;
-  // stgs.check_termination = 1;
-  // stgs.tol_abs_dual = 5e-2;
-  // stgs.tol_abs_prim = 5e-2;
+  // tiny_AddStageCost(&work, 0);
+  // printf("%f\n",info.obj_val);
+  /* Solver settings */
+  stgs.en_cstr_goal = 0;
+  stgs.en_cstr_inputs = 1;
+  stgs.en_cstr_states = 0;
+  stgs.max_iter = 1;           // limit this if needed
+  stgs.verbose = 0;
+  stgs.check_termination = 1;
+  stgs.tol_abs_dual = 5e-2;
+  stgs.tol_abs_prim = 5e-2;
 
-  // // Absolute formulation:
-  // // Warm-starting since horizon data is reused
-  // // Stop earlier as horizon exceeds the end
-  // MatCpy(X[0], work.data->x0);  
-  // srand(1);  // random seed
+  // Absolute formulation:
+  // Warm-starting since horizon data is reused
+  // Stop earlier as horizon exceeds the end
+  X[0] = work.data->x0;  
+  srand(1);  // random seed
 
-  // /* End of MPC initialization*/
+  /* End of MPC initialization*/
 
-  // /* Start MPC loop */
+  /* Start MPC loop */
 
-  // for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
-  //   Matrix pose = slap_CreateSubMatrix(X[k], 0, 0, 6, 1);
-  //   Matrix pose_ref = slap_CreateSubMatrix(Xref[0], 0, 0, 6, 1);
-  //   // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[0]));
-  //   printf("ex[%d] =  %.4f\n", k, slap_NormedDifference(pose, pose_ref));
-  //   // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
+  for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
+    MatrixXf pose = X[k](seq(0,5));
+    MatrixXf pose_ref = Xref[0](seq(0,5));
+    // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[0]));
+    printf("ex[%d] =  %.4f\n", k, (pose - pose_ref).norm());
+    // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
 
-  //   // Inject noise into measurement
-  //   for (int j = 0; j < NSTATES; ++j) {
-  //     X[k].data[j] += X[k].data[j] * T_NOISE(0);
-  //   }
+    // Inject noise into measurement
+    for (int j = 0; j < NSTATES; ++j) {
+      X[k](j) += X[k](j) * T_NOISE(0);
+    }
 
-  //   clock_t start, end;
-  //   double cpu_time_used;
-  //   start = clock();
+    clock_t start, end;
+    double cpu_time_used;
+    start = clock();
 
-  //   MatCpy(work.data->x0, X[k]);  // update current measurement
+    work.data->x0 = X[k]; // update current measurement
+    // Warm-start by previous solution
+    // tiny_ShiftFill(Uhrz, T_ARRAY_SIZE(Uhrz));
 
-  //   // Warm-start by previous solution
-  //   tiny_ShiftFill(Uhrz, T_ARRAY_SIZE(Uhrz));
+    // Solve optimization problem using Augmented Lagrangian TVLQR
+    tiny_SolveAdmm(&work);
 
-  //   // Solve optimization problem using Augmented Lagrangian TVLQR
-  //   tiny_SolveAdmm(&work);
+    end = clock();
+    cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
+    printf("solve time:        %f\n", cpu_time_used);
+    // printf("%f\n", cpu_time_used);
 
-  //   end = clock();
-  //   cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
-  //   printf("solve time:        %f\n", cpu_time_used);
-  //   // printf("%f\n", cpu_time_used);
+    // if(work.info->status_val != TINY_SOLVED) {
+    //   printf("!!! STOP AS SOLVER FAILED !!!\n");
+    //   return 0;
+    // }
 
-  //   // if(work.info->status_val != TINY_SOLVED) {
-  //   //   printf("!!! STOP AS SOLVER FAILED !!!\n");
-  //   //   return 0;
-  //   // }
+    // PrintMatrixT(Uhrz[0]);
 
-  //   // PrintMatrixT(Uhrz[0]);
+    // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
+    // PrintMatrixT(pos);
 
-  //   // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
-  //   // PrintMatrixT(pos);
+    // === 2. Simulate dynamics using the first control solution ===
+    // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uref[k]);
+    // tiny_Clamp(ZU_new[0].data, umin_data[0], umax_data[0], NINPUTS);
+    // If no constraints, use Uhrz[0]
+    // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], ZU_new[0]);
+    tiny_EvalModel(&X[k + 1], &X[k], &ZU_new[0], &model, 0);
+  }
 
-  //   // === 2. Simulate dynamics using the first control solution ===
-  //   // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uref[k]);
-  //   // tiny_Clamp(ZU_new[0].data, umin_data[0], umax_data[0], NINPUTS);
-  //   // If no constraints, use Uhrz[0]
-  //   tiny_QuadNonlinearDynamics(&X[k + 1], X[k], ZU_new[0]);
-  //   // tiny_DynamicsLti(&X[k + 1], X[k], Uref[k], model);
-  // }
-
-  // return 0;
+  return 0;
 }

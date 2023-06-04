@@ -34,7 +34,8 @@ enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work) {
 
     // Update z_prev (preallocated, no malloc)
     for (int i = 0; i < N - 1; ++i) {
-      SwapVectors(&(work->ZU_new[i].data), &(work->ZU[i].data));
+      // SwapVectors(&((work->ZU_new[i]).data()), &((work->ZU[i]).data()));
+      work->ZU[i] = work->ZU_new[i];
     }
 
     /* Compute x^{k+1} */
@@ -95,13 +96,16 @@ enum tiny_ErrorCode UpdateSlackDual(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
 
   for (int k = 0; k < N - 1; ++k) {
-    MatAdd(work->soln->YU[k], work->soln->YU[k], work->soln->U[k], 1);
-    for (int i = 0; i < n; ++i) { 
-      work->ZU_new[k].data[i] = T_MIN(T_MAX(work->soln->YU[k].data[i],
-                                work->data->lcu.data[i]),  // Between lower
-                                work->data->ucu.data[i]);  // and upper bounds
-    } 
-    MatAdd(work->soln->YU[k], work->soln->YU[k], work->ZU_new[k], -1);
+    // MatAdd(work->soln->YU[k], work->soln->YU[k], work->soln->U[k], 1);
+    work->soln->YU[k] = work->soln->YU[k] + work->soln->U[k];
+    // for (int i = 0; i < n; ++i) { 
+    //   work->ZU_new[k].data[i] = T_MIN(T_MAX(work->soln->YU[k].data[i],
+    //                             work->data->lcu.data[i]),  // Between lower
+    //                             work->data->ucu.data[i]);  // and upper bounds
+    // } 
+    work->ZU_new[k] = work->soln->YU[k].cwiseMin(work->data->ucu).cwiseMax(work->data->lcu); 
+    // MatAdd(work->soln->YU[k], work->soln->YU[k], work->ZU_new[k], -1);
+    work->soln->YU[k] = work->soln->YU[k] - work->ZU_new[k];
   }
   return TINY_NO_ERROR;
 }
@@ -111,10 +115,11 @@ enum tiny_ErrorCode ComputePrimalResidual(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
   work->info->pri_res = 0;
   for (int k = 0; k < N - 1; ++k) {    
-    for (int i = 0; i < n; ++i) {      
-      work->info->pri_res = T_MAX(work->info->pri_res, 
-                    T_ABS(work->soln->U[k].data[i] - work->ZU_new[k].data[i]));
-    } 
+    // for (int i = 0; i < n; ++i) {      
+    //   work->info->pri_res = T_MAX(work->info->pri_res, 
+    //                 T_ABS(work->soln->U[k].data[i] - work->ZU_new[k].data[i]));
+    // } 
+    work->info->pri_res = T_MAX(work->info->pri_res, (work->soln->U[k] - work->ZU_new[k]).cwiseAbs().maxCoeff());
   }
   return TINY_NO_ERROR;
 }
@@ -124,10 +129,11 @@ enum tiny_ErrorCode ComputeDualResidual(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
   work->info->dua_res = 0;
   for (int k = 0; k < N - 1; ++k) {
-    for (int i = 0; i < n; ++i) {      
-      work->info->dua_res = T_MAX(work->info->dua_res, 
-                    T_ABS(work->ZU_new[k].data[i] - work->ZU[k].data[i]));
-    } 
+    // for (int i = 0; i < n; ++i) {      
+    //   work->info->dua_res = T_MAX(work->info->dua_res, 
+    //                 T_ABS(work->ZU_new[k].data[i] - work->ZU[k].data[i]));
+    // } 
+    work->info->dua_res = T_MAX(work->info->dua_res, (work->ZU_new[k] - work->ZU[k]).cwiseAbs().maxCoeff());
   }
   work->info->dua_res = work->info->dua_res * work->rho;
   return TINY_NO_ERROR;
@@ -181,7 +187,9 @@ enum tiny_ErrorCode tiny_WarmStartInput(tiny_AdmmWorkspace* work, float* U_data)
   int N = work->data->model->nhorizon;
   int m = work->data->model->ninputs;
   for (int i = 0; i < N - 1; ++i) {
-    slap_CopyFromArray(work->soln->U[i], &U_data[i * m]);
+    // slap_CopyFromArray(work->soln->U[i], &U_data[i * m]);
+    // (work->soln->U[i]).data() = &U_data[i * m];
+    work->soln->U[i] = Eigen::Map<Eigen::VectorMf>(&U_data[i * m]);
   }
   return TINY_NO_ERROR;
 }

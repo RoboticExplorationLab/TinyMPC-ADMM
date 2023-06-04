@@ -1,6 +1,12 @@
 #ifndef CONSTANTS_H
 # define CONSTANTS_H
 
+/******************
+* Problem Macros  *
+******************/
+# define NSTATES 12
+# define NINPUTS 4
+
 /************************************
 * Printing Constants to set Layout *
 ************************************/

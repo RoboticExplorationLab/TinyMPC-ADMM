@@ -79,7 +79,7 @@ public:
   * Eigen provides a number of typedefs covering the usual cases. Here are some examples:
   *
   * \li \c Matrix2d is a 2x2 square matrix of doubles (\c Matrix<double, 2, 2>)
-  * \li \c Vector4f is a vector of 4 floats (\c Matrix<float, 4, 1>)
+  * \li \c VectorMf is a vector of 4 floats (\c Matrix<float, 4, 1>)
   * \li \c RowVector3i is a row-vector of 3 ints (\c Matrix<int, 1, 3>)
   *
   * \li \c MatrixXf is a dynamic-size matrix of floats (\c Matrix<float, Dynamic, Dynamic>)

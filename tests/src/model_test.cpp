@@ -43,9 +43,9 @@ void tiny_InitModelFromArray_Test() {
   float A_data[] = {1, 2, 3, 4, 5, 6, 7, 8};  
   float B_data[] = {1.1, 2.2, 1.3, 2.3};        
   float f_data[] = {2.1, 1.2, 3.3, 1.3};     
-  Eigen::Matrix12f A[NHORIZON-1];
-  Eigen::Matrix12x4f B[NHORIZON-1];
-  Eigen::Vector12f f[NHORIZON-1];  
+  Eigen::MatrixNf A[NHORIZON-1];
+  Eigen::MatrixNMf B[NHORIZON-1];
+  Eigen::VectorNf f[NHORIZON-1];  
   tiny_Model ltv_model;
   tiny_InitModel(&ltv_model, NSTATES, NINPUTS, NHORIZON, 1, 1, 0.1);
   TEST(ltv_model.nhorizon == NHORIZON);
@@ -83,9 +83,9 @@ void tiny_InitModelFromArray_Test() {
   float A2_data[] = {1, 2, 3, 4};  
   float B2_data[] = {1.1, 2.2};        
   float f2_data[] = {2.1, 1.2};     
-  Eigen::Matrix12f A2;
-  Eigen::Matrix12x4f B2;     
-  Eigen::Vector12f f2;      
+  Eigen::MatrixNf A2;
+  Eigen::MatrixNMf B2;     
+  Eigen::VectorNf f2;      
   tiny_Model lti_model;
   tiny_InitModel(&lti_model, NSTATES, NINPUTS, NHORIZON, 0, 1, 0.1);
   TEST(lti_model.nhorizon == NHORIZON);

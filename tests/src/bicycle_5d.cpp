@@ -47,8 +47,8 @@ void tiny_Bicycle5dNonlinearDynamics_Raw(float* xn, const float* x,
   xn[4] = 0.1 * u[1] + x[4];
 }
 
-void tiny_Bicycle5dNonlinearDynamics(Eigen::Matrix12f* xn, Eigen::Matrix12f* x,
-                                     Eigen::Matrix4f* u) {
+void tiny_Bicycle5dNonlinearDynamics(Eigen::MatrixNf* xn, Eigen::MatrixNf* x,
+                                     Eigen::MatrixMf* u) {
   tiny_Bicycle5dNonlinearDynamics_Raw(xn->data(), x->data(), u->data());
 }
 
@@ -195,8 +195,8 @@ void tiny_Bicycle5dGetJacobianB_Raw(float* B, const float* x,
   B[9] = 0.1;
 }
 
-void tiny_Bicycle5dGetJacobians(Eigen::Matrix12f* A, Eigen::Matrix12x4f* B, Eigen::Matrix12f* x,
-                                Eigen::Matrix4f* u) {
+void tiny_Bicycle5dGetJacobians(Eigen::MatrixNf* A, Eigen::MatrixNMf* B, Eigen::MatrixNf* x,
+                                Eigen::MatrixMf* u) {
   tiny_Bicycle5dGetJacobianA_Raw(A->data(), x->data(), u->data());
   tiny_Bicycle5dGetJacobianB_Raw(B->data(), x->data(), u->data());
 }

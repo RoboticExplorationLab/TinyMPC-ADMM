@@ -14,10 +14,12 @@ extern "C" {
  */
 namespace Eigen
 { 
-    typedef Matrix<float, 12, 12> Matrix12f;
-    typedef Matrix<float, 12, 4>  Matrix12x4f;
-    typedef Matrix<float, 4, 12>  Matrix4x12f;
-    typedef Vector<float, 12>     Vector12f;  
+    typedef Matrix<float, NSTATES, NSTATES> MatrixNf;
+    typedef Matrix<float, NSTATES, NINPUTS> MatrixNMf;
+    typedef Matrix<float, NINPUTS, NSTATES> MatrixMNf;
+    typedef Matrix<float, NINPUTS, NINPUTS> MatrixMf;
+    typedef Vector<float, NSTATES>          VectorNf;  
+    typedef Vector<float, NINPUTS>          VectorMf; 
 }
 
 // for a horizon of N x(0)->x(N-1), need N-1 matrices
@@ -30,12 +32,12 @@ typedef struct {
   int affine;         ///< Boolean, true if model is affine
   float dt;          ///< Sample time Ts of the discrete model
 
-  Eigen::Matrix12f*     A;
-  Eigen::Matrix12x4f*   B;
-  Eigen::Vector12f*     f;
+  Eigen::MatrixNf*  A;
+  Eigen::MatrixNMf* B;
+  Eigen::VectorNf*  f;
 
-  void (*get_jacobians)(Eigen::Matrix12f*, Eigen::Matrix12x4f*, Eigen::Vector12f*, Eigen::Vector4f*);
-  void (*get_nonl_model)(Eigen::Vector12f*, Eigen::Vector12f*, Eigen::Vector4f*);
+  void (*get_jacobians)(Eigen::MatrixNf*, Eigen::MatrixNMf*, Eigen::VectorNf*, Eigen::VectorMf*);
+  void (*get_nonl_model)(Eigen::VectorNf*, Eigen::VectorNf*, Eigen::VectorMf*);
   int data_size;
 } tiny_Model;
 
@@ -44,17 +46,17 @@ typedef struct {
  * Solution structure
  */
 typedef struct {
-  Eigen::Vector12f* X;      ///< State trajectory solution 
-  Eigen::Vector4f* U;      ///< Input trajectory solution
+  Eigen::VectorNf* X;      ///< State trajectory solution 
+  Eigen::VectorMf* U;      ///< Input trajectory solution
 
-  Eigen::Matrix4x12f Kinf;    ///< Feedback gain of IHLQR
-  Eigen::Vector4f* d;      ///< Feedforward gain
-  Eigen::Matrix12f Pinf;    ///< Terminal cost Hessian of IHLQR
-  Eigen::Vector12f* p;      ///< Terminal cost gradient
+  Eigen::MatrixMNf Kinf;    ///< Feedback gain of IHLQR
+  Eigen::VectorMf* d;      ///< Feedforward gain
+  Eigen::MatrixNf  Pinf;    ///< Terminal cost Hessian of IHLQR
+  Eigen::VectorNf* p;      ///< Terminal cost gradient
   
-  Eigen::Vector4f* YU;     ///< Dual variables for input constraints
-  Eigen::Vector12f* YX;     ///< Dual variables for state constraints
-  Eigen::Vector12f YG;      ///< Dual variables for goal constraint
+  Eigen::VectorMf* YU;     ///< Dual variables for input constraints
+  Eigen::VectorNf* YX;     ///< Dual variables for state constraints
+  Eigen::VectorNf  YG;      ///< Dual variables for goal constraint
 
   int data_size;
 } tiny_AdmmSolution;
@@ -109,7 +111,7 @@ typedef struct {
   int    check_riccati;       ///< Boolean, if 0, then termination checking is disabled
   int    check_termination;   ///< Integer, check termination interval; if 0, then termination checking is disabled
   int    warm_start;          ///< boolean, enable warm start
-  float time_limit;          ///< Time limit of each MPC step; if 0, disabled
+  float  time_limit;          ///< Time limit of each MPC step; if 0, disabled
 } tiny_AdmmSettings;
 
 // void tiny_InitSettings(tiny_AdmmSettings* solver);
@@ -120,23 +122,23 @@ typedef struct {
  */
 typedef struct {
   tiny_Model* model;    ///< System model
-  Eigen::Vector12f  x0;
+  Eigen::VectorNf x0;
 
-  Eigen::Matrix12f  Q;
-  Eigen::Matrix4f   R;
-  Eigen::Vector12f* q;
-  Eigen::Vector4f*  r;
-  Eigen::Vector4f*  r_tilde;
+  Eigen::MatrixNf  Q;
+  Eigen::MatrixMf  R;
+  Eigen::VectorNf* q;
+  Eigen::VectorMf* r;
+  Eigen::VectorMf* r_tilde;
   
-  Eigen::Vector12f* Xref;
-  Eigen::Vector4f*  Uref;
+  Eigen::VectorNf* Xref;
+  Eigen::VectorMf* Uref;
 
-  Eigen::Matrix12f  Acx;
-  Eigen::Vector12f  ucx;
-  Eigen::Vector12f  lcx;
-  Eigen::Matrix4f   Acu;
-  Eigen::Vector4f   ucu;
-  Eigen::Vector4f   lcu;
+  Eigen::MatrixNf Acx;
+  Eigen::VectorNf ucx;
+  Eigen::VectorNf lcx;
+  Eigen::MatrixMf Acu;
+  Eigen::VectorMf ucu;
+  Eigen::VectorMf lcu;
   
   int data_size;
 } tiny_AdmmData;
@@ -154,15 +156,15 @@ typedef struct {
   float rho;
 
   // Temporary data
-  Eigen::Vector4f     Qu;          ///< temporary 
-  Eigen::Matrix4f     Quu_inv;     ///< mxm cache for (R + B'*Pinf*B)\I 
-  Eigen::Matrix12f    AmBKt;       ///< nxn cache for (A - BKinf)'
-  Eigen::Matrix12x4f  coeff_d2p;   ///< nxm cache for Kinf'*R - AmBKt*Pinf*B
+  Eigen::VectorMf  Qu;          ///< temporary 
+  Eigen::MatrixMf  Quu_inv;     ///< mxm cache for (R + B'*Pinf*B)\I 
+  Eigen::MatrixNf  AmBKt;       ///< nxn cache for (A - BKinf)'
+  Eigen::MatrixNMf coeff_d2p;   ///< nxm cache for Kinf'*R - AmBKt*Pinf*B
   
-  Eigen::Vector4f*  ZU;         ///< Slack variable for input
-  Eigen::Vector4f*  ZU_new;     ///< Updated slack variable for input
-  Eigen::Vector12f* ZX;         ///< Slack variable for input
-  Eigen::Vector12f* ZX_new;     ///< Updated slack variable for input
+  Eigen::VectorMf* ZU;         ///< Slack variable for input
+  Eigen::VectorMf* ZU_new;     ///< Updated slack variable for input
+  Eigen::VectorNf* ZX;         ///< Slack variable for input
+  Eigen::VectorNf* ZX_new;     ///< Updated slack variable for input
 
   int data_size;      ///< sum data size of all temporary data //TODO: + model + solution 
   int first_run;      ///< flag indicating whether the solve function has been run before
