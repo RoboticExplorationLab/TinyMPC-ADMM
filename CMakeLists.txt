@@ -68,7 +68,7 @@ if (NOT WIN32)
   #                     -Wwrite-strings -Wstrict-prototypes -Wold-style-definition 
   #                     -Wredundant-decls -Wnested-externs -Wmissing-include-dirs)
   if (TINY_VECTORIZE)
-    add_compile_options(-march=native)
+    add_compile_options(-march=native -mfma)
   endif()
   # if (TINY_PROFILE)
   #   add_compile_options(-pd)
