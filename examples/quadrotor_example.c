@@ -233,7 +233,7 @@ sfloat R_data[NINPUTS*NINPUTS] = {
     Matrix pose_ref = slap_CreateSubMatrix(Xref[0], 0, 0, 6, 1);
     // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[0]));
     // printf("ex[%d] =  %.4f\n", k, slap_NormedDifference(pose, pose_ref));
-    // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
+    printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
 
     // Inject noise into measurement
     for (int j = 0; j < NSTATES; ++j) {
