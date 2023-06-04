@@ -12,7 +12,7 @@
 #define NSTATES 12   // no. of states (error state)
 #define NINPUTS 4    // no. of controls
 #define NHORIZON 3  // horizon steps (NHORIZON states and NHORIZON-1 controls)
-#define NSIM 200     // simulation steps (fixed with reference data)
+#define NSIM 10     // simulation steps (fixed with reference data)
 
 int main() {
   /* Start MPC initialization*/
@@ -195,7 +195,7 @@ sfloat R_data[NINPUTS*NINPUTS] = {
 
   tiny_UpdateLinearCost(&work);
 
-  if (1) {
+  if (0) {
     printf("\nProblem Info: \n");
     PrintMatrix(work.data->model->A[0]);
     PrintMatrix(work.data->model->B[0]);
@@ -212,7 +212,7 @@ sfloat R_data[NINPUTS*NINPUTS] = {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 100;           // limit this if needed
+  stgs.max_iter = 1;           // limit this if needed
   stgs.verbose = 0;
   stgs.check_termination = 1;
   stgs.tol_abs_dual = 5e-2;
@@ -232,7 +232,7 @@ sfloat R_data[NINPUTS*NINPUTS] = {
     Matrix pose = slap_CreateSubMatrix(X[k], 0, 0, 6, 1);
     Matrix pose_ref = slap_CreateSubMatrix(Xref[0], 0, 0, 6, 1);
     // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[0]));
-    printf("ex[%d] =  %.4f\n", k, slap_NormedDifference(pose, pose_ref));
+    // printf("ex[%d] =  %.4f\n", k, slap_NormedDifference(pose, pose_ref));
     // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
 
     // Inject noise into measurement
@@ -247,15 +247,15 @@ sfloat R_data[NINPUTS*NINPUTS] = {
     MatCpy(work.data->x0, X[k]);  // update current measurement
 
     // Warm-start by previous solution
-    tiny_ShiftFill(Uhrz, T_ARRAY_SIZE(Uhrz));
+    // tiny_ShiftFill(Uhrz, T_ARRAY_SIZE(Uhrz));
 
     // Solve optimization problem using Augmented Lagrangian TVLQR
     tiny_SolveAdmm(&work);
 
     end = clock();
     cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
-    printf("solve time:        %f\n", cpu_time_used);
-    // printf("%f\n", cpu_time_used);
+    // printf("solve time:        %f\n", cpu_time_used);
+    printf("%f\n", cpu_time_used);
 
     // if(work.info->status_val != TINY_SOLVED) {
     //   printf("!!! STOP AS SOLVER FAILED !!!\n");
@@ -271,8 +271,8 @@ sfloat R_data[NINPUTS*NINPUTS] = {
     // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uref[k]);
     // tiny_Clamp(ZU_new[0].data, umin_data[0], umax_data[0], NINPUTS);
     // If no constraints, use Uhrz[0]
-    tiny_QuadNonlinearDynamics(&X[k + 1], X[k], ZU_new[0]);
-    // tiny_DynamicsLti(&X[k + 1], X[k], Uref[k], model);
+    // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], ZU_new[0]);
+    tiny_EvalModel(&X[k + 1], X[k], ZU_new[0], &model, 0);
   }
 
   return 0;

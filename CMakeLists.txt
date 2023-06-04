@@ -55,6 +55,8 @@ set(SLAP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(SLAP_VECTORIZE ${TINY_VECTORIZE} CACHE BOOL "" FORCE)
 set(SLAP_FLOAT ${TINY_FLOAT} CACHE STRING "" FORCE)
 
+add_compile_options(-fno-math-errno -ffast-math -Ofast -DNDEBUG)
+
 ##############################
 # Main build targets
 ##############################
