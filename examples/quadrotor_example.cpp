@@ -237,7 +237,7 @@ int main() {
     MatrixXf pose = X[k](seq(0,5));
     MatrixXf pose_ref = Xref[0](seq(0,5));
     // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[0]));
-    printf("ex[%d] =  %.4f\n", k, (pose - pose_ref).norm());
+    // printf("ex[%d] =  %.4f\n", k, (pose - pose_ref).norm());
     // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
 
     // Inject noise into measurement
@@ -258,8 +258,8 @@ int main() {
 
     end = clock();
     cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
-    printf("solve time:        %f\n", cpu_time_used);
-    // printf("%f\n", cpu_time_used);
+    // printf("solve time:        %f\n", cpu_time_used);
+    printf("%f\n", cpu_time_used);
 
     // if(work.info->status_val != TINY_SOLVED) {
     //   printf("!!! STOP AS SOLVER FAILED !!!\n");
