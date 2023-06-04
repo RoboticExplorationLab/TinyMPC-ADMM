@@ -5,10 +5,10 @@
 function(add_my_test name)
   set(TEST_NAME ${name}_test)
   add_executable(${TEST_NAME}
-    ${TEST_NAME}.c
+    ${TEST_NAME}.cpp
 
-    test_utils.h
-    test_utils.c  
+    # test_utils.h
+    # test_utils.c  
 
     ${ARGN}
     )
@@ -23,7 +23,7 @@ endfunction()
 
 # Add tests
 add_my_test(eigen)
-# add_my_test(model bicycle_5d.h bicycle_5d.c)
+# add_my_test(model)
 # add_my_test(setup_prob)
 # add_my_test(forward_pass)
 # add_my_test(cost)

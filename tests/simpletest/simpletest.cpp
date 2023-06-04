@@ -2,6 +2,10 @@
 
 #include <stdio.h>
 
+# ifdef __cplusplus
+extern "C" {
+# endif // ifdef __cplusplus
+
 int tests_total = 0;
 int tests_passed = 0;
 
@@ -30,3 +34,7 @@ void PrintFail(const char* expr, const char* file, int line) {
   printf("TEST FAILED! %s\n", expr);
   printf("%s%s:%d\n", "             ", file, line);
 }
+
+# ifdef __cplusplus
+}
+# endif // ifdef __cplusplus

@@ -50,6 +50,10 @@
 #pragma once
 #include <math.h>
 
+# ifdef __cplusplus
+extern "C" {
+# endif // ifdef __cplusplus
+
 #define TEST(test)                          \
   do {                                      \
     if (!(test)) {                          \
@@ -67,3 +71,7 @@ void TestFail();
 int TestResult();
 void PrintTestResult();
 void PrintFail(const char* expr, const char* files, int line);
+
+# ifdef __cplusplus
+}
+# endif // ifdef __cplusplus

@@ -27,7 +27,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 // http://forum.arduino.cc/index.php?PHPSESSID=a86gv50nb3e3ireijfmli63260&topic=144446.msg1089371#msg1089371
 
 // Disable debug asserts.
-#define EIGEN_NO_DEBUG 1
+// #define EIGEN_NO_DEBUG 1
 
 // Hint to number of registers
 #define EIGEN_ARCH_DEFAULT_NUMBER_OF_REGISTERS 16

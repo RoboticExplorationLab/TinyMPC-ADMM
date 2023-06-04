@@ -1,13 +1,12 @@
 #ifndef BICYCLE_5D_H
 # define BICYCLE_5D_H
 
+#include <Eigen.h>
+
 # ifdef __cplusplus
 extern "C" {
 # endif // ifdef __cplusplus
 
-
-#include <math.h>
-#include <slap/slap.h>
 
 //========================================
 // Bicycle model parameters
@@ -28,8 +27,8 @@ extern "C" {
 void tiny_Bicycle5dNonlinearDynamics_Raw(float* xn, const float* x,
                                          const float* u);
 
-void tiny_Bicycle5dNonlinearDynamics(Matrix* xn, const Matrix x,
-                                     const Matrix u);
+void tiny_Bicycle5dNonlinearDynamics(Eigen::Matrix12f* xn, Eigen::Matrix12f* x,
+                                     Eigen::Matrix4f* u);
 
 //========================================
 // Codes generated from julia/bicycle_tvlqr
@@ -41,8 +40,8 @@ void tiny_Bicycle5dGetJacobianA_Raw(float* A, const float* x,
 void tiny_Bicycle5dGetJacobianB_Raw(float* B, const float* x,
                                     const float* u);
 
-void tiny_Bicycle5dGetJacobians(Matrix* A, Matrix* B, const Matrix x,
-                                const Matrix u);
+void tiny_Bicycle5dGetJacobians(Eigen::Matrix12f* A, Eigen::Matrix12x4f* B, Eigen::Matrix12f* x,
+                                Eigen::Matrix4f* u);
 
 
 # ifdef __cplusplus

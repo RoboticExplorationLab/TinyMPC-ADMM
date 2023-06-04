@@ -12,6 +12,9 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS NO)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS NO)
 
 include(CMakePrintHelpers)
 include(GNUInstallDirs)
@@ -22,7 +25,7 @@ include(GNUInstallDirs)
 # include(FindCPM)
 
 # Handle default build type
-set(TINY_DEFAULT_BUILD_TYPE "Release")
+set(TINY_DEFAULT_BUILD_TYPE "Debug")
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "No build type specified. Setting CMAKE_BUILD_TYPE to ${TINY_DEFAULT_BUILD_TYPE}")
   set(CMAKE_BUILD_TYPE ${TINY_DEFAULT_BUILD_TYPE} CACHE STRING "Choose the type of build." FORCE)
@@ -36,7 +39,7 @@ option(TINY_BUILD_TESTS "Build tests for TinyMPC" ON)
 option(TINY_CLANG_TIDY "Run clang-tidy analyzer on the source code." OFF)
 
 # Build examples
-option(TINY_BUILD_EXAMPLES "Build examples for TinyMPC." OFF)
+option(TINY_BUILD_EXAMPLES "Build examples for TinyMPC." ON)
 
 # Build with -march=native
 option(TINY_VECTORIZE "Compile with -march=native" ON)
@@ -54,7 +57,8 @@ include_directories(ext/Eigen)
 ##############################
 # Compile options
 if (NOT WIN32)
-  add_compile_options(-Wall -Wextra -pedantic)
+  add_compile_options()
+  # add_compile_options(-Wall -Wextra -pedantic -Wno-comment)
   # add_compile_options(-Wno-error=unknown-pragmas
   #                     -Wformat=2 -Wno-unused-parameter -Wshadow 
   #                     -Wwrite-strings -Wstrict-prototypes -Wold-style-definition 
@@ -68,7 +72,7 @@ if (NOT WIN32)
 endif()
 
 if (CMAKE_C_COMPILER_ID MATCHES "GNU")
-  add_compile_options(-Wjump-misses-init -Wlogical-op)
+  add_compile_options(-Wlogical-op)
 endif()  
 
 # Make all includes relative to src/ directory

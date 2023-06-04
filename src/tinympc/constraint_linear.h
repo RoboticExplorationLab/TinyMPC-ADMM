@@ -1,13 +1,12 @@
 #ifndef CONSTRAINT_LINEAR_H
 # define CONSTRAINT_LINEAR_H
 
+#include "types.h"
+#include "utils.h"
+
 # ifdef __cplusplus
 extern "C" {
 # endif // ifdef __cplusplus
-
-
-#include "types.h"
-#include "utils.h"
 
 enum tiny_ErrorCode tiny_SetInputBound(tiny_AdmmWorkspace* work, float* Ac_data, float* lc_data, float* uc_data);
 

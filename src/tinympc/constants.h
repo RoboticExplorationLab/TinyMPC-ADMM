@@ -1,11 +1,6 @@
 #ifndef CONSTANTS_H
 # define CONSTANTS_H
 
-# ifdef __cplusplus
-extern "C" {
-# endif // ifdef __cplusplus
-
-
 /************************************
 * Printing Constants to set Layout *
 ************************************/
@@ -28,7 +23,7 @@ extern "C" {
 ******************/
 // Inherit from slap_ErrorCode and expand new errors for tinympc
 enum tiny_ErrorCode {
-  TINY_SLAP_ERROR = 0,
+  TINY_EIGEN_ERROR = 0,
   TINY_MATRIX_NOT_PSD,
   TINY_NO_ERROR,
   TINY_NOT_SUPPORTED,
@@ -75,17 +70,17 @@ enum tiny_ErrorCode {
 # define TIME_LIMIT (0.0)
 
 
-# ifndef TINY_NULL_MAT
-#  define TINY_NULL_MAT  \
-  ((Matrix){      \
-      0,          \
-      0,          \
-      0,          \
-      0,          \
-      TINY_NULL,       \
-      slap_DENSE, \
-  })
-# endif /* ifndef TINY_NULL_MAT */
+// # ifndef TINY_NULL_MAT
+// #  define TINY_NULL_MAT  \
+//   ((Matrix){      \
+//       0,          \
+//       0,          \
+//       0,          \
+//       0,          \
+//       TINY_NULL,       \
+//       slap_DENSE, \
+//   })
+// # endif /* ifndef TINY_NULL_MAT */
 
 # ifndef TINY_NULL
 #  define TINY_NULL 0
@@ -101,9 +96,5 @@ enum tiny_ErrorCode {
 
 /* Printing */
 # define PRINT_INTERVAL 1
-
-# ifdef __cplusplus
-}
-# endif // ifdef __cplusplus
 
 #endif // ifndef CONSTANTS_H

@@ -1,15 +1,18 @@
 #ifndef UTILS_H
 # define UTILS_H
 
-# ifdef __cplusplus
-extern "C" {
-# endif // ifdef __cplusplus
+#include <iostream>
+#include <Eigen.h>
 
 #include <stdlib.h>
 #include <string.h>
 
 #include "types.h"
 #include "constants.h"
+
+# ifdef __cplusplus
+extern "C" {
+# endif // ifdef __cplusplus
 
 void PrintLine(void);
 
@@ -36,13 +39,13 @@ void PrintSummary(tiny_AdmmInfo *info);
 #define PrintMatrix(mat)      \
   {                          \
     printf("%s = \n", #mat); \
-    slap_PrintMatrix(mat);   \
+    std::cout << mat << std::endl;   \
   }
 
 #define PrintMatrixT(mat)                   \
   {                                        \
     printf("%s = \n", #mat);               \
-    slap_PrintMatrix(slap_Transpose(mat)); \
+    std::cout << mat.transpose() << std::endl;  \
   }
 
 //========================================
@@ -87,12 +90,9 @@ void PrintSummary(tiny_AdmmInfo *info);
 #define PrintMatrixInfo(mat)      \
   {                          \
     printf("%s info: \n", #mat); \
-    printf(" Dims: (%d, %d)\n", mat.rows, mat.cols);   \
+    printf(" Dims: (%d, %d)\n", mat.rows(), mat.cols());   \
     printf(" Data: "); \
-    for (int imat = 0; imat < mat.cols * mat.rows; ++imat) { \
-      printf("%.4f, ", mat.data[imat]); \
-    } \
-    printf("\n");\
+    std::cout << mat << std::endl; \
   }
 
 //========================================
@@ -132,27 +132,22 @@ void PrintSolveInfo(tiny_AdmmWorkspace* work);
 // // Clamp the inputs to within min max value,
 // // will modify the provided array
 // //========================================
-void tiny_Clamps(float* arr, const float* min, const float* max,
-                 const int N);
+// void tiny_Clamps(float* arr, const float* min, const float* max,
+//                  const int N);
 
-void tiny_Clamp(float* arr, const float min, const float max, const int N);
+// void tiny_Clamp(float* arr, const float min, const float max, const int N);
 
-void tiny_ClampMatrix(Matrix* mat, const Matrix min, const Matrix max);
+// void tiny_ClampMatrix(Matrix* mat, const Matrix min, const Matrix max);
 
-void tiny_ShiftFill(Matrix* mats, const int length);
+// void tiny_ShiftFill(Matrix* mats, const int length);
 
-void tiny_ShiftFillWith(Matrix* mats, const float* x, const int length);
+// void tiny_ShiftFillWith(Matrix* mats, const float* x, const int length);
 
 
 //========================================
 // Raw matrix operators, ignore all metadata
 //========================================
 void SwapVectors(float **a, float **b);
-void MatAdd(Matrix C, Matrix A, Matrix B, float alpha);
-void MatCpy(Matrix des, Matrix src);
-void MatScale(Matrix A, float alpha);
-void MatMulAdd(Matrix C, Matrix A, Matrix B, float alpha, float beta);
-void MatMulAdd2(Matrix D, Matrix C, Matrix A, Matrix B, float alpha, float beta);
 
 # ifdef __cplusplus
 }

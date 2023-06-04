@@ -1,8 +1,10 @@
 #include "auxil.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum tiny_ErrorCode tiny_InitSettings(tiny_AdmmSettings* stgs) {
-  SLAP_ASSERT(stgs != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  "tiny_InitSettings: settings must not be TINY_NULL");
   stgs->reg_min       = (float)REG_MIN;
   stgs->reg_max       = (float)REG_MAX;
   stgs->reg_mul       = (float)REG_MUL;
@@ -45,7 +47,7 @@ enum tiny_ErrorCode tiny_SetUnconstrained(tiny_AdmmSettings* stgs) {
 }
 
 enum tiny_ErrorCode tiny_InitSolnTrajFromArray(tiny_AdmmWorkspace* work,
-Matrix* X, Matrix* U,
+Eigen::Vector12f* X, Eigen::Vector4f* U,
 float* X_data, float* U_data) {
 
   int N = work->data->model->nhorizon;
@@ -56,18 +58,18 @@ float* X_data, float* U_data) {
   work->soln->U = U;
 
   for (int i = 0; i < N - 1; ++i) {
-    U[i] = slap_MatrixFromArray(m, 1, &U_data[i * m]);
+    U[i] = Eigen::Map<Eigen::Vector4f>(&U_data[i * m]);
   }
 
   for (int i = 0; i < N; ++i) {
-    X[i] = slap_MatrixFromArray(n, 1, &X_data[i * n]);
+    X[i] = Eigen::Map<Eigen::Vector12f>(&X_data[i * n]);
   }
 
   return TINY_NO_ERROR;  
 }
 
 enum tiny_ErrorCode tiny_InitSolnDualsFromArray(tiny_AdmmWorkspace* work,
-Matrix* YX, Matrix* YU,
+Eigen::Vector12f* YX, Eigen::Vector4f* YU,
 float* YX_data, float* YU_data, float* YG_data) {
 
   int N = work->data->model->nhorizon;
@@ -77,18 +79,18 @@ float* YX_data, float* YU_data, float* YG_data) {
   work->soln->YX = YX;  
   work->soln->YU = YU;
   if (YG_data) {
-    work->soln->YG = slap_MatrixFromArray(n, 1, YG_data);
+    work->soln->YG = Eigen::Map<Eigen::Vector12f>(YG_data);
   }
 
   if (YU_data) {
     for (int i = 0; i < N - 1; ++i) {
-      YU[i] = slap_MatrixFromArray(m, 1, &YU_data[i * m]);
+      YU[i] = Eigen::Map<Eigen::Vector4f>(&YU_data[i * m]);
     }
   }
 
   if (YX_data) {
     for (int i = 0; i < N; ++i) {
-      YX[i] = slap_MatrixFromArray(n, 1, &YX_data[i * n]);
+      YX[i] = Eigen::Map<Eigen::Vector12f>(&YX_data[i * n]);
     }
   }
 
@@ -96,23 +98,23 @@ float* YX_data, float* YU_data, float* YG_data) {
 }
 
 enum tiny_ErrorCode tiny_InitSolnGainsFromArray(tiny_AdmmWorkspace* work, 
-Matrix* d, Matrix* p, float* d_data, float* p_data, 
+Eigen::Vector4f* d, Eigen::Vector12f* p, float* d_data, float* p_data, 
 float* Kinf_data, float* Pinf_data) {
 
   int N = work->data->model->nhorizon;
   int n = work->data->model[0].nstates;
   int m = work->data->model->ninputs;
 
-  work->soln->Kinf = slap_MatrixFromArray(m, n, Kinf_data);
+  work->soln->Kinf = Eigen::Map<Eigen::Matrix4x12f>(Kinf_data);
   work->soln->d = d;
-  work->soln->Pinf = slap_MatrixFromArray(n, n, Pinf_data);
+  work->soln->Pinf = Eigen::Map<Eigen::Matrix12f>(Pinf_data);
   work->soln->p = p;
 
   for (int i = 0; i < N - 1; ++i) {
-    d[i] = slap_MatrixFromArray(m, 1, &d_data[i * m]);
+    d[i] = Eigen::Map<Eigen::Vector4f>(&d_data[i * m]);
   }
   for (int i = 0; i < N; ++i) {
-    p[i] = slap_MatrixFromArray(n, 1, &p_data[i * n]);
+    p[i] = Eigen::Map<Eigen::Vector12f>(&p_data[i * n]);
   }
 
   return TINY_NO_ERROR;  
@@ -124,13 +126,13 @@ float* R_data) {
 
   int n = work->data->model[0].nstates;
   int m = work->data->model->ninputs;
-  work->data->Q = slap_MatrixFromArray(n, n, Q_data);
-  work->data->R = slap_MatrixFromArray(m, m, R_data);
+  work->data->Q = Eigen::Map<Eigen::Matrix12f>(Q_data);
+  work->data->R = Eigen::Map<Eigen::Matrix4f>(R_data);
   return TINY_NO_ERROR;
 }
 
 enum tiny_ErrorCode tiny_InitDataLinearCostFromArray(tiny_AdmmWorkspace* work, 
-Matrix* q, Matrix* r, Matrix* r_tilde, float* q_data, float* r_data, float* r_tilde_data) {
+Eigen::Vector12f* q, Eigen::Vector4f* r, Eigen::Vector4f* r_tilde, float* q_data, float* r_data, float* r_tilde_data) {
 
   int N = work->data->model[0].nhorizon;
   int n = work->data->model[0].nstates;
@@ -140,9 +142,9 @@ Matrix* q, Matrix* r, Matrix* r_tilde, float* q_data, float* r_data, float* r_ti
   work->data->r_tilde = r_tilde;
   
   for (int i = 0; i < N - 1; ++i) {
-    q[i] = slap_MatrixFromArray(n, 1, &q_data[i * n]);
-    r[i] = slap_MatrixFromArray(m, 1, &r_data[i * m]);
-    r_tilde[i] = slap_MatrixFromArray(m, 1, &r_tilde_data[i * m]);
+    q[i] = Eigen::Map<Eigen::Vector12f>(&q_data[i * n]);
+    r[i] = Eigen::Map<Eigen::Vector4f>(&r_data[i * m]);
+    r_tilde[i] = Eigen::Map<Eigen::Vector4f>(&r_tilde_data[i * m]);
   }
 
   return TINY_NO_ERROR;
@@ -154,19 +156,6 @@ enum tiny_ErrorCode tiny_InitWorkspace(tiny_AdmmWorkspace* work,
                                        tiny_AdmmData* data,
                                        tiny_AdmmSolution* soln,
                                        tiny_AdmmSettings* stgs) {
-  SLAP_ASSERT(work != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  "tiny_InitWorkspace: work must not be TINY_NULL");
-  SLAP_ASSERT(info != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  "tiny_InitWorkspace: info must not be TINY_NULL");
-  SLAP_ASSERT(model != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  "tiny_InitWorkspace: model must not be TINY_NULL");
-  SLAP_ASSERT(data != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  "tiny_InitWorkspace: data must not be TINY_NULL");    
-  SLAP_ASSERT(stgs != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  "tiny_InitWorkspace: stgs must not be TINY_NULL");
-  SLAP_ASSERT(soln != TINY_NULL, SLAP_BAD_POINTER, TINY_SLAP_ERROR,
-  "tiny_InitWorkspace: soln must not be TINY_NULL");  
-
   work->data = data;
   work->info = info;
   work->soln = soln;
@@ -190,7 +179,7 @@ enum tiny_ErrorCode tiny_InitWorkspace(tiny_AdmmWorkspace* work,
 }
 
 enum tiny_ErrorCode tiny_InitWorkspaceTempData(tiny_AdmmWorkspace* work, 
-Matrix* ZU, Matrix* ZU_new, Matrix* ZX, Matrix* ZX_new, float* temp_data) {
+Eigen::Vector4f* ZU, Eigen::Vector4f* ZU_new, Eigen::Vector12f* ZX, Eigen::Vector12f* ZX_new, float* temp_data) {
   int N = work->data->model[0].nhorizon;
   int n = work->data->model[0].nstates;
   int m = work->data->model[0].ninputs;
@@ -198,7 +187,7 @@ Matrix* ZU, Matrix* ZU_new, Matrix* ZX, Matrix* ZX_new, float* temp_data) {
   float* ptr = temp_data;
   // work->Quu_inv = slap_MatrixFromArray(m, m, ptr); 
   // ptr += m*m;
-  work->Qu = slap_MatrixFromArray(m, 1, ptr);   
+  work->Qu = Eigen::Map<Eigen::Vector4f>(ptr);   
   ptr += m;
   // work->AmBKt = slap_MatrixFromArray(n, n, ptr);
   // ptr += n*n; 
@@ -212,18 +201,18 @@ Matrix* ZU, Matrix* ZU_new, Matrix* ZX, Matrix* ZX_new, float* temp_data) {
 
   if (ZU) {
     for (int i = 0; i < N - 1; ++i) {
-      ZU[i] = slap_MatrixFromArray(m, 1, ptr); 
+      ZU[i] = Eigen::Map<Eigen::Vector4f>(ptr);   
       ptr += m;
-      ZU_new[i] = slap_MatrixFromArray(m, 1, ptr); 
+      ZU_new[i] = Eigen::Map<Eigen::Vector4f>(ptr);   
       ptr += m;
     }
   }
 
   if (ZX) {
     for (int i = 0; i < N; ++i) {
-      ZX[i] = slap_MatrixFromArray(n, 1, ptr); 
+      ZX[i] = Eigen::Map<Eigen::Vector12f>(ptr);   
       ptr += n;
-      ZX_new[i] = slap_MatrixFromArray(n, 1, ptr); 
+      ZX_new[i] = Eigen::Map<Eigen::Vector12f>(ptr);   
       ptr += n;
     }
   }
@@ -231,44 +220,19 @@ Matrix* ZU, Matrix* ZU_new, Matrix* ZX, Matrix* ZX_new, float* temp_data) {
   return TINY_NO_ERROR;
 }
 
-// enum tiny_ErrorCode tiny_EvalPrimalCache(tiny_AdmmWorkspace* work) {
-//   tiny_Model* model = work->data->model;
-
-//   int n = work->data->model[0].nstates;
-//   int m = work->data->model->ninputs;
-
-//   float PB_data[n*m];
-//   T_INIT_ZEROS(PB_data);
-//   Matrix PB = slap_MatrixFromArray(n, m, PB_data);
-
-//   if (model[0].ltv) {
-
-//   }
-//   else {
-//     // cache for (A - BK)'
-//     // slap_Copy(work->AmBKt, model[0].A[0]);
-//     // slap_MatMulAdd(work->AmBKt, model[0].B[0], work->soln->Kinf, -1, 1);
-//     // work->AmBKt = slap_Transpose(work->AmBKt);
-//     slap_MatMulAB(work->AmBKt, model[0].B[0], work->soln->Kinf);
-//     slap_MatrixAddition(work->AmBKt, model[0].A[0], work->AmBKt, -1);
-
-//     // cache for Kinf'*R - AmBKt*Pinf*B
-//     slap_MatMulAtB(work->coeff_d2p, work->soln->Kinf, work->data->R);
-//     slap_MatMulAB(PB, work->soln->Pinf, model[0].B[0]);
-//     slap_MatMulAdd(work->coeff_d2p, work->AmBKt, PB, -1, 1);
-//   }
-//   return TINY_NO_ERROR;
-// }
-
 enum tiny_ErrorCode tiny_InitPrimalCache(tiny_AdmmWorkspace* work, 
 float* Quu_inv_data, float* AmBKt_data, float* coeff_d2p_data) {
 
   int n = work->data->model[0].nstates;
   int m = work->data->model->ninputs;
 
-  work->Quu_inv   = slap_MatrixFromArray(m, m, Quu_inv_data); 
-  work->AmBKt     = slap_MatrixFromArray(n, n, AmBKt_data); 
-  work->coeff_d2p = slap_MatrixFromArray(n, m, coeff_d2p_data); 
+  // work->Quu_inv   = slap_MatrixFromArray(m, m, Quu_inv_data); 
+  // work->AmBKt     = slap_MatrixFromArray(n, n, AmBKt_data); 
+  // work->coeff_d2p = slap_MatrixFromArray(n, m, coeff_d2p_data); 
+
+  work->Quu_inv   = Eigen::Map<Eigen::Matrix4f>(Quu_inv_data);  
+  work->AmBKt     = Eigen::Map<Eigen::Matrix12f>(AmBKt_data); 
+  work->coeff_d2p = Eigen::Map<Eigen::Matrix12x4f>(coeff_d2p_data); 
 
   return TINY_NO_ERROR;
 }
@@ -284,54 +248,59 @@ enum tiny_ErrorCode tiny_ResetInfo(tiny_AdmmWorkspace* work) {
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_SetStateReference(tiny_AdmmWorkspace* work, Matrix* Xref, 
-float* Xref_data) {
-  int n = work->data->model[0].nstates;
-  int N = work->data->model[0].nhorizon;
-  work->data->Xref = Xref;
-  for (int i = 0; i < N; ++i) {
-    Xref[i] = slap_MatrixFromArray(n, 1, &Xref_data[i * n]);
-  }
-  return TINY_NO_ERROR;
-}
+// enum tiny_ErrorCode tiny_SetStateReference(tiny_AdmmWorkspace* work, Matrix* Xref, 
+// float* Xref_data) {
+//   int n = work->data->model[0].nstates;
+//   int N = work->data->model[0].nhorizon;
+//   work->data->Xref = Xref;
+//   for (int i = 0; i < N; ++i) {
+//     Xref[i] = slap_MatrixFromArray(n, 1, &Xref_data[i * n]);
+//   }
+//   return TINY_NO_ERROR;
+// }
 
-enum tiny_ErrorCode tiny_SetInputReference(tiny_AdmmWorkspace* work, Matrix* Uref,
-float* Uref_data) {
+// enum tiny_ErrorCode tiny_SetInputReference(tiny_AdmmWorkspace* work, Matrix* Uref,
+// float* Uref_data) {
+//   int m = work->data->model[0].ninputs;
+//   int N = work->data->model[0].nhorizon;
+//   work->data->Uref = Uref;
+//   for (int i = 0; i < N - 1; ++i) {
+//     Uref[i] = slap_MatrixFromArray(m, 1, &Uref_data[i * m]);
+//   }
+//   return TINY_NO_ERROR;
+// }
+
+// enum tiny_ErrorCode tiny_SetReference(tiny_AdmmWorkspace* work, Matrix* Xref, 
+// Matrix* Uref, float* Xref_data, float* Uref_data) {
+
+//   tiny_SetStateReference(work, Xref, Xref_data);
+//   tiny_SetInputReference(work, Uref, Uref_data);
+//   return TINY_NO_ERROR;
+// }
+
+enum tiny_ErrorCode tiny_SetGoalReference(tiny_AdmmWorkspace* work, Eigen::Vector12f* Xref,
+Eigen::Vector4f* Uref, float* xg_data, float* ug_data) {
+  int n = work->data->model[0].nstates;
   int m = work->data->model[0].ninputs;
   int N = work->data->model[0].nhorizon;
-  work->data->Uref = Uref;
-  for (int i = 0; i < N - 1; ++i) {
-    Uref[i] = slap_MatrixFromArray(m, 1, &Uref_data[i * m]);
-  }
-  return TINY_NO_ERROR;
-}
-
-enum tiny_ErrorCode tiny_SetReference(tiny_AdmmWorkspace* work, Matrix* Xref, 
-Matrix* Uref, float* Xref_data, float* Uref_data) {
-
-  tiny_SetStateReference(work, Xref, Xref_data);
-  tiny_SetInputReference(work, Uref, Uref_data);
-  return TINY_NO_ERROR;
-}
-
-enum tiny_ErrorCode tiny_SetGoalReference(tiny_AdmmWorkspace* work, Matrix* Xref,
-Matrix* Uref, float* xg_data, float* ug_data) {
-  int n = work->data->model[0].nstates;
-  int m = work->data->model[0].ninputs;
-  int N = work->data->model[0].nhorizon;
   work->data->Xref = Xref;
   work->data->Uref = Uref;
   for (int i = 0; i < N; ++i) {
-    Xref[i] = slap_MatrixFromArray(n, 1, xg_data);
+    Xref[i] =  Eigen::Map<Eigen::Vector12f>(xg_data);
   }
   for (int i = 0; i < N - 1; ++i) {
-    Uref[i] = slap_MatrixFromArray(m, 1, ug_data);
+    Uref[i] =  Eigen::Map<Eigen::Vector4f>(ug_data);
   }
   return TINY_NO_ERROR;
 }
 
 enum tiny_ErrorCode tiny_SetInitialState(tiny_AdmmWorkspace* work, float* x0_data) {
   int n = work->data->model[0].nstates;
-  work->data->x0 = slap_MatrixFromArray(n, 1, x0_data);
+  // work->data->x0 = slap_MatrixFromArray(n, 1, x0_data);
+  work->data->x0 = Eigen::Map<Eigen::Vector12f>(x0_data);
   return TINY_NO_ERROR;
 }
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,5 +1,9 @@
 #include "utils.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void PrintSolveInfo(tiny_AdmmWorkspace* work) {
   tiny_AdmmInfo* info = work->info;
   printf("Solve info: \n");
@@ -178,37 +182,37 @@ void PrintSummary(tiny_AdmmInfo *info) {
 //========================================
 // Clamp the inputs to within min max value
 //========================================
-void tiny_Clamps(float* arr, const float* min, const float* max,
-                 const int N) {
-  for (int k = 0; k < N; ++k) {
-    arr[k] = (arr[k] > max[k]) ? max[k] : ((arr[k] < min[k]) ? min[k] : arr[k]);
-  }
-}
+// void tiny_Clamps(float* arr, const float* min, const float* max,
+//                  const int N) {
+//   for (int k = 0; k < N; ++k) {
+//     arr[k] = (arr[k] > max[k]) ? max[k] : ((arr[k] < min[k]) ? min[k] : arr[k]);
+//   }
+// }
 
-void tiny_Clamp(float* arr, const float min, const float max, const int N) {
-  for (int k = 0; k < N; ++k) {
-    arr[k] = (arr[k] > max) ? max : ((arr[k] < min) ? min : arr[k]);
-  }
-}
+// void tiny_Clamp(float* arr, const float min, const float max, const int N) {
+//   for (int k = 0; k < N; ++k) {
+//     arr[k] = (arr[k] > max) ? max : ((arr[k] < min) ? min : arr[k]);
+//   }
+// }
 
-// Clamp all data for matrix or vector
-void tiny_ClampMatrix(Matrix* mat, const Matrix min, const Matrix max) {
-  tiny_Clamps(mat->data, min.data, max.data, (mat->rows) * (mat->cols));
-}
+// // Clamp all data for matrix or vector
+// void tiny_ClampMatrix(Matrix* mat, const Matrix min, const Matrix max) {
+//   tiny_Clamps(mat->data, min.data, max.data, (mat->rows) * (mat->cols));
+// }
 
-void tiny_ShiftFill(Matrix* mats, const int length) {
-  for (int k = 0; k < length - 1; ++k) {
-    slap_Copy(mats[k], mats[k + 1]);
-  }
-  slap_Copy(mats[length - 1], mats[length - 2]);
-}
+// void tiny_ShiftFill(Matrix* mats, const int length) {
+//   for (int k = 0; k < length - 1; ++k) {
+//     slap_Copy(mats[k], mats[k + 1]);
+//   }
+//   slap_Copy(mats[length - 1], mats[length - 2]);
+// }
 
-void tiny_ShiftFillWith(Matrix* mats, const float* x, const int length) {
-  for (int k = 0; k < length - 1; ++k) {
-    slap_Copy(mats[k], mats[k + 1]);
-  }
-  slap_CopyFromArray(mats[length - 1], x);
-}
+// void tiny_ShiftFillWith(Matrix* mats, const float* x, const int length) {
+//   for (int k = 0; k < length - 1; ++k) {
+//     slap_Copy(mats[k], mats[k + 1]);
+//   }
+//   slap_CopyFromArray(mats[length - 1], x);
+// }
 
 void SwapVectors(float **a, float **b) {
   float *temp;
@@ -218,64 +222,6 @@ void SwapVectors(float **a, float **b) {
   *a   = temp;
 }
 
-void MatAdd(Matrix C, Matrix A, Matrix B, float alpha) {
-  for (int i = 0; i < C.cols * C.rows; ++i) {
-    C.data[i] = A.data[i] + B.data[i] * alpha;
-  }
+#ifdef __cplusplus
 }
-
-void MatCpy(Matrix des, Matrix src) {
-  for (int i = 0; i < des.cols * des.rows; ++i) {
-    des.data[i] = src.data[i];
-  }
-}
-
-void MatScale(Matrix A, float alpha) {
-  for (int i = 0; i < A.cols * A.rows; ++i) {
-    A.data[i] = A.data[i] * alpha;
-  }
-}
-
-void MatMulAdd(Matrix C, Matrix A, Matrix B, float alpha, float beta) {
-  int n = A.rows;
-  int m = A.cols;
-  int p = B.cols;
-  float Aik;
-  float Bkj;
-  float Cij;
-  int ij;
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < p; ++j) {
-      ij = i + j * n;
-      Cij = 0;
-      for (int k = 0; k < m; ++k) {  // columns of A, rows of B
-        Aik = A.data[i + n * k];
-        Bkj = B.data[k + m * j];
-        Cij += Aik * Bkj;
-      }
-      C.data[ij] = alpha * Cij + beta * C.data[ij];
-    }
-  }
-}
-
-void MatMulAdd2(Matrix D, Matrix C, Matrix A, Matrix B, float alpha, float beta) {
-  int n = A.rows;
-  int m = A.cols;
-  int p = B.cols;
-  float Aik;
-  float Bkj;
-  float Cij;
-  int ij;
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < p; ++j) {
-      ij = i + j * n;
-      Cij = 0;
-      for (int k = 0; k < m; ++k) {  // columns of A, rows of B
-        Aik = A.data[i + n * k];
-        Bkj = B.data[k + m * j];
-        Cij += Aik * Bkj;
-      }
-      D.data[ij] = alpha * Cij + beta * C.data[ij];
-    }
-  }
-}
+#endif
