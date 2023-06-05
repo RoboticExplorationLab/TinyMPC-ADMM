@@ -16,7 +16,7 @@
 
 using namespace Eigen;
 
-// Create data, can assign values here
+// Precomputed data and cache
 static MatrixNf A = (Eigen::MatrixNf() << 
 1.000000f,0.000000f,0.000000f,0.000000f,0.000841f,0.000000f,0.010000f,0.000000f,0.000000f,0.000000f,0.000001f,0.000000f,
 0.000000f,1.000000f,0.000000f,-0.000841f,0.000000f,0.000000f,0.000000f,0.010000f,0.000000f,-0.000001f,0.000000f,0.000000f,
@@ -119,13 +119,11 @@ static MatrixMf R = (Eigen::MatrixMf() <<
 0.000000f,0.000000f,100.000000f,0.000000f,
 0.000000f,0.000000f,0.000000f,100.000000f).finished();
 
-static VectorNf  Xhrz[NHORIZON];
-static VectorMf  Uhrz[NHORIZON-1]; 
-static VectorMf  d[NHORIZON-1];
-static VectorNf  p[NHORIZON];
-static VectorMf  YU[NHORIZON];
-
-static VectorNf x0 = (Eigen::VectorNf() << 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0).finished();
+static VectorNf Xhrz[NHORIZON];
+static VectorMf Uhrz[NHORIZON-1]; 
+static VectorMf d[NHORIZON-1];
+static VectorNf p[NHORIZON];
+static VectorMf YU[NHORIZON];
 
 static VectorNf q[NHORIZON-1];
 static VectorMf r[NHORIZON-1];
@@ -138,11 +136,12 @@ static MatrixMf Acu;
 static VectorMf ucu;
 static VectorMf lcu;
 
-static VectorMf  Qu;
-static VectorMf  ZU[NHORIZON-1]; 
-static VectorMf  ZU_new[NHORIZON-1];
+static VectorMf Qu;
+static VectorMf ZU[NHORIZON-1]; 
+static VectorMf ZU_new[NHORIZON-1];
 
-static VectorNf xg = (Eigen::VectorNf() << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).finished();
+static VectorNf x0 = (Eigen::VectorNf() << 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0).finished();
+static VectorNf xg = (Eigen::VectorNf() << 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).finished();
 static VectorMf ug = (Eigen::VectorMf() << 0, 0, 0, 0).finished();;
 
 static VectorNf X[NSIM];
@@ -206,14 +205,22 @@ void init_mpc() {
   // Stop earlier as horizon exceeds the end
   X[0] = x0;  
   srand(1);  // random seed
+
   /* End of MPC initialization*/
 }
 
 int main() {
   init_mpc();
 
+  for (int k = 0; k < NHORIZON; ++k) {
+    // PrintMatrixT(work.data->Xref[k]);
+    // PrintMatrixT(Xref[k]);
+    // printf("%f\n", (work.data->Xref[k])(0));
+  }
+
   /* Start MPC loop */
 
+  printf("*** Start MPC loop ***\n");
   for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
     MatrixXf pose = X[k](seq(0,5));
     MatrixXf pose_ref = Xref[0](seq(0,5));
@@ -238,7 +245,7 @@ int main() {
     end = clock();
     cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
     // printf("solve time:        %f\n", cpu_time_used);
-    printf("%f\n", cpu_time_used);
+    // printf("%f\n", cpu_time_used);
 
     // if(work.info->status_val != TINY_SOLVED) {
     //   printf("!!! STOP AS SOLVER FAILED !!!\n");
@@ -247,15 +254,15 @@ int main() {
 
     // PrintMatrixT(Uhrz[0]);
 
-    // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
-    // PrintMatrixT(pos);
+    PrintMatrixT(pose);
+    PrintMatrixT(work.data->Xref[0]);
 
     // === 2. Simulate dynamics using the first control solution ===
     // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uref[k]);
     // tiny_Clamp(ZU_new[0].data, umin[0], umax[0], NINPUTS);
     // If no constraints, use Uhrz[0]
     // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], ZU_new[0]);
-    tiny_EvalModel(&X[k + 1], &X[k], &ZU_new[0], &model, 0);
+    tiny_EvalModel(&X[k + 1], &X[k], ZU_new, &model, 0);
   }
 
   return 0;
