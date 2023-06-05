@@ -28,6 +28,10 @@ static Eigen::Matrix4f foo = (Eigen::Matrix4f() <<
 0.000000f,0.000000f,100.000000f,0.000000f,
 0.000000f,0.000000f,0.000000f,100.000000f).finished();
 
+static Eigen::Vector2f vs[2] = 
+{(Eigen::Vector2f() << 1.0f,0.1f).finished(),
+(Eigen::Vector2f() << 100.0f,0.0f).finished()};
+
 int main()
 {    
   initialize();
@@ -36,6 +40,8 @@ int main()
   std::cout << foo << std::endl;
   std::cout << *(st1.m1) << std::endl;
   std::cout << (st1.m2) << std::endl;
+  std::cout << "vs[0] = \n" << vs[0] << std::endl;
+  std::cout << "vs[1] = \n" << vs[1] << std::endl;
   // Eigen::Vector2f vec, ub, lb;
   // vec << -3, 3;
   // ub << 1, 2;

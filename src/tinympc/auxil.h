@@ -45,11 +45,10 @@ enum tiny_ErrorCode tiny_SetStateReference(tiny_AdmmWorkspace* work, Eigen::Vect
 
 enum tiny_ErrorCode tiny_SetInputReference(tiny_AdmmWorkspace* work, Eigen::VectorMf* Uref);
 
-enum tiny_ErrorCode tiny_SetReference(tiny_AdmmWorkspace* work, Eigen::VectorNf* Xref, 
-Eigen::VectorMf* Uref);
+enum tiny_ErrorCode tiny_SetGoalState(tiny_AdmmWorkspace* work, Eigen::VectorNf* Xref,
+Eigen::VectorNf* xg);
 
-enum tiny_ErrorCode tiny_SetGoalReference(tiny_AdmmWorkspace* work, Eigen::VectorNf* Xref,
-Eigen::VectorMf* Uref, Eigen::VectorNf* xg, Eigen::VectorMf* ug);
+enum tiny_ErrorCode tiny_SetGoalInput(tiny_AdmmWorkspace* work, Eigen::VectorMf* Uref, Eigen::VectorMf* ug);
 
 enum tiny_ErrorCode tiny_SetInitialState(tiny_AdmmWorkspace* work, Eigen::VectorNf* x0);
 

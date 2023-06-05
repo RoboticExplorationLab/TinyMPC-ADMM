@@ -139,21 +139,19 @@ enum tiny_ErrorCode tiny_SetInputReference(tiny_AdmmWorkspace* work, Eigen::Vect
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_SetReference(tiny_AdmmWorkspace* work, Eigen::VectorNf* Xref, 
-Eigen::VectorMf* Uref) {
-  tiny_SetStateReference(work, Xref);
-  tiny_SetInputReference(work, Uref);
-  return TINY_NO_ERROR;
-}
-
-enum tiny_ErrorCode tiny_SetGoalReference(tiny_AdmmWorkspace* work, Eigen::VectorNf* Xref,
-Eigen::VectorMf* Uref, Eigen::VectorNf* xg, Eigen::VectorMf* ug) {
+enum tiny_ErrorCode tiny_SetGoalState(tiny_AdmmWorkspace* work, Eigen::VectorNf* Xref,
+Eigen::VectorNf* xg) {
   int N = work->data->model[0].nhorizon;
   work->data->Xref = Xref;
-  work->data->Uref = Uref;
   for (int i = 0; i < N; ++i) {
     Xref[i] = *xg;
   }
+  return TINY_NO_ERROR;
+}
+
+enum tiny_ErrorCode tiny_SetGoalInput(tiny_AdmmWorkspace* work, Eigen::VectorMf* Uref, Eigen::VectorMf* ug) {
+  int N = work->data->model[0].nhorizon;
+  work->data->Uref = Uref;
   for (int i = 0; i < N - 1; ++i) {
     Uref[i] = *ug;
   }

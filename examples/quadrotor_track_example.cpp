@@ -1,18 +1,19 @@
 // MPC
-// Scenerio: make Crazyflie hovering
+// Scenerio: drive the Crazyflie quadrotor to track fig-8 reference (easy)
 //
 
 #include "time.h"
 #include "tinympc/tinympc.h"
 #include "Eigen.h"
 
+#include "data/traj_fig8.h"
+
 // Macro variables
 #define DT 0.01       // dt
 // #define NSTATES 12   // no. of states (error state)
 // #define NINPUTS 4    // no. of controls
-// These are already defined in `constants.h`
-#define NHORIZON 3  // horizon steps (NHORIZON states and NHORIZON-1 controls)
-#define NSIM 200     // simulation steps (fixed with reference data)
+#define NHORIZON 5  // horizon steps (NHORIZON states and NHORIZON-1 controls)
+#define NSIM 500     // simulation steps (fixed with reference data)
 
 using namespace Eigen;
 
@@ -129,8 +130,7 @@ static VectorNf q[NHORIZON-1];
 static VectorMf r[NHORIZON-1];
 static VectorMf r_tilde[NHORIZON-1];
 
-static VectorNf Xref[NSIM];
-static VectorMf Uref[NSIM-1];
+static VectorMf Uref[NHORIZON-1];
 
 static MatrixMf Acu;
 static VectorMf ucu;
@@ -140,9 +140,8 @@ static VectorMf Qu;
 static VectorMf ZU[NHORIZON-1]; 
 static VectorMf ZU_new[NHORIZON-1];
 
-static VectorNf x0 = (VectorNf() << 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0).finished();
-static VectorNf xg = (VectorNf() << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).finished();
-static VectorMf ug = (VectorMf() << 0, 0, 0, 0).finished();;
+static VectorNf x0 = (VectorNf() << 0, 0, 0.5, 0.1, 0, 0, 0, 0, 0, 0, 0, 0).finished();
+static VectorMf ug = (VectorMf() << 0, 0, 0, 0).finished();
 
 static VectorNf X[NSIM];
 
@@ -168,7 +167,7 @@ void InitMpc() {
   tiny_InitSolution(&work, Xhrz, Uhrz, 0, YU, 0, &Kinf, d, &Pinf, p);
 
   tiny_SetInitialState(&work, &x0);  
-  tiny_SetGoalState(&work, Xref, &xg);
+  tiny_SetStateReference(&work, XrefAll);
   tiny_SetGoalInput(&work, Uref, &ug);
 
   /* Set up LQR cost */
@@ -178,11 +177,10 @@ void InitMpc() {
   tiny_SetInputBound(&work, &Acu, &lcu, &ucu);
   ucu.fill(0.5);
   lcu.fill(-0.5);
-  printf("Is constrained? %d\n", IsConstrained(&work));
   tiny_UpdateLinearCost(&work);
 
   /* Solver settings */
-  stgs.max_iter = 1;           // limit this if needed
+  stgs.max_iter = 100;           // limit this if needed
   stgs.verbose = 0;
   stgs.check_termination = 1;
   stgs.tol_abs_dual = 5e-2;
@@ -203,7 +201,8 @@ int main() {
 
   /* Start MPC loop */
 
-  if (0) {
+  if (1) {
+    printf("\nTRACKING QUADROTOR\n");
     printf("\nProblem Info: \n");
     PrintMatrix(work.data->model->A[0]);
     PrintMatrix(work.data->model->B[0]);
@@ -219,7 +218,7 @@ int main() {
   printf("\n*** Start MPC loop ***\n");
   for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
     MatrixXf pose = X[k](seq(0,5));
-    MatrixXf pose_ref = Xref[0](seq(0,5));
+    MatrixXf pose_ref = work.data->Xref[0](seq(0,5));
     printf("ex[%d] =  %.4f\n", k, (pose - pose_ref).norm());
 
     // Inject noise into measurement
@@ -232,7 +231,12 @@ int main() {
     start = clock();
 
     work.data->x0 = &(X[k]); // update current measurement
-    // PrintMatrixT(*(work.data->x0));
+
+    // Update reference
+    data.Xref = &XrefAll[k];
+    // data.Uref = &Uref[k];
+    tiny_UpdateLinearCost(&work);
+
     // Warm-start by previous solution
     // tiny_ShiftFill(Uhrz, T_ARRAY_SIZE(Uhrz));
 
@@ -241,22 +245,21 @@ int main() {
 
     end = clock();
     cpu_time_used = ((double)(end - start)) * 1000 / CLOCKS_PER_SEC;  // ms
-    // printf("solve time:        %f\n", cpu_time_used);
+    printf("solve time:        %f\n", cpu_time_used);
     // printf("%f\n", cpu_time_used);
 
-    // if(work.info->status_val != TINY_SOLVED) {
-    //   printf("!!! STOP AS SOLVER FAILED !!!\n");
-    //   return 0;
-    // }
+    if(work.info->status_val != TINY_SOLVED) {
+      printf("!!! STOP AS SOLVER FAILED !!!\n");
+      // return 0;
+    }
 
     // PrintMatrixT(Uhrz[0]);
 
     // PrintMatrixT(pose);
-    // PrintMatrixT(work.data->Xref[0]);
+    // PrintMatrixT(pose_ref);
 
     // === 2. Simulate dynamics using the first control solution ===
-    // tiny_Clamp(ZU_new[0].data, umin[0], umax[0], NINPUTS);
-    // If no constraints, use Uhrz[0]
+    // tiny_Clamp(ZU_new[0].data, umin_data[0], umax_data[0], NINPUTS);
     tiny_EvalModel(&X[k + 1], &X[k], ZU_new, &model, 0);
   }
 
