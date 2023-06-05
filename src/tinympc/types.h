@@ -56,7 +56,7 @@ typedef struct {
   
   Eigen::VectorMf* YU;     ///< Dual variables for input constraints
   Eigen::VectorNf* YX;     ///< Dual variables for state constraints
-  Eigen::VectorNf*  YG;      ///< Dual variables for goal constraint
+  Eigen::VectorNf* YG;      ///< Dual variables for goal constraint
 
   int data_size;
 } tiny_AdmmSolution;

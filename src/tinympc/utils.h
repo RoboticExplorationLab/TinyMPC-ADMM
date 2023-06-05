@@ -45,7 +45,7 @@ void PrintSummary(tiny_AdmmInfo *info);
 #define PrintMatrixT(mat)                   \
   {                                        \
     printf("%s = \n", #mat);               \
-    std::cout << mat.transpose() << std::endl;  \
+    std::cout << (mat).transpose() << std::endl;  \
   }
 
 //========================================

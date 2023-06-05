@@ -80,7 +80,7 @@ endif()
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 # Build source files
-# add_subdirectory(src/tinympc)
+add_subdirectory(src/tinympc)
 
 ##############################
 # Tests
@@ -93,5 +93,5 @@ endif()
 # Examples
 ##############################
 if (TINY_BUILD_EXAMPLES)
-  # add_subdirectory(examples)
+  add_subdirectory(examples)
 endif()

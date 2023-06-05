@@ -65,7 +65,7 @@ enum tiny_ErrorCode {
 # define TOL_ABS_DUAL (1e-2)
 
 # define EN_CSTR_STATES (0)
-# define EN_CSTR_INPUTS (1)
+# define EN_CSTR_INPUTS (0)
 # define EN_CSTR_GOAL (0)
 
 # define VERBOSE (1)

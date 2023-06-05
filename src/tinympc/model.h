@@ -10,15 +10,9 @@ extern "C" {
 enum tiny_ErrorCode tiny_InitModel(tiny_Model* model, const int nstates,
                                    const int ninputs, const int nhorizon,
                                    const int ltv, const int affine, 
-                                   const float dt);
-
-// User provides array of slap matrices
-enum tiny_ErrorCode tiny_InitModelDataMatrix(tiny_Model* model, 
-    Eigen::MatrixNf* A, Eigen::MatrixNMf* B, Eigen::VectorNf* f);
-
-// User provides matrix as column-major array
-enum tiny_ErrorCode tiny_InitModel(tiny_Model* model, Eigen::MatrixNf* A, 
-    Eigen::MatrixNMf* B, Eigen::VectorNf* f, float* A_array, float* B_array, float* f_array);
+                                   const float dt,
+                                   Eigen::MatrixNf* A, 
+                                   Eigen::MatrixNMf* B, Eigen::VectorNf* f);
 
 // enum tiny_ErrorCode tiny_InitModelMemory(tiny_Model* model, Eigen::MatrixXf* mats,
 //     float* data);
@@ -35,9 +29,8 @@ enum tiny_ErrorCode tiny_InitModel(tiny_Model* model, Eigen::MatrixNf* A,
 //     tiny_Model* model, 
 //     void (*get_nonl_model)(Eigen::VectorXf*, Eigen::VectorXf*, Eigen::VectorXf*));
 
-// k = 0 to use LTI model
-enum tiny_ErrorCode tiny_EvalModel(Eigen::VectorNf* xn, Eigen::VectorNf* x, Eigen::VectorMf* u,
-                                   tiny_Model* model, const int k);
+// For all model types, k = 0 to use LTI model
+enum tiny_ErrorCode tiny_EvalModel(Eigen::VectorNf* xn, Eigen::VectorNf* x, Eigen::VectorMf* u, tiny_Model* model, const int k);
 
 enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_AdmmWorkspace* work);
 

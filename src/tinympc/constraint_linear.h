@@ -8,9 +8,9 @@
 extern "C" {
 # endif // ifdef __cplusplus
 
-enum tiny_ErrorCode tiny_SetInputBound(tiny_AdmmWorkspace* work, float* Ac_data, float* lc_data, float* uc_data);
+enum tiny_ErrorCode tiny_SetInputBound(tiny_AdmmWorkspace* work, Eigen::MatrixMf* Acu, Eigen::VectorMf* lcu, Eigen::VectorMf* ucu);
 
-enum tiny_ErrorCode tiny_SetStateBound(tiny_AdmmWorkspace* work, float* Ac_data, float* lc_data, float* uc_data);
+enum tiny_ErrorCode tiny_SetStateBound(tiny_AdmmWorkspace* work, Eigen::MatrixNf* Acx, Eigen::VectorNf* lcx, Eigen::VectorNf* ucx);
 
 // enum tiny_ErrorCode tiny_ProjectInput(tiny_AdmmWorkspace* work);
 

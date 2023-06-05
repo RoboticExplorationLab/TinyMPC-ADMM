@@ -96,7 +96,6 @@ enum tiny_ErrorCode tiny_InitWorkspace(tiny_AdmmWorkspace* work,
   work->alpha = (float)ALPHA;
   work->rho = work->stgs->rho_init;
 
-  work->data_size = m + 2*m*(N - 1);  // only input constraints
   work->first_run = 1;
   return TINY_NO_ERROR;
 }

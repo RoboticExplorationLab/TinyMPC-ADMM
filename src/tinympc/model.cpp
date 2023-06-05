@@ -7,7 +7,9 @@ extern "C" {
 enum tiny_ErrorCode tiny_InitModel(tiny_Model* model, const int nstates,
                                    const int ninputs, const int nhorizon,
                                    const int ltv, const int affine, 
-                                   const float dt) {
+                                   const float dt,
+                                   Eigen::MatrixNf* A, 
+                                   Eigen::MatrixNMf* B, Eigen::VectorNf* f) {
 
   model->nstates  = nstates;
   model->ninputs  = ninputs;
@@ -23,72 +25,10 @@ enum tiny_ErrorCode tiny_InitModel(tiny_Model* model, const int nstates,
   model->get_jacobians = TINY_NULL;
   model->get_nonl_model = TINY_NULL; 
 
-  if (model->ltv) {
-    model->data_size = model->nstates*(model->nstates + model->ninputs)*(model->nhorizon - 1);
-    if (affine) {
-      model->data_size += model->nstates*(model->nhorizon - 1);
-    }
-  }
-  else {
-    model->data_size = model->nstates*(model->nstates + model->ninputs);
-    if (model->affine) {
-    model->data_size += model->nstates;
-    }
-  }
+  model->A = A;
+  model->B = B;
+  model->f = f;
   return TINY_NO_ERROR;
-}
-
-// User provides array of slap matrices
-enum tiny_ErrorCode tiny_InitModelDataMatrix(tiny_Model* model, 
-    Eigen::MatrixNf* A, Eigen::MatrixNMf* B, Eigen::VectorNf* f) {
-  model->A = A;
-  model->B = B;
-  if (model->affine) {
-    if (f) {  
-      model->f = f;
-    }
-  }
-  return TINY_NO_ERROR;  
-}
-
-// // User provides matrix as column-major array
-enum tiny_ErrorCode tiny_InitModel(tiny_Model* model, Eigen::MatrixNf* A, 
-    Eigen::MatrixNMf* B, Eigen::VectorNf* f, float* A_array, float* B_array, float* f_array) {
-
-  model->A = A;
-  model->B = B;
-  
-  if (model->ltv) {
-    float* A_ptr = A_array;
-    float* B_ptr = B_array;
-    for (int k = 0; k < model->nhorizon-1; ++k) {
-      model->A[k] = Eigen::Map<Eigen::MatrixNf>(A_ptr); 
-      A_ptr += model->nstates * model->nstates;
-      model->B[k] = Eigen::Map<Eigen::MatrixNMf>(B_ptr); 
-      B_ptr += model->nstates * model->ninputs; 
-    }
-    if (model->affine) {
-      if (f && f_array) {  
-        model->f = f;
-        float* f_ptr = f_array;
-        for (int k = 0; k < model->nhorizon-1; ++k) {
-          model->f[k] = Eigen::Map<Eigen::VectorNf>(f_ptr); 
-          f_ptr += model->nstates;     
-        }
-      }
-    }  
-  }
-  else {
-    model->A[0] = Eigen::Map<Eigen::MatrixNf>(A_array); 
-    model->B[0] = Eigen::Map<Eigen::MatrixNMf>(B_array); 
-    if (model->affine) {
-      if (f && f_array) {
-        model->f = f;
-        model->f[0] = Eigen::Map<Eigen::VectorNf>(f_array);
-      }
-    }
-  }
-  return TINY_NO_ERROR;  
 }
 
 // enum tiny_ErrorCode tiny_SetModelJacFunc(
@@ -106,14 +46,12 @@ enum tiny_ErrorCode tiny_InitModel(tiny_Model* model, Eigen::MatrixNf* A,
 // }
 
 enum tiny_ErrorCode tiny_EvalModel(Eigen::VectorNf* xn, Eigen::VectorNf* x, Eigen::VectorMf* u, tiny_Model* model, const int k) {
-  // if (model->affine) {
-  //   return TINY_NOT_SUPPORTED;
-  // }
-  // else {
-  //   slap_MatMulAB(*xn, model->A[k], x);
-  // }
-  // MatMulAdd(*xn, model->B[k], u, 1, 1);  // x[k+1] += B * u[k]
-  (*xn).noalias() = (model->A[k]).lazyProduct(*x) + (model->B[k]).lazyProduct(*u);
+  if (model->affine) {
+    return TINY_NOT_SUPPORTED;
+  }
+  else {
+    (*xn).noalias() = (model->A[k]).lazyProduct(*x) + (model->B[k]).lazyProduct(*u);
+  } 
   return TINY_NO_ERROR;
 }
 
@@ -130,7 +68,7 @@ enum tiny_ErrorCode tiny_RollOutClosedLoop(tiny_AdmmWorkspace* work) {
       // Control input: u = - d - K*x
       // MatMulAdd2(work->soln->U[k],  work->soln->d[k], work->soln->Kinf, work->soln->X[k], -1, -1);
       (work->soln->U[k]) = -work->soln->d[k];
-      (work->soln->U[k]).noalias() -= (work->soln->Kinf).lazyProduct(work->soln->X[k]);
+      (work->soln->U[k]).noalias() -= (*(work->soln->Kinf)).lazyProduct(work->soln->X[k]);
       // Next state: x = A*x + B*u + f
       if (adaptive_horizon && k > adaptive_horizon - 1) {
         tiny_EvalModel(&(work->soln->X[k + 1]), &(work->soln->X[k]), &(work->soln->U[k]), &model[1], 0);

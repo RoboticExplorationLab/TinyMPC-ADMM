@@ -5,13 +5,13 @@
 extern "C" {
 #endif
 
+static Eigen::Matrix2f m(2,2);
+static Eigen::Matrix2f* pm = &m;
+
 struct struct1 {
   Eigen::Matrix2f* m1;
   Eigen::Matrix2f* m2;
-} st1;
-
-static Eigen::Matrix2f m(2,2);
-static Eigen::Matrix2f* pm = &m;
+} st1 {.m1 = &m};
 
 static float a_data[] = {1, 2};
 static Eigen::Map<Eigen::Vector2f> va(a_data);
@@ -22,12 +22,20 @@ void initialize() {
   st1.m1 = pm;
 }
 
+static Eigen::Matrix4f foo = (Eigen::Matrix4f() << 
+100.000000f,0.000000f,0.000000f,0.000000f,
+0.000000f,100.000000f,0.000000f,0.000000f,
+0.000000f,0.000000f,100.000000f,0.000000f,
+0.000000f,0.000000f,0.000000f,100.000000f).finished();
+
 int main()
 {    
   initialize();
   std::cout << m << std::endl;
   std::cout << *pm << std::endl;
+  std::cout << foo << std::endl;
   std::cout << *(st1.m1) << std::endl;
+  std::cout << (st1.m2) << std::endl;
   // Eigen::Vector2f vec, ub, lb;
   // vec << -3, 3;
   // ub << 1, 2;

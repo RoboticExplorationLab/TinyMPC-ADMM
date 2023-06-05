@@ -4,23 +4,21 @@
 extern "C" {
 #endif
 
-enum tiny_ErrorCode tiny_SetInputBound(tiny_AdmmWorkspace* work, float* Ac_data, float* lc_data, float* uc_data) {
-  int n = work->data->model->ninputs;
+enum tiny_ErrorCode tiny_SetInputBound(tiny_AdmmWorkspace* work, Eigen::MatrixMf* Acu, Eigen::VectorMf* lcu, Eigen::VectorMf* ucu) {
   work->stgs->en_cstr_inputs = EN_CSTR_INPUTS;
-  work->data->Acu = Eigen::Map<Eigen::MatrixMf>(Ac_data);
-  (work->data->Acu).setIdentity();
-  work->data->lcu = Eigen::Map<Eigen::VectorMf>(lc_data);
-  work->data->ucu = Eigen::Map<Eigen::VectorMf>(uc_data);
+  work->data->Acu = Acu;
+  (*(work->data->Acu)).setIdentity();
+  work->data->lcu = lcu;
+  work->data->ucu = ucu;
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_SetStateBound(tiny_AdmmWorkspace* work, float* Ac_data, float* lc_data, float* uc_data) {
-  int n = work->data->model[0].nstates;
-  work->stgs->en_cstr_states = EN_CSTR_STATES;
-  work->data->Acx = Eigen::Map<Eigen::MatrixNf>(Ac_data);
-  (work->data->Acx).setIdentity();
-  work->data->lcx = Eigen::Map<Eigen::VectorNf>(lc_data);
-  work->data->ucx = Eigen::Map<Eigen::VectorNf>(uc_data);
+enum tiny_ErrorCode tiny_SetStateBound(tiny_AdmmWorkspace* work, Eigen::MatrixNf* Acx, Eigen::VectorNf* lcx, Eigen::VectorNf* ucx) {
+  work->stgs->en_cstr_inputs = EN_CSTR_STATES;
+  work->data->Acx = Acx;
+  (*(work->data->Acx)).setIdentity();
+  work->data->lcx = lcx;
+  work->data->ucx = ucx;
   return TINY_NO_ERROR;
 }
 

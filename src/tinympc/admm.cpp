@@ -92,48 +92,32 @@ enum tiny_ErrorCode UpdatePrimal(tiny_AdmmWorkspace* work) {
 }
 
 enum tiny_ErrorCode UpdateSlackDual(tiny_AdmmWorkspace* work) {
-  int n = work->data->model[0].ninputs;
   int N = work->data->model[0].nhorizon;
 
   for (int k = 0; k < N - 1; ++k) {
-    // MatAdd(work->soln->YU[k], work->soln->YU[k], work->soln->U[k], 1);
     work->soln->YU[k] = work->soln->YU[k] + work->soln->U[k];
-    // for (int i = 0; i < n; ++i) { 
-    //   work->ZU_new[k].data[i] = T_MIN(T_MAX(work->soln->YU[k].data[i],
-    //                             work->data->lcu.data[i]),  // Between lower
-    //                             work->data->ucu.data[i]);  // and upper bounds
-    // } 
-    work->ZU_new[k] = work->soln->YU[k].cwiseMin(work->data->ucu).cwiseMax(work->data->lcu); 
-    // MatAdd(work->soln->YU[k], work->soln->YU[k], work->ZU_new[k], -1);
+    work->ZU_new[k] = work->soln->YU[k].cwiseMin(*(work->data->ucu)).cwiseMax(*(work->data->lcu)); 
+
     work->soln->YU[k] = work->soln->YU[k] - work->ZU_new[k];
   }
   return TINY_NO_ERROR;
 }
 
 enum tiny_ErrorCode ComputePrimalResidual(tiny_AdmmWorkspace* work) {
-  int n = work->data->model[0].ninputs;
   int N = work->data->model[0].nhorizon;
   work->info->pri_res = 0;
   for (int k = 0; k < N - 1; ++k) {    
-    // for (int i = 0; i < n; ++i) {      
-    //   work->info->pri_res = T_MAX(work->info->pri_res, 
-    //                 T_ABS(work->soln->U[k].data[i] - work->ZU_new[k].data[i]));
-    // } 
     work->info->pri_res = T_MAX(work->info->pri_res, (work->soln->U[k] - work->ZU_new[k]).cwiseAbs().maxCoeff());
   }
   return TINY_NO_ERROR;
 }
 
 enum tiny_ErrorCode ComputeDualResidual(tiny_AdmmWorkspace* work) {
-  int n = work->data->model[0].ninputs;
   int N = work->data->model[0].nhorizon;
   work->info->dua_res = 0;
   for (int k = 0; k < N - 1; ++k) {
-    // for (int i = 0; i < n; ++i) {      
-    //   work->info->dua_res = T_MAX(work->info->dua_res, 
-    //                 T_ABS(work->ZU_new[k].data[i] - work->ZU[k].data[i]));
-    // } 
-    work->info->dua_res = T_MAX(work->info->dua_res, (work->ZU_new[k] - work->ZU[k]).cwiseAbs().maxCoeff());
+    work->info->dua_res = T_MAX(work->info->dua_res, 
+                         (work->ZU_new[k] - work->ZU[k]).cwiseAbs().maxCoeff());
   }
   work->info->dua_res = work->info->dua_res * work->rho;
   return TINY_NO_ERROR;
@@ -183,13 +167,7 @@ enum tiny_ErrorCode UpdateInfo(tiny_AdmmWorkspace* work,
   return TINY_NO_ERROR;
 }
 
-enum tiny_ErrorCode tiny_WarmStartInput(tiny_AdmmWorkspace* work, float* U_data) {
-  int N = work->data->model->nhorizon;
-  int m = work->data->model->ninputs;
-  for (int i = 0; i < N - 1; ++i) {
-    // slap_Copy(work->soln->U[i], &U_data[i * m]);
-    // (work->soln->U[i]).data() = &U_data[i * m];
-    work->soln->U[i] = Eigen::Map<Eigen::VectorMf>(&U_data[i * m]);
-  }
+enum tiny_ErrorCode tiny_WarmStartInput(tiny_AdmmWorkspace* work, Eigen::VectorMf* U) {
+  work->soln->U = U;
   return TINY_NO_ERROR;
 }
