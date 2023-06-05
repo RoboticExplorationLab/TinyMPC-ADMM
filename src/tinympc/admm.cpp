@@ -6,7 +6,6 @@ enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work) {
 
   // Shortcut unconstrained problem
   if (!IsConstrained(work)) {
-    printf("No constraints\n");
     tiny_SolveLqr(work);
     return TINY_NO_ERROR;
   }
@@ -50,7 +49,6 @@ enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work) {
     tiny_UpdateConstrainedLinearCost(work);
 
     /* End of ADMM STEPS */
-    // print()
     // Can we check for termination ?
     can_check_termination = work->stgs->check_termination &&
                             (iter % work->stgs->check_termination == 0);
@@ -162,8 +160,8 @@ int CheckTermination(tiny_AdmmWorkspace* work) {
 }
 
 enum tiny_ErrorCode UpdateInfo(tiny_AdmmWorkspace* work,
-                                int                 iter,
-                                int                 compute_objective) {
+                                int                iter,
+                                int                compute_objective) {
 
   work->info->iter = iter; // Update iteration number
   // Compute the objective if needed
