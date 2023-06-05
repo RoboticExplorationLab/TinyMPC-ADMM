@@ -5,10 +5,7 @@
 extern "C" {
 # endif // ifdef __cplusplus
 
-
-#include <slap/slap.h>
-
-static float X_ref_data[] = {
+float X_ref_data[] = {
   0.0,1.0,0.1,
   0.0,1.0,0.1,
   0.0,1.0,0.2,

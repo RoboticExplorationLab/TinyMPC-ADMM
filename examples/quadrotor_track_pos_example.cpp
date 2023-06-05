@@ -3,17 +3,18 @@
 //
 
 #include "data/traj_pos_fig8.h"
-#include "quadrotor.h"
-#include "slap/slap.h"
 #include "time.h"
 #include "tinympc/tinympc.h"
+#include "Eigen.h"
 
 // Macro variables
 #define H 0.01       // dt
-#define NSTATES 12   // no. of states (error state)
-#define NINPUTS 4    // no. of controls
+// #define NSTATES 12   // no. of states (error state)
+// #define NINPUTS 4    // no. of controls
 #define NHORIZON 10  // horizon steps (NHORIZON states and NHORIZON-1 controls)
 #define NSIM 500     // simulation steps (fixed with reference data)
+
+using namespace Eigen;
 
 int main() {
   /* Start MPC initialization*/
@@ -139,36 +140,45 @@ int main() {
   float YU_data[NINPUTS * (NHORIZON - 1)] = {0};
 
   // Created matrices
-  Matrix X[NSIM];
-  Matrix Xref[NSIM];
-  Matrix Uref[NSIM - 1];
-  Matrix Xhrz[NHORIZON];
-  Matrix Uhrz[NHORIZON - 1];
-  Matrix d[NHORIZON - 1];
-  Matrix p[NHORIZON];
-  Matrix YU[NHORIZON - 1];
-  Matrix ZU[NHORIZON - 1];
-  Matrix ZU_new[NHORIZON - 1];
-  Matrix q[NHORIZON-1];
-  Matrix r[NHORIZON-1];
-  Matrix r_tilde[NHORIZON-1];
-  Matrix A;
-  Matrix B;
-  Matrix f;
+  VectorNf X[NSIM];
+  VectorNf Xref[NHORIZON];
+  VectorMf Uref[NHORIZON - 1];
+  VectorNf Xhrz[NHORIZON];
+  VectorMf Uhrz[NHORIZON - 1];
+  VectorMf d[NHORIZON - 1];
+  VectorNf p[NHORIZON];
+  VectorMf YU[NHORIZON - 1];
+  VectorMf ZU[NHORIZON - 1];
+  VectorMf ZU_new[NHORIZON - 1];
+  VectorNf q[NHORIZON-1];
+  VectorMf r[NHORIZON-1];
+  VectorMf r_tilde[NHORIZON-1];
+  MatrixNf A;
+  MatrixNMf B;
+  VectorNf f;
 
   for (int i = 0; i < NSIM; ++i) {
-    if (i < NSIM - 1) {
-      Uref[i] = slap_MatrixFromArray(NINPUTS, 1, ug_data);
-    }
-    X[i] = slap_MatrixFromArray(NSTATES, 1, &X_data[i * NSTATES]);
-    Xref[i] = slap_MatrixFromArray(NSTATES, 1, &Xref_data[i * NSTATES]);
+    X[i] = Map<VectorNf>(&X_data[i * NSTATES]);
   }
+
+  for (int i = 0; i < NHORIZON; ++i) {
+    if (i < NHORIZON - 1) {
+      Uref[i] = Map<VectorMf>(ug_data);
+    }
+    Xref[i] = Map<VectorNf>(&Xref_data[i * NSTATES]);
+  }
+
   for (int i = 0; i < NHORIZON; ++i) {
     for (int j = 0; j < 3; ++j) {
       Xref_data[i*NSTATES + j] = X_ref_data[(i)*3+j];
+      printf("%f\n", Xref_data[i*NSTATES + j]);
     }
   }
-
+  PrintMatrix(Xref[0]);
+  printf("%d\n", Xref[0].data());
+  printf("%d\n\n", &Xref_data[0]);
+  printf("%d\n", Uref[0].data());
+  printf("%d\n", ug_data);
   /* Create TinyMPC struct and problem data*/
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.01);
@@ -204,8 +214,8 @@ int main() {
 
   /* Set up constraints */
   tiny_SetInputBound(&work, Acu_data, umin_data, umax_data);
-  slap_SetConst(data.ucu, 0.5);
-  slap_SetConst(data.lcu, -0.5);
+  (data.ucu).fill(0.5);
+  (data.lcu).fill(-0.5);
 
   tiny_UpdateLinearCost(&work);
 
@@ -235,45 +245,44 @@ int main() {
   // Absolute formulation:
   // Warm-starting since horizon data is reused
   // Stop earlier as horizon exceeds the end
-  slap_Copy(X[0], work.data->x0);  
+  X[0] = work.data->x0;  
   srand(1);  // random seed
 
   /* End of MPC initialization*/
 
   /* Start MPC loop */
 
-  for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
-    Matrix pose = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
-    Matrix pose_ref = slap_CreateSubMatrix(Xref[0], 0, 0, 3, 1);
-    // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[k]));
-    printf("ex[%d] =  %.4f\n", k, slap_NormedDifference(pose, pose_ref));
-    // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
+  for (int k = 0; k < 1; ++k) {
+    MatrixXf pose = X[k](seq(0,5));
+    MatrixXf pose_ref = Xref[0](seq(0,5));
+    printf("ex[%d] =  %.4f\n", k, (pose - pose_ref).norm());
 
     // Inject noise into measurement
     for (int j = 0; j < NSTATES; ++j) {
-      X[k].data[j] += X[k].data[j] * T_NOISE(0);
+      X[k](j) += X[k](j) * T_NOISE(0);
     }
 
     clock_t start, end;
     double cpu_time_used;
     start = clock();
 
-    MatCpy(work.data->x0, X[k]);  // update current measurement
+    work.data->x0 = X[k]; // update current measurement
 
     // Update reference: 3 positions, k counts each MPC step
     for (int i = 0; i < NHORIZON; ++i) {
       for (int j = 0; j < 3; ++j) {
         Xref_data[i*NSTATES + j] = X_ref_data[(k+i)*3+j];
+        // printf("%f\n", Xref_data[i*NSTATES + j]);
       }
     }
     tiny_UpdateLinearCost(&work);
 
-    // for (int i = 0; i < NHORIZON; ++i) { 
-    //   PrintMatrixT(Xref[i]);
-    // }
+    for (int i = 0; i < NHORIZON; ++i) { 
+      // PrintMatrixT(Xref[i]);
+    }
 
     // Warm-start by previous solution
-    tiny_ShiftFill(Uhrz, T_ARRAY_SIZE(Uhrz));
+    // tiny_ShiftFill(Uhrz, T_ARRAY_SIZE(Uhrz));
 
     // Solve optimization problem using Augmented Lagrangian TVLQR
     tiny_SolveAdmm(&work);
@@ -291,11 +300,12 @@ int main() {
     // PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
-    PrintMatrixT(pose);
+    // PrintMatrixT(pose);
+    // PrintMatrixT(pose_ref);
 
     // === 2. Simulate dynamics using the first control solution ===
     // tiny_Clamp(ZU_new[0].data, umin_data[0], umax_data[0], NINPUTS);
-    tiny_EvalModel(&X[k + 1], X[k], ZU_new[0], &model, 0);
+    tiny_EvalModel(&X[k + 1], &X[k], &ZU_new[0], &model, 0);
   }
 
   return 0;

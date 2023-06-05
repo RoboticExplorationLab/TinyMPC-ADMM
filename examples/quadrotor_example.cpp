@@ -140,22 +140,22 @@ int main() {
   float YU_data[NINPUTS * (NHORIZON - 1)] = {0};
 
   // Created matrices
-  VectorNf    X[NSIM];
-  VectorNf    Xref[NSIM];
-  VectorMf     Uref[NSIM - 1];
-  VectorNf    Xhrz[NHORIZON];
-  VectorMf     Uhrz[NHORIZON - 1];
-  VectorMf     d[NHORIZON - 1];
-  VectorNf    p[NHORIZON];
-  VectorMf     YU[NHORIZON - 1];
-  VectorMf     ZU[NHORIZON - 1];
-  VectorMf     ZU_new[NHORIZON - 1];
-  VectorNf    q[NHORIZON-1];
-  VectorMf     r[NHORIZON-1];
-  VectorMf     r_tilde[NHORIZON-1];
-  MatrixNf    A;
-  MatrixNMf  B;
-  VectorNf    f;
+  VectorNf X[NSIM];
+  VectorNf Xref[NSIM];
+  VectorMf Uref[NSIM - 1];
+  VectorNf Xhrz[NHORIZON];
+  VectorMf Uhrz[NHORIZON - 1];
+  VectorMf d[NHORIZON - 1];
+  VectorNf p[NHORIZON];
+  VectorMf YU[NHORIZON - 1];
+  VectorMf ZU[NHORIZON - 1];
+  VectorMf ZU_new[NHORIZON - 1];
+  VectorNf q[NHORIZON-1];
+  VectorMf r[NHORIZON-1];
+  VectorMf r_tilde[NHORIZON-1];
+  MatrixNf A;
+  MatrixNMf B;
+  VectorNf f;
 
   for (int i = 0; i < NSIM; ++i) {
     X[i] = Map<VectorNf>(&X_data[i * NSTATES]);
@@ -236,9 +236,7 @@ int main() {
   for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
     MatrixXf pose = X[k](seq(0,5));
     MatrixXf pose_ref = Xref[0](seq(0,5));
-    // printf("ex[%d] = %.4f\n", k, slap_NormedDifference(X[k], Xref[0]));
-    // printf("ex[%d] =  %.4f\n", k, (pose - pose_ref).norm());
-    // printf("%.4f\n", slap_NormedDifference(pose, pose_ref));
+    printf("ex[%d] =  %.4f\n", k, (pose - pose_ref).norm());
 
     // Inject noise into measurement
     for (int j = 0; j < NSTATES; ++j) {
