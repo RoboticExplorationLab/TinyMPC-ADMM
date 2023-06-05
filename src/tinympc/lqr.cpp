@@ -35,6 +35,7 @@ enum tiny_ErrorCode tiny_BackwardPassGrad(tiny_AdmmWorkspace* work) {
       // slap_MatMulAB(work->soln->d[k], work->Quu_inv, work->Qu);
       // (work->soln->d[k]).noalias() = work->Quu_inv * work->Qu;
       (work->soln->d[k]).noalias() = (*(work->Quu_inv)).lazyProduct(*(work->Qu));
+      // PrintMatrixT(work->soln->d[k]);
 
       /* Compute p[k] .= q[k] + AmBKt*p[k+1] - Kinf'*r[k] + coeff_d2p*d[k] */
       // slap_MatMulAtB(work->soln->p[k], work->soln->Kinf, work->data->r_tilde[k]);
@@ -43,7 +44,8 @@ enum tiny_ErrorCode tiny_BackwardPassGrad(tiny_AdmmWorkspace* work) {
       // MatAdd(work->soln->p[k],work->soln->p[k], work->data->q[k], 1);  
       work->soln->p[k] = work->data->q[k];
       (work->soln->p[k]).noalias() += (*(work->AmBKt)).lazyProduct(work->soln->p[k+1])
-                         - ((*(work->soln->Kinf)).transpose()).lazyProduct(work->data->r_tilde[k]) + (*(work->coeff_d2p)).lazyProduct(work->soln->d[k]);    
+                         - ((*(work->soln->Kinf)).transpose()).lazyProduct(work->data->r_tilde[k]) + (*(work->coeff_d2p)).lazyProduct(work->soln->d[k]);   
+      // PrintMatrixT(work->soln->p[k]);
     }
   }
   return TINY_NO_ERROR;

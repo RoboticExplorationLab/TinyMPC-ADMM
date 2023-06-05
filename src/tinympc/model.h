@@ -2,6 +2,7 @@
 # define MODEL_H
 
 #include "types.h"
+#include "utils.h"
 
 # ifdef __cplusplus
 extern "C" {

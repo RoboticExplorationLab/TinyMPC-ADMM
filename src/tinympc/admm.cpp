@@ -6,6 +6,7 @@ enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work) {
 
   // Shortcut unconstrained problem
   if (!IsConstrained(work)) {
+    printf("No constraints\n");
     tiny_SolveLqr(work);
     return TINY_NO_ERROR;
   }
@@ -33,9 +34,10 @@ enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work) {
     /* ADMM STEPS */
 
     // Update z_prev (preallocated, no malloc)
-    for (int i = 0; i < N - 1; ++i) {
-      // SwapVectors(&((work->ZU_new[i]).data()), &((work->ZU[i]).data()));
-      work->ZU[i] = work->ZU_new[i];
+    if (work->stgs->en_cstr_inputs) {
+      for (int i = 0; i < N - 1; ++i) {
+        work->ZU[i] = work->ZU_new[i];
+      }
     }
 
     /* Compute x^{k+1} */
@@ -94,11 +96,13 @@ enum tiny_ErrorCode UpdatePrimal(tiny_AdmmWorkspace* work) {
 enum tiny_ErrorCode UpdateSlackDual(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
 
-  for (int k = 0; k < N - 1; ++k) {
-    work->soln->YU[k] = work->soln->YU[k] + work->soln->U[k];
-    work->ZU_new[k] = work->soln->YU[k].cwiseMin(*(work->data->ucu)).cwiseMax(*(work->data->lcu)); 
+  if (work->stgs->en_cstr_inputs) {
+    for (int k = 0; k < N - 1; ++k) {
+      work->soln->YU[k] = work->soln->YU[k] + work->soln->U[k];
+      work->ZU_new[k] = work->soln->YU[k].cwiseMin(*(work->data->ucu)).cwiseMax(*(work->data->lcu)); 
 
-    work->soln->YU[k] = work->soln->YU[k] - work->ZU_new[k];
+      work->soln->YU[k] = work->soln->YU[k] - work->ZU_new[k];
+    }
   }
   return TINY_NO_ERROR;
 }
@@ -106,8 +110,10 @@ enum tiny_ErrorCode UpdateSlackDual(tiny_AdmmWorkspace* work) {
 enum tiny_ErrorCode ComputePrimalResidual(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
   work->info->pri_res = 0;
-  for (int k = 0; k < N - 1; ++k) {    
-    work->info->pri_res = T_MAX(work->info->pri_res, (work->soln->U[k] - work->ZU_new[k]).cwiseAbs().maxCoeff());
+  if (work->stgs->en_cstr_inputs) {
+    for (int k = 0; k < N - 1; ++k) {    
+      work->info->pri_res = T_MAX(work->info->pri_res, (work->soln->U[k] - work->ZU_new[k]).cwiseAbs().maxCoeff());
+    }
   }
   return TINY_NO_ERROR;
 }
@@ -115,11 +121,13 @@ enum tiny_ErrorCode ComputePrimalResidual(tiny_AdmmWorkspace* work) {
 enum tiny_ErrorCode ComputeDualResidual(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
   work->info->dua_res = 0;
-  for (int k = 0; k < N - 1; ++k) {
-    work->info->dua_res = T_MAX(work->info->dua_res, 
-                         (work->ZU_new[k] - work->ZU[k]).cwiseAbs().maxCoeff());
-  }
+  if (work->stgs->en_cstr_inputs) {
+    for (int k = 0; k < N - 1; ++k) {
+      work->info->dua_res = T_MAX(work->info->dua_res, 
+                          (work->ZU_new[k] - work->ZU[k]).cwiseAbs().maxCoeff());
+    }
   work->info->dua_res = work->info->dua_res * work->rho;
+  }
   return TINY_NO_ERROR;
 }
 

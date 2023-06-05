@@ -35,9 +35,11 @@ enum tiny_ErrorCode tiny_UpdateLinearCost(tiny_AdmmWorkspace* work) {
 
 enum tiny_ErrorCode tiny_UpdateConstrainedLinearCost(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
-  for (int k = 0; k < N - 1; ++k) {
-    /* Compute r_tilde[k] = r[k] - ρ*(z[k]-y[k]) */ 
-    work->data->r_tilde[k] = work->data->r[k] - work->rho * (work->ZU_new[k] - work->soln->YU[k]);
+  if (work->stgs->en_cstr_inputs) {
+    for (int k = 0; k < N - 1; ++k) {
+      /* Compute r_tilde[k] = r[k] - ρ*(z[k]-y[k]) */ 
+      work->data->r_tilde[k] = work->data->r[k] - work->rho * (work->ZU_new[k] - work->soln->YU[k]);
+    }
   }
   return TINY_NO_ERROR;
 }

@@ -141,7 +141,7 @@ static VectorMf ZU[NHORIZON-1];
 static VectorMf ZU_new[NHORIZON-1];
 
 static VectorNf x0 = (Eigen::VectorNf() << 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0).finished();
-static VectorNf xg = (Eigen::VectorNf() << 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).finished();
+static VectorNf xg = (Eigen::VectorNf() << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).finished();
 static VectorMf ug = (Eigen::VectorMf() << 0, 0, 0, 0).finished();;
 
 static VectorNf X[NSIM];
@@ -154,7 +154,7 @@ static tiny_AdmmInfo info;
 static tiny_AdmmSolution soln;
 static tiny_AdmmWorkspace work;
 
-void init_mpc() {
+void InitMpc() {
   /* Start MPC initialization*/
 
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, DT, &A, &B, 0);
@@ -177,24 +177,11 @@ void init_mpc() {
   tiny_SetInputBound(&work, &Acu, &lcu, &ucu);
   ucu.fill(0.5);
   lcu.fill(-0.5);
-
+  printf("Is constrained? %d\n", IsConstrained(&work));
   tiny_UpdateLinearCost(&work);
 
-  if (1) {
-    printf("\nProblem Info: \n");
-    PrintMatrix(work.data->model->A[0]);
-    PrintMatrix(work.data->model->B[0]);
-    PrintMatrix((*(work.data->Q)));
-    PrintMatrix((*(work.data->R)));
-    PrintMatrixT((*(work.data->x0)));
-    PrintMatrixT(work.data->Xref[0]);
-    PrintMatrixT(work.data->Uref[0]);
-    PrintMatrixT(work.data->q[0]);
-    PrintMatrixT(work.data->r[0]);
-  }
-
   /* Solver settings */
-  stgs.max_iter = 100;           // limit this if needed
+  stgs.max_iter = 1;           // limit this if needed
   stgs.verbose = 0;
   stgs.check_termination = 1;
   stgs.tol_abs_dual = 5e-2;
@@ -210,17 +197,25 @@ void init_mpc() {
 }
 
 int main() {
-  init_mpc();
 
-  for (int k = 0; k < NHORIZON; ++k) {
-    // PrintMatrixT(work.data->Xref[k]);
-    // PrintMatrixT(Xref[k]);
-    // printf("%f\n", (work.data->Xref[k])(0));
-  }
+  InitMpc();
 
   /* Start MPC loop */
 
-  printf("*** Start MPC loop ***\n");
+  if (0) {
+    printf("\nProblem Info: \n");
+    PrintMatrix(work.data->model->A[0]);
+    PrintMatrix(work.data->model->B[0]);
+    PrintMatrix((*(work.data->Q)));
+    PrintMatrix((*(work.data->R)));
+    PrintMatrixT((*(work.data->x0)));
+    PrintMatrixT(work.data->Xref[0]);
+    PrintMatrixT(work.data->Uref[0]);
+    PrintMatrixT(work.data->q[0]);
+    PrintMatrixT(work.data->r[0]);
+  }
+
+  printf("\n*** Start MPC loop ***\n");
   for (int k = 0; k < NSIM - NHORIZON - 1; ++k) {
     MatrixXf pose = X[k](seq(0,5));
     MatrixXf pose_ref = Xref[0](seq(0,5));
@@ -228,7 +223,7 @@ int main() {
 
     // Inject noise into measurement
     for (int j = 0; j < NSTATES; ++j) {
-      X[k](j) += X[k](j) * T_NOISE(0);
+      X[k](j) += X[k](j) * T_NOISE(1);
     }
 
     clock_t start, end;
@@ -236,6 +231,7 @@ int main() {
     start = clock();
 
     work.data->x0 = &(X[k]); // update current measurement
+    // PrintMatrixT(*(work.data->x0));
     // Warm-start by previous solution
     // tiny_ShiftFill(Uhrz, T_ARRAY_SIZE(Uhrz));
 
@@ -254,15 +250,13 @@ int main() {
 
     // PrintMatrixT(Uhrz[0]);
 
-    PrintMatrixT(pose);
-    PrintMatrixT(work.data->Xref[0]);
+    // PrintMatrixT(pose);
+    // PrintMatrixT(work.data->Xref[0]);
 
     // === 2. Simulate dynamics using the first control solution ===
-    // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uref[k]);
     // tiny_Clamp(ZU_new[0].data, umin[0], umax[0], NINPUTS);
     // If no constraints, use Uhrz[0]
-    // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], ZU_new[0]);
-    tiny_EvalModel(&X[k + 1], &X[k], ZU_new, &model, 0);
+    tiny_EvalModel(&X[k + 1], &X[k], ZU, &model, 0);
   }
 
   return 0;
