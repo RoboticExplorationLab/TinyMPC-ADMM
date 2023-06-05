@@ -212,7 +212,7 @@ sfloat R_data[NINPUTS*NINPUTS] = {
   stgs.en_cstr_goal = 0;
   stgs.en_cstr_inputs = 1;
   stgs.en_cstr_states = 0;
-  stgs.max_iter = 1;           // limit this if needed
+  stgs.max_iter = 100;           // limit this if needed
   stgs.verbose = 1;
   stgs.check_termination = 1;
   stgs.tol_abs_dual = 5e-2;
@@ -265,7 +265,7 @@ sfloat R_data[NINPUTS*NINPUTS] = {
     // PrintMatrixT(Uhrz[0]);
 
     // Matrix pos = slap_CreateSubMatrix(X[k], 0, 0, 3, 1);
-    // PrintMatrixT(pos);
+    PrintMatrixT(pose);
 
     // === 2. Simulate dynamics using the first control solution ===
     // tiny_QuadNonlinearDynamics(&X[k + 1], X[k], Uref[k]);
