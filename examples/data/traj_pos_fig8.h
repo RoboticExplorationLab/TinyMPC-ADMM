@@ -7,7 +7,7 @@
 extern "C" {
 # endif // ifdef __cplusplus
 
-static Eigen::Vector3f Xref[] = {
+static Eigen::Vector3f XrefAll[] = {
 (Eigen::Vector3f() << -6.123233995736766e-17,6.123233995736766e-17,0.5).finished(),
 (Eigen::Vector3f() << -0.006283019941676418,0.006283143965559066,0.5).finished(),
 (Eigen::Vector3f() << -0.012565047721668906,0.012566039883352776,0.5).finished(),

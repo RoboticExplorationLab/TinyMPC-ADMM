@@ -6,7 +6,7 @@
 #include "tinympc/tinympc.h"
 #include "Eigen.h"
 
-#include "data/traj_fig8.h"
+#include "data/traj_pos_fig8.h"
 
 // Macro variables
 #define DT 0.01       // dt
@@ -130,6 +130,7 @@ static VectorNf q[NHORIZON-1];
 static VectorMf r[NHORIZON-1];
 static VectorMf r_tilde[NHORIZON-1];
 
+static VectorNf Xref[NHORIZON];
 static VectorMf Uref[NHORIZON-1];
 
 static MatrixMf Acu;
@@ -167,7 +168,9 @@ void InitMpc() {
   tiny_InitSolution(&work, Xhrz, Uhrz, 0, YU, 0, &Kinf, d, &Pinf, p);
 
   tiny_SetInitialState(&work, &x0);  
-  // tiny_SetGoalReference(&work, Xref, Uref, &xg, &ug);
+  for (int k = 0; k < NHORIZON; ++k) {
+    Xref[k](seq(0,2)) = XrefAll[k];
+  }
   tiny_SetStateReference(&work, Xref);
   tiny_SetGoalInput(&work, Uref, &ug);
 
@@ -178,7 +181,6 @@ void InitMpc() {
   tiny_SetInputBound(&work, &Acu, &lcu, &ucu);
   ucu.fill(0.5);
   lcu.fill(-0.5);
-  printf("Is constrained? %d\n", IsConstrained(&work));
   tiny_UpdateLinearCost(&work);
 
   /* Solver settings */
@@ -204,6 +206,7 @@ int main() {
   /* Start MPC loop */
 
   if (1) {
+    printf("\nPOSITION TRACKING QUADROTOR\n");
     printf("\nProblem Info: \n");
     PrintMatrix(work.data->model->A[0]);
     PrintMatrix(work.data->model->B[0]);
@@ -234,7 +237,10 @@ int main() {
     work.data->x0 = &(X[k]); // update current measurement
 
     // Update reference
-    data.Xref = &Xref[k];
+    for (int i = 0; i < NHORIZON; ++i) {
+      Xref[i](seq(0,2)) = XrefAll[k+i];
+    }
+    // data.Xref = &Xref[k];
     // data.Uref = &Uref[k];
     tiny_UpdateLinearCost(&work);
 

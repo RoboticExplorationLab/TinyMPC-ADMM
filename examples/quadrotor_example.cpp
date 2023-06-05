@@ -204,6 +204,7 @@ int main() {
   /* Start MPC loop */
 
   if (0) {
+    printf("\nHOVERING QUADROTOR\n");
     printf("\nProblem Info: \n");
     PrintMatrix(work.data->model->A[0]);
     PrintMatrix(work.data->model->B[0]);
