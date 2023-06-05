@@ -28,8 +28,8 @@ typedef struct {
   int ninputs;
   int nhorizon;
 
-  int ltv;            ///< Boolean, true if model is LTV  
-  int affine;         ///< Boolean, true if model is affine
+  int   ltv;            ///< Boolean, true if model is LTV  
+  int   affine;         ///< Boolean, true if model is affine
   float dt;          ///< Sample time Ts of the discrete model
 
   Eigen::MatrixNf*  A;
@@ -49,14 +49,14 @@ typedef struct {
   Eigen::VectorNf* X;      ///< State trajectory solution 
   Eigen::VectorMf* U;      ///< Input trajectory solution
 
-  Eigen::MatrixMNf Kinf;    ///< Feedback gain of IHLQR
-  Eigen::VectorMf* d;      ///< Feedforward gain
-  Eigen::MatrixNf  Pinf;    ///< Terminal cost Hessian of IHLQR
-  Eigen::VectorNf* p;      ///< Terminal cost gradient
+  Eigen::MatrixMNf* Kinf;    ///< Feedback gain of IHLQR
+  Eigen::VectorMf*  d;      ///< Feedforward gain
+  Eigen::MatrixNf*  Pinf;    ///< Terminal cost Hessian of IHLQR
+  Eigen::VectorNf*  p;      ///< Terminal cost gradient
   
   Eigen::VectorMf* YU;     ///< Dual variables for input constraints
   Eigen::VectorNf* YX;     ///< Dual variables for state constraints
-  Eigen::VectorNf  YG;      ///< Dual variables for goal constraint
+  Eigen::VectorNf*  YG;      ///< Dual variables for goal constraint
 
   int data_size;
 } tiny_AdmmSolution;
@@ -87,7 +87,7 @@ typedef struct {
   float reg_min;             ///< Minimum regularization
   float reg_max;             ///< Maximum regularization
   float reg_mul;             ///< Regularization update multiplier
-  int    en_reg_update;       ///< Boolean, enable regularization update (tighter solve)
+  int   en_reg_update;       ///< Boolean, enable regularization update (tighter solve)
   
   float rho_init;            ///< Initial rho
   float rho_max;             ///< Maximum rho
@@ -95,23 +95,23 @@ typedef struct {
 
   float alpha_mul;           ///< Line-search step multiplier
 
-  int    max_iter;            ///< Maximum number of AL iterations
-  int    max_iter_riccati;    ///< Maximum number of Riccati solve iterations
-  int    max_iter_ls;         ///< Maximum number of line-search iterations
+  int   max_iter;            ///< Maximum number of AL iterations
+  int   max_iter_riccati;    ///< Maximum number of Riccati solve iterations
+  int   max_iter_ls;         ///< Maximum number of line-search iterations
 
   float tol_abs_prim;        ///< Riccati solve tolerance
   float tol_abs_dual;        ///< Constraint tolerance
 
-  int    en_cstr_states;      ///< Boolean, enable inequality constraints on states
-  int    en_cstr_inputs;      ///< Boolean, enable inequality constraints on inputs
-  int    en_cstr_goal;        ///< Boolean, enable equality constraint on goal
+  int   en_cstr_states;      ///< Boolean, enable inequality constraints on states
+  int   en_cstr_inputs;      ///< Boolean, enable inequality constraints on inputs
+  int   en_cstr_goal;        ///< Boolean, enable equality constraint on goal
 
-  int    verbose;             ///< Integer, level to write out progress
-  int    adaptive_horizon;    ///< Integer, after `adaptive_horizon` steps, use the second model with longer interval; if 0, disabled 
-  int    check_riccati;       ///< Boolean, if 0, then termination checking is disabled
-  int    check_termination;   ///< Integer, check termination interval; if 0, then termination checking is disabled
-  int    warm_start;          ///< boolean, enable warm start
-  float  time_limit;          ///< Time limit of each MPC step; if 0, disabled
+  int   verbose;             ///< Integer, level to write out progress
+  int   adaptive_horizon;    ///< Integer, after `adaptive_horizon` steps, use the second model with longer interval; if 0, disabled 
+  int   check_riccati;       ///< Boolean, if 0, then termination checking is disabled
+  int   check_termination;   ///< Integer, check termination interval; if 0, then termination checking is disabled
+  int   warm_start;          ///< boolean, enable warm start
+  float time_limit;          ///< Time limit of each MPC step; if 0, disabled
 } tiny_AdmmSettings;
 
 // void tiny_InitSettings(tiny_AdmmSettings* solver);
@@ -122,10 +122,10 @@ typedef struct {
  */
 typedef struct {
   tiny_Model* model;    ///< System model
-  Eigen::VectorNf x0;
+  Eigen::VectorNf* x0;
 
-  Eigen::MatrixNf  Q;
-  Eigen::MatrixMf  R;
+  Eigen::MatrixNf* Q;
+  Eigen::MatrixMf* R;
   Eigen::VectorNf* q;
   Eigen::VectorMf* r;
   Eigen::VectorMf* r_tilde;
@@ -133,12 +133,12 @@ typedef struct {
   Eigen::VectorNf* Xref;
   Eigen::VectorMf* Uref;
 
-  Eigen::MatrixNf Acx;
-  Eigen::VectorNf ucx;
-  Eigen::VectorNf lcx;
-  Eigen::MatrixMf Acu;
-  Eigen::VectorMf ucu;
-  Eigen::VectorMf lcu;
+  Eigen::MatrixNf* Acx;
+  Eigen::VectorNf* ucx;
+  Eigen::VectorNf* lcx;
+  Eigen::MatrixMf* Acu;
+  Eigen::VectorMf* ucu;
+  Eigen::VectorMf* lcu;
   
   int data_size;
 } tiny_AdmmData;
@@ -146,20 +146,20 @@ typedef struct {
 // void tiny_InitProblemData(tiny_ProblemData* prob);
 
 typedef struct {
-  tiny_AdmmData*        data;      ///< problem data
-  tiny_AdmmSettings*    stgs;      ///< problem settings
-  tiny_AdmmSolution*    soln;      ///< problem solution
-  tiny_AdmmInfo*        info;      ///< solver information
+  tiny_AdmmData*      data;      ///< problem data
+  tiny_AdmmSettings*  stgs;      ///< problem settings
+  tiny_AdmmSolution*  soln;      ///< problem solution
+  tiny_AdmmInfo*      info;      ///< solver information
 
   float reg;
   float alpha;
   float rho;
 
   // Temporary data
-  Eigen::VectorMf  Qu;          ///< temporary 
-  Eigen::MatrixMf  Quu_inv;     ///< mxm cache for (R + B'*Pinf*B)\I 
-  Eigen::MatrixNf  AmBKt;       ///< nxn cache for (A - BKinf)'
-  Eigen::MatrixNMf coeff_d2p;   ///< nxm cache for Kinf'*R - AmBKt*Pinf*B
+  Eigen::VectorMf*  Qu;          ///< temporary 
+  Eigen::MatrixMf*  Quu_inv;     ///< mxm cache for (R + B'*Pinf*B)\I 
+  Eigen::MatrixNf*  AmBKt;       ///< nxn cache for (A - BKinf)'
+  Eigen::MatrixNMf* coeff_d2p;   ///< nxm cache for Kinf'*R - AmBKt*Pinf*B
   
   Eigen::VectorMf* ZU;         ///< Slack variable for input
   Eigen::VectorMf* ZU_new;     ///< Updated slack variable for input

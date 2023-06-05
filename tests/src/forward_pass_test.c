@@ -52,14 +52,14 @@ void ForwardPassTest() {
   T_INIT_ZEROS(temp_data);
 
   tiny_InitWorkspaceTempData(&work, 0, 0, 0, 0, temp_data);
-  tiny_InitModelFromArray(&model, &A, &B, &f, A_data, B_data, f_data);
+  tiny_InitModel(&model, &A, &B, &f, A_data, B_data, f_data);
 
-  tiny_InitSolnTrajFromArray(&work, X, U, x_data, u_data);
-  tiny_InitSolnGainsFromArray(&work, d, 0, d_data, 0, K_data, 0);
+  tiny_InitSolnTraj(&work, X, U, x_data, u_data);
+  tiny_InitSolnGains(&work, d, 0, d_data, 0, K_data, 0);
 
   float* xsol_ptr = xsol_data;
   for (int i = 0; i < NHORIZON; ++i) {
-    Xsln[i] = slap_MatrixFromArray(NSTATES, 1, xsol_ptr);
+    Xsln[i] = slap_Matrix(NSTATES, 1, xsol_ptr);
     xsol_ptr += NSTATES;
   }
 
@@ -67,19 +67,19 @@ void ForwardPassTest() {
   data.Xref = Xref;
   data.Uref = Uref;
 
-  data.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
+  data.Q = slap_Matrix(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(data.Q, 1);
-  data.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
+  data.R = slap_Matrix(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(data.R, 1);
-  data.q[0] = slap_MatrixFromArray(NSTATES, 1, q_data);
-  data.q[1] = slap_MatrixFromArray(NSTATES, 1, &q_data[NSTATES]);
-  data.r[0] = slap_MatrixFromArray(NINPUTS, 1, r_data);
-  data.r[1] = slap_MatrixFromArray(NINPUTS, 1, &r_data[NINPUTS]);
-  Xref[0] = slap_MatrixFromArray(NSTATES, 1, Xref_data);
-  Xref[1] = slap_MatrixFromArray(NSTATES, 1, Xref_data);
-  Xref[2] = slap_MatrixFromArray(NSTATES, 1, Xref_data);
-  Uref[0] = slap_MatrixFromArray(NINPUTS, 1, Uref_data);
-  Uref[1] = slap_MatrixFromArray(NINPUTS, 1, Uref_data);
+  data.q[0] = slap_Matrix(NSTATES, 1, q_data);
+  data.q[1] = slap_Matrix(NSTATES, 1, &q_data[NSTATES]);
+  data.r[0] = slap_Matrix(NINPUTS, 1, r_data);
+  data.r[1] = slap_Matrix(NINPUTS, 1, &r_data[NINPUTS]);
+  Xref[0] = slap_Matrix(NSTATES, 1, Xref_data);
+  Xref[1] = slap_Matrix(NSTATES, 1, Xref_data);
+  Xref[2] = slap_Matrix(NSTATES, 1, Xref_data);
+  Uref[0] = slap_Matrix(NINPUTS, 1, Uref_data);
+  Uref[1] = slap_Matrix(NINPUTS, 1, Uref_data);
   tiny_UpdateLinearCost(&work);
 
   uptr = u_data;

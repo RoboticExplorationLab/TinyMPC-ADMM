@@ -66,40 +66,40 @@ void DeltaLqrLtvTest() {
   float* Bptr = B_data;
   float* fptr = f_data;
 
-  Matrix xhover = slap_MatrixFromArray(NSTATES, 1, xhover_data);
-  Matrix uhover = slap_MatrixFromArray(NINPUTS, 1, uhover_data);
+  Matrix xhover = slap_Matrix(NSTATES, 1, xhover_data);
+  Matrix uhover = slap_Matrix(NINPUTS, 1, uhover_data);
 
   for (int i = 0; i < NHORIZON; ++i) {
     if (i < NHORIZON - 1) {
-      A[i] = slap_MatrixFromArray(NSTATES, NSTATES, Aptr);
+      A[i] = slap_Matrix(NSTATES, NSTATES, Aptr);
       Aptr += NSTATES * NSTATES;
-      B[i] = slap_MatrixFromArray(NSTATES, NINPUTS, Bptr);
+      B[i] = slap_Matrix(NSTATES, NINPUTS, Bptr);
       Bptr += NSTATES * NINPUTS;
-      f[i] = slap_MatrixFromArray(NSTATES, 1, fptr);
+      f[i] = slap_Matrix(NSTATES, 1, fptr);
       fptr += NSTATES;
-      U[i] = slap_MatrixFromArray(NINPUTS, 1, Uptr);
+      U[i] = slap_Matrix(NINPUTS, 1, Uptr);
       // slap_SetConst(U[i], 0.01);
       Uptr += NINPUTS;
-      Uref[i] = slap_MatrixFromArray(NINPUTS, 1, ug_data);
+      Uref[i] = slap_Matrix(NINPUTS, 1, ug_data);
       // Uref_ptr += NINPUTS;
-      K[i] = slap_MatrixFromArray(NINPUTS, NSTATES, Kptr);
+      K[i] = slap_Matrix(NINPUTS, NSTATES, Kptr);
       Kptr += NINPUTS * NSTATES;
-      d[i] = slap_MatrixFromArray(NINPUTS, 1, dptr);
+      d[i] = slap_Matrix(NINPUTS, 1, dptr);
       dptr += NINPUTS;
     }
-    X[i] = slap_MatrixFromArray(NSTATES, 1, Xptr);
+    X[i] = slap_Matrix(NSTATES, 1, Xptr);
     Xptr += NSTATES;
-    Xref[i] = slap_MatrixFromArray(NSTATES, 1, xg_data);
+    Xref[i] = slap_Matrix(NSTATES, 1, xg_data);
     // Xref_ptr += NSTATES;
-    P[i] = slap_MatrixFromArray(NSTATES, NSTATES, Pptr);
+    P[i] = slap_Matrix(NSTATES, NSTATES, Pptr);
     Pptr += NSTATES * NSTATES;
-    p[i] = slap_MatrixFromArray(NSTATES, 1, pptr);
+    p[i] = slap_Matrix(NSTATES, 1, pptr);
     pptr += NSTATES;
   }
 
   model.ninputs = NSTATES;
   model.nstates = NINPUTS;
-  model.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);
+  model.x0 = slap_Matrix(NSTATES, 1, x0_data);
   model.get_jacobians = tiny_PQuadGetJacobians;  // from planar quadrotor
   model.A = A;
   model.B = B;
@@ -109,11 +109,11 @@ void DeltaLqrLtvTest() {
   prob.ninputs = NINPUTS;
   prob.nstates = NSTATES;
   prob.nhorizon = NHORIZON;
-  prob.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
+  prob.Q = slap_Matrix(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(prob.Q, 10e-1);
-  prob.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
+  prob.R = slap_Matrix(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(prob.R, 1e-1);
-  prob.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
+  prob.Qf = slap_Matrix(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(prob.Qf, 10e-1);
   prob.Xref = Xref;
   prob.Uref = Uref;
@@ -124,7 +124,7 @@ void DeltaLqrLtvTest() {
   prob.p = p;
 
   float Q_temp_data[(NSTATES + NINPUTS) * (NSTATES + NINPUTS + 1)] = {0};
-  Matrix Q_temp = slap_MatrixFromArray(NSTATES + NINPUTS, NSTATES + NINPUTS + 1,
+  Matrix Q_temp = slap_Matrix(NSTATES + NINPUTS, NSTATES + NINPUTS + 1,
                                        Q_temp_data);
 
   // Compute and store A, B offline
@@ -196,40 +196,40 @@ void AbsLqrLtvTest() {
   float* Bptr = B_data;
   float* fptr = f_data;
 
-  Matrix xhover = slap_MatrixFromArray(NSTATES, 1, xhover_data);
-  Matrix uhover = slap_MatrixFromArray(NINPUTS, 1, uhover_data);
+  Matrix xhover = slap_Matrix(NSTATES, 1, xhover_data);
+  Matrix uhover = slap_Matrix(NINPUTS, 1, uhover_data);
 
   for (int i = 0; i < NHORIZON; ++i) {
     if (i < NHORIZON - 1) {
-      A[i] = slap_MatrixFromArray(NSTATES, NSTATES, Aptr);
+      A[i] = slap_Matrix(NSTATES, NSTATES, Aptr);
       Aptr += NSTATES * NSTATES;
-      B[i] = slap_MatrixFromArray(NSTATES, NINPUTS, Bptr);
+      B[i] = slap_Matrix(NSTATES, NINPUTS, Bptr);
       Bptr += NSTATES * NINPUTS;
-      f[i] = slap_MatrixFromArray(NSTATES, 1, fptr);
+      f[i] = slap_Matrix(NSTATES, 1, fptr);
       fptr += NSTATES;
-      U[i] = slap_MatrixFromArray(NINPUTS, 1, Uptr);
+      U[i] = slap_Matrix(NINPUTS, 1, Uptr);
       // slap_SetConst(U[i], 0.01);
       Uptr += NINPUTS;
-      Uref[i] = slap_MatrixFromArray(NINPUTS, 1, uhover_data);
+      Uref[i] = slap_Matrix(NINPUTS, 1, uhover_data);
       // Uref_ptr += NINPUTS;
-      K[i] = slap_MatrixFromArray(NINPUTS, NSTATES, Kptr);
+      K[i] = slap_Matrix(NINPUTS, NSTATES, Kptr);
       Kptr += NINPUTS * NSTATES;
-      d[i] = slap_MatrixFromArray(NINPUTS, 1, dptr);
+      d[i] = slap_Matrix(NINPUTS, 1, dptr);
       dptr += NINPUTS;
     }
-    X[i] = slap_MatrixFromArray(NSTATES, 1, Xptr);
+    X[i] = slap_Matrix(NSTATES, 1, Xptr);
     Xptr += NSTATES;
-    Xref[i] = slap_MatrixFromArray(NSTATES, 1, xg_data);
+    Xref[i] = slap_Matrix(NSTATES, 1, xg_data);
     // Xref_ptr += NSTATES;
-    P[i] = slap_MatrixFromArray(NSTATES, NSTATES, Pptr);
+    P[i] = slap_Matrix(NSTATES, NSTATES, Pptr);
     Pptr += NSTATES * NSTATES;
-    p[i] = slap_MatrixFromArray(NSTATES, 1, pptr);
+    p[i] = slap_Matrix(NSTATES, 1, pptr);
     pptr += NSTATES;
   }
 
   model.ninputs = NSTATES;
   model.nstates = NINPUTS;
-  model.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);
+  model.x0 = slap_Matrix(NSTATES, 1, x0_data);
   model.get_jacobians = tiny_PQuadGetJacobians;  // from planar quadrotor
   model.A = A;
   model.B = B;
@@ -239,11 +239,11 @@ void AbsLqrLtvTest() {
   prob.ninputs = NINPUTS;
   prob.nstates = NSTATES;
   prob.nhorizon = NHORIZON;
-  prob.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
+  prob.Q = slap_Matrix(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(prob.Q, 10e-1);
-  prob.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
+  prob.R = slap_Matrix(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(prob.R, 1e-1);
-  prob.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
+  prob.Qf = slap_Matrix(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(prob.Qf, 10e-1);
   prob.Xref = Xref;
   prob.Uref = Uref;
@@ -254,7 +254,7 @@ void AbsLqrLtvTest() {
   prob.p = p;
 
   float Q_temp_data[(NSTATES + NINPUTS) * (NSTATES + NINPUTS + 1)] = {0};
-  Matrix Q_temp = slap_MatrixFromArray(NSTATES + NINPUTS, NSTATES + NINPUTS + 1,
+  Matrix Q_temp = slap_Matrix(NSTATES + NINPUTS, NSTATES + NINPUTS + 1,
                                        Q_temp_data);
 
   // Compute and store A, B offline
@@ -319,48 +319,48 @@ void DeltaLqrLtiTest() {
   float* Pptr = P_data;
   float* pptr = p_data;
 
-  Matrix xhover = slap_MatrixFromArray(NSTATES, 1, xhover_data);
-  Matrix uhover = slap_MatrixFromArray(NINPUTS, 1, uhover_data);
+  Matrix xhover = slap_Matrix(NSTATES, 1, xhover_data);
+  Matrix uhover = slap_Matrix(NINPUTS, 1, uhover_data);
 
   for (int i = 0; i < NHORIZON; ++i) {
     if (i < NHORIZON - 1) {
-      U[i] = slap_MatrixFromArray(NINPUTS, 1, Uptr);
+      U[i] = slap_Matrix(NINPUTS, 1, Uptr);
       // slap_SetConst(U[i], 0.01);
       Uptr += NINPUTS;
-      Uref[i] = slap_MatrixFromArray(NINPUTS, 1, ug_data);
+      Uref[i] = slap_Matrix(NINPUTS, 1, ug_data);
       // Uref_ptr += NINPUTS;
-      K[i] = slap_MatrixFromArray(NINPUTS, NSTATES, Kptr);
+      K[i] = slap_Matrix(NINPUTS, NSTATES, Kptr);
       Kptr += NINPUTS * NSTATES;
-      d[i] = slap_MatrixFromArray(NINPUTS, 1, dptr);
+      d[i] = slap_Matrix(NINPUTS, 1, dptr);
       dptr += NINPUTS;
     }
-    X[i] = slap_MatrixFromArray(NSTATES, 1, Xptr);
+    X[i] = slap_Matrix(NSTATES, 1, Xptr);
     Xptr += NSTATES;
-    Xref[i] = slap_MatrixFromArray(NSTATES, 1, xg_data);
+    Xref[i] = slap_Matrix(NSTATES, 1, xg_data);
     // Xref_ptr += NSTATES;
-    P[i] = slap_MatrixFromArray(NSTATES, NSTATES, Pptr);
+    P[i] = slap_Matrix(NSTATES, NSTATES, Pptr);
     Pptr += NSTATES * NSTATES;
-    p[i] = slap_MatrixFromArray(NSTATES, 1, pptr);
+    p[i] = slap_Matrix(NSTATES, 1, pptr);
     pptr += NSTATES;
   }
 
   model.ninputs = NSTATES;
   model.nstates = NINPUTS;
-  model.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);
-  model.f = slap_MatrixFromArray(NSTATES, 1, f_data);
-  model.A = slap_MatrixFromArray(NSTATES, NSTATES, A_data);
-  model.B = slap_MatrixFromArray(NSTATES, NINPUTS, B_data);
+  model.x0 = slap_Matrix(NSTATES, 1, x0_data);
+  model.f = slap_Matrix(NSTATES, 1, f_data);
+  model.A = slap_Matrix(NSTATES, NSTATES, A_data);
+  model.B = slap_Matrix(NSTATES, NINPUTS, B_data);
 
   slap_Copy(X[0], model.x0);
 
   prob.ninputs = NINPUTS;
   prob.nstates = NSTATES;
   prob.nhorizon = NHORIZON;
-  prob.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
+  prob.Q = slap_Matrix(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(prob.Q, 10e-1);
-  prob.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
+  prob.R = slap_Matrix(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(prob.R, 1e-1);
-  prob.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
+  prob.Qf = slap_Matrix(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(prob.Qf, 10e-1);
   prob.Xref = Xref;
   prob.Uref = Uref;
@@ -371,7 +371,7 @@ void DeltaLqrLtiTest() {
   prob.p = p;
 
   float Q_temp_data[(NSTATES + NINPUTS) * (NSTATES + NINPUTS + 1)] = {0};
-  Matrix Q_temp = slap_MatrixFromArray(NSTATES + NINPUTS, NSTATES + NINPUTS + 1,
+  Matrix Q_temp = slap_Matrix(NSTATES + NINPUTS, NSTATES + NINPUTS + 1,
                                        Q_temp_data);
   // Formulate problem as delta_x = x - x_hover = x (xhover = 0);
   // delta_u = u - u_hover
@@ -435,48 +435,48 @@ void AbsLqrLtiTest() {
   float* Pptr = P_data;
   float* pptr = p_data;
 
-  Matrix xhover = slap_MatrixFromArray(NSTATES, 1, xhover_data);
-  Matrix uhover = slap_MatrixFromArray(NINPUTS, 1, uhover_data);
+  Matrix xhover = slap_Matrix(NSTATES, 1, xhover_data);
+  Matrix uhover = slap_Matrix(NINPUTS, 1, uhover_data);
 
   for (int i = 0; i < NHORIZON; ++i) {
     if (i < NHORIZON - 1) {
-      U[i] = slap_MatrixFromArray(NINPUTS, 1, Uptr);
+      U[i] = slap_Matrix(NINPUTS, 1, Uptr);
       // slap_SetConst(U[i], 0.01);
       Uptr += NINPUTS;
-      Uref[i] = slap_MatrixFromArray(NINPUTS, 1, uhover_data);
+      Uref[i] = slap_Matrix(NINPUTS, 1, uhover_data);
       // Uref_ptr += NINPUTS;
-      K[i] = slap_MatrixFromArray(NINPUTS, NSTATES, Kptr);
+      K[i] = slap_Matrix(NINPUTS, NSTATES, Kptr);
       Kptr += NINPUTS * NSTATES;
-      d[i] = slap_MatrixFromArray(NINPUTS, 1, dptr);
+      d[i] = slap_Matrix(NINPUTS, 1, dptr);
       dptr += NINPUTS;
     }
-    X[i] = slap_MatrixFromArray(NSTATES, 1, Xptr);
+    X[i] = slap_Matrix(NSTATES, 1, Xptr);
     Xptr += NSTATES;
-    Xref[i] = slap_MatrixFromArray(NSTATES, 1, xg_data);
+    Xref[i] = slap_Matrix(NSTATES, 1, xg_data);
     // Xref_ptr += NSTATES;
-    P[i] = slap_MatrixFromArray(NSTATES, NSTATES, Pptr);
+    P[i] = slap_Matrix(NSTATES, NSTATES, Pptr);
     Pptr += NSTATES * NSTATES;
-    p[i] = slap_MatrixFromArray(NSTATES, 1, pptr);
+    p[i] = slap_Matrix(NSTATES, 1, pptr);
     pptr += NSTATES;
   }
 
   model.ninputs = NSTATES;
   model.nstates = NINPUTS;
-  model.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);
-  model.f = slap_MatrixFromArray(NSTATES, 1, f_data);
-  model.A = slap_MatrixFromArray(NSTATES, NSTATES, A_data);
-  model.B = slap_MatrixFromArray(NSTATES, NINPUTS, B_data);
+  model.x0 = slap_Matrix(NSTATES, 1, x0_data);
+  model.f = slap_Matrix(NSTATES, 1, f_data);
+  model.A = slap_Matrix(NSTATES, NSTATES, A_data);
+  model.B = slap_Matrix(NSTATES, NINPUTS, B_data);
 
   slap_Copy(X[0], model.x0);
 
   prob.ninputs = NINPUTS;
   prob.nstates = NSTATES;
   prob.nhorizon = NHORIZON;
-  prob.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
+  prob.Q = slap_Matrix(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(prob.Q, 100e-1);
-  prob.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
+  prob.R = slap_Matrix(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(prob.R, 1e-1);
-  prob.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
+  prob.Qf = slap_Matrix(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(prob.Qf, 100e-1);
   prob.Xref = Xref;
   prob.Uref = Uref;
@@ -487,7 +487,7 @@ void AbsLqrLtiTest() {
   prob.p = p;
 
   float Q_temp_data[(NSTATES + NINPUTS) * (NSTATES + NINPUTS + 1)] = {0};
-  Matrix Q_temp = slap_MatrixFromArray(NSTATES + NINPUTS, NSTATES + NINPUTS + 1,
+  Matrix Q_temp = slap_Matrix(NSTATES + NINPUTS, NSTATES + NINPUTS + 1,
                                        Q_temp_data);
 
   // Formulate problem as absolute: x, u

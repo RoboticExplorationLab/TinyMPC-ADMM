@@ -31,10 +31,10 @@
 //   prob.ncstr_states = 2 * NSTATES;
 //   prob.ncstr_inputs = 2 * NINPUTS;
 //   prob.ncstr_goal = NSTATES;
-//   prob.u_max = slap_MatrixFromArray(NINPUTS, 1, u_max_data);
-//   prob.u_min = slap_MatrixFromArray(NINPUTS, 1, u_min_data);
-//   Matrix u = slap_MatrixFromArray(NINPUTS, 1, u_data);
-//   Matrix mat = slap_MatrixFromArray(NINPUTS * 2, 1, ineq_data);
+//   prob.u_max = slap_Matrix(NINPUTS, 1, u_max_data);
+//   prob.u_min = slap_Matrix(NINPUTS, 1, u_min_data);
+//   Matrix u = slap_Matrix(NINPUTS, 1, u_data);
+//   Matrix mat = slap_Matrix(NINPUTS * 2, 1, ineq_data);
 //   tiny_EvalInputConstraint(&mat, prob, u);
 //   // slap_PrintMatrix(mat);
 //   TEST(SumOfSquaredError(mat.data, ans, NINPUTS * 2) < tol);
@@ -57,9 +57,9 @@
 //   prob.ncstr_states = 2 * NSTATES;
 //   prob.ncstr_inputs = 2 * NINPUTS;
 //   prob.ncstr_goal = NSTATES;
-//   prob.u_max = slap_MatrixFromArray(NINPUTS, 1, u_max_data);
-//   prob.u_min = slap_MatrixFromArray(NINPUTS, 1, u_min_data);
-//   Matrix mat = slap_MatrixFromArray(NINPUTS * 2, 1, ineq_data);
+//   prob.u_max = slap_Matrix(NINPUTS, 1, u_max_data);
+//   prob.u_min = slap_Matrix(NINPUTS, 1, u_min_data);
+//   Matrix mat = slap_Matrix(NINPUTS * 2, 1, ineq_data);
 //   tiny_EvalInputConstraintOffset(&mat, prob);
 //   // slap_PrintMatrix(mat);
 //   TEST(SumOfSquaredError(mat.data, ans, NINPUTS * 2) < tol);
@@ -81,9 +81,9 @@
 //   prob.ncstr_states = 2 * NSTATES;
 //   prob.ncstr_inputs = 2 * NINPUTS;
 //   prob.ncstr_goal = NSTATES;
-//   prob.u_max = slap_MatrixFromArray(NINPUTS, 1, u_max_data);
-//   prob.u_min = slap_MatrixFromArray(NINPUTS, 1, u_min_data);
-//   Matrix mat = slap_MatrixFromArray(NINPUTS * 2, NINPUTS, jac_data);
+//   prob.u_max = slap_Matrix(NINPUTS, 1, u_max_data);
+//   prob.u_min = slap_Matrix(NINPUTS, 1, u_min_data);
+//   Matrix mat = slap_Matrix(NINPUTS * 2, NINPUTS, jac_data);
 //   tiny_EvalInputConstraintJacobian(&mat, prob);
 //   // slap_PrintMatrix(mat);
 //   TEST(SumOfSquaredError(mat.data, ans, NINPUTS * 2 * NINPUTS) < tol);
@@ -124,17 +124,17 @@ void ActiveIneqMaskTest() {
   tiny_InitWorkspaceTempData(&work, temp_data);
 
   soln.U = U;
-  U[0] = slap_MatrixFromArray(NINPUTS, 1, u_data);
+  U[0] = slap_Matrix(NINPUTS, 1, u_data);
 
-  data.Acu = slap_MatrixFromArray(2 * NINPUTS, NINPUTS, Acstr_input_data);
+  data.Acu = slap_Matrix(2 * NINPUTS, NINPUTS, Acstr_input_data);
   Matrix upper_half = slap_CreateSubMatrix(data.Acu, 0, 0, NINPUTS, NINPUTS);
   Matrix lower_half = slap_CreateSubMatrix(data.Acu, NINPUTS, 0, NINPUTS, NINPUTS);
   slap_SetIdentity(upper_half, 1);
   slap_SetIdentity(lower_half, -1);
-  data.bcu = slap_MatrixFromArray(2 * NINPUTS, 1, bcstr_input_data);
+  data.bcu = slap_Matrix(2 * NINPUTS, 1, bcstr_input_data);
   tiny_EvalInputConstraint(&work, 0);
-  work.YU_hat = slap_MatrixFromArray(NINPUTS * 2, 1, dual_data);
-  // Matrix mask = slap_MatrixFromArray(NINPUTS * 2, NINPUTS * 2, mask_data);
+  work.YU_hat = slap_Matrix(NINPUTS * 2, 1, dual_data);
+  // Matrix mask = slap_Matrix(NINPUTS * 2, NINPUTS * 2, mask_data);
   tiny_ActiveIneqMask(&(work.cu_mask), work.YU_hat, work.cu);
   // PrintMatrix(work.cu_mask);
   // PrintMatrixT(work.cu);
@@ -165,7 +165,7 @@ void RiccatiConvergenceTest() {
   Matrix d[2];
   float* dptr = d_data;
   for (int k = 0; k < 3 - 1; ++k) {
-    d[k] = slap_MatrixFromArray(2, 1, dptr);
+    d[k] = slap_Matrix(2, 1, dptr);
     dptr += 2;
   }
   soln.d = d;
@@ -179,8 +179,8 @@ void ProjectOrthantDualsTest() {
   float dual_data[2] = {-2, -1};
   float new_dual_data[2] = {10, -10};
   float ans[2] = {10, 0};
-  Matrix dual = slap_MatrixFromArray(2, 1, dual_data);
-  Matrix new_dual = slap_MatrixFromArray(2, 1, new_dual_data);
+  Matrix dual = slap_Matrix(2, 1, dual_data);
+  Matrix new_dual = slap_Matrix(2, 1, new_dual_data);
   tiny_ProjectOrthantDuals(&dual, new_dual);
   TEST(SumOfSquaredError(dual.data, ans, 2) < 1e-8);
 }

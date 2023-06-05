@@ -50,7 +50,7 @@ void BackPassTest() {
   Matrix A;
   Matrix B;
   Matrix f;
-  tiny_InitModelFromArray(&model, &A, &B, &f, A_data, B_data, f_data);
+  tiny_InitModel(&model, &A, &B, &f, A_data, B_data, f_data);
 
   Matrix Xref[NHORIZON];
   Matrix Uref[NHORIZON - 1];
@@ -70,37 +70,37 @@ void BackPassTest() {
 
   for (int i = 0; i < NHORIZON; ++i) {
     if (i < NHORIZON - 1) {
-      Uref[i] = slap_MatrixFromArray(NINPUTS, 1, Uref_ptr);
+      Uref[i] = slap_Matrix(NINPUTS, 1, Uref_ptr);
       Uref_ptr += NINPUTS;
-      K[i] = slap_MatrixFromArray(NINPUTS, NSTATES, Kptr);
+      K[i] = slap_Matrix(NINPUTS, NSTATES, Kptr);
       Kptr += NINPUTS * NSTATES;
-      d[i] = slap_MatrixFromArray(NINPUTS, 1, dptr);
+      d[i] = slap_Matrix(NINPUTS, 1, dptr);
       dptr += NINPUTS;
     }
-    Xref[i] = slap_MatrixFromArray(NSTATES, 1, Xref_ptr);
+    Xref[i] = slap_Matrix(NSTATES, 1, Xref_ptr);
     Xref_ptr += NSTATES;
-    P[i] = slap_MatrixFromArray(NSTATES, NSTATES, Pptr);
+    P[i] = slap_Matrix(NSTATES, NSTATES, Pptr);
     Pptr += NSTATES * NSTATES;
-    p[i] = slap_MatrixFromArray(NSTATES, 1, pptr);
+    p[i] = slap_Matrix(NSTATES, 1, pptr);
     pptr += NSTATES;
   }
 
-  data.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
+  data.Q = slap_Matrix(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(data.Q, 1e-1);
-  data.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
+  data.R = slap_Matrix(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(data.R, 1e-1);
-  data.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
+  data.Qf = slap_Matrix(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(data.Qf, 100 * 1e-1);
   data.Xref = Xref;
   data.Uref = Uref;
-  data.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);
+  data.x0 = slap_Matrix(NSTATES, 1, x0_data);
   data.q = q;
   data.r = r;
-  data.q[0] = slap_MatrixFromArray(NSTATES, 1, q_data);
-  data.q[1] = slap_MatrixFromArray(NSTATES, 1, &q_data[NSTATES]);
-  data.r[0] = slap_MatrixFromArray(NINPUTS, 1, r_data);
-  data.r[1] = slap_MatrixFromArray(NINPUTS, 1, &r_data[NINPUTS]);
-  data.qf = slap_MatrixFromArray(NSTATES, 1, qf_data);   
+  data.q[0] = slap_Matrix(NSTATES, 1, q_data);
+  data.q[1] = slap_Matrix(NSTATES, 1, &q_data[NSTATES]);
+  data.r[0] = slap_Matrix(NINPUTS, 1, r_data);
+  data.r[1] = slap_Matrix(NINPUTS, 1, &r_data[NINPUTS]);
+  data.qf = slap_Matrix(NSTATES, 1, qf_data);   
   soln.K = K;
   soln.d = d;
   soln.P = P;

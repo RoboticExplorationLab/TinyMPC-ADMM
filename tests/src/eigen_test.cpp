@@ -5,18 +5,29 @@
 extern "C" {
 #endif
 
+struct struct1 {
+  Eigen::Matrix2f* m1;
+  Eigen::Matrix2f* m2;
+} st1;
+
 static Eigen::Matrix2f m(2,2);
+static Eigen::Matrix2f* pm = &m;
+
 static float a_data[] = {1, 2};
 static Eigen::Map<Eigen::Vector2f> va(a_data);
 
-void function1() {
+void initialize() {
   m << 1, 2, 3, 4;
+  // pm = &m;
+  st1.m1 = pm;
 }
+
 int main()
 {    
-  function1();
+  initialize();
   std::cout << m << std::endl;
-
+  std::cout << *pm << std::endl;
+  std::cout << *(st1.m1) << std::endl;
   // Eigen::Vector2f vec, ub, lb;
   // vec << -3, 3;
   // ub << 1, 2;
@@ -72,5 +83,5 @@ XrefAll[NSIM-1] << ...;
 
 // main.cpp
 data.Xref = &XrefAll[k];
-
+soln.Kinf << ...;
 */

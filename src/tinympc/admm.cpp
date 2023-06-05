@@ -187,7 +187,7 @@ enum tiny_ErrorCode tiny_WarmStartInput(tiny_AdmmWorkspace* work, float* U_data)
   int N = work->data->model->nhorizon;
   int m = work->data->model->ninputs;
   for (int i = 0; i < N - 1; ++i) {
-    // slap_CopyFromArray(work->soln->U[i], &U_data[i * m]);
+    // slap_Copy(work->soln->U[i], &U_data[i * m]);
     // (work->soln->U[i]).data() = &U_data[i * m];
     work->soln->U[i] = Eigen::Map<Eigen::VectorMf>(&U_data[i * m]);
   }

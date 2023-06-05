@@ -17,7 +17,7 @@ enum tiny_ErrorCode tiny_InitModelDataMatrix(tiny_Model* model,
     Eigen::MatrixNf* A, Eigen::MatrixNMf* B, Eigen::VectorNf* f);
 
 // User provides matrix as column-major array
-enum tiny_ErrorCode tiny_InitModelFromArray(tiny_Model* model, Eigen::MatrixNf* A, 
+enum tiny_ErrorCode tiny_InitModel(tiny_Model* model, Eigen::MatrixNf* A, 
     Eigen::MatrixNMf* B, Eigen::VectorNf* f, float* A_array, float* B_array, float* f_array);
 
 // enum tiny_ErrorCode tiny_InitModelMemory(tiny_Model* model, Eigen::MatrixXf* mats,

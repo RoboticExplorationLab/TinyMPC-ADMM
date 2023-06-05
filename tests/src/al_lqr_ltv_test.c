@@ -91,37 +91,37 @@ void AbsLqrLtvTest() {
 
   for (int i = 0; i < NHORIZON; ++i) {
     if (i < NHORIZON - 1) {
-      A[i] = slap_MatrixFromArray(NSTATES, NSTATES, Aptr);
+      A[i] = slap_Matrix(NSTATES, NSTATES, Aptr);
       Aptr += NSTATES * NSTATES;
-      B[i] = slap_MatrixFromArray(NSTATES, NINPUTS, Bptr);
+      B[i] = slap_Matrix(NSTATES, NINPUTS, Bptr);
       Bptr += NSTATES * NINPUTS;
-      f[i] = slap_MatrixFromArray(NSTATES, 1, fptr);
+      f[i] = slap_Matrix(NSTATES, 1, fptr);
       fptr += NSTATES;
-      U[i] = slap_MatrixFromArray(NINPUTS, 1, Uptr);
+      U[i] = slap_Matrix(NINPUTS, 1, Uptr);
       // slap_SetConst(U[i], 0.01);
       Uptr += NINPUTS;
-      Uref[i] = slap_MatrixFromArray(NINPUTS, 1, Uref_ptr);
+      Uref[i] = slap_Matrix(NINPUTS, 1, Uref_ptr);
       Uref_ptr += NINPUTS;
-      K[i] = slap_MatrixFromArray(NINPUTS, NSTATES, Kptr);
+      K[i] = slap_Matrix(NINPUTS, NSTATES, Kptr);
       Kptr += NINPUTS * NSTATES;
-      d[i] = slap_MatrixFromArray(NINPUTS, 1, dptr);
+      d[i] = slap_Matrix(NINPUTS, 1, dptr);
       dptr += NINPUTS;
-      YU[i] = slap_MatrixFromArray(2 * NINPUTS, 1, udual_ptr);
+      YU[i] = slap_Matrix(2 * NINPUTS, 1, udual_ptr);
       udual_ptr += 2 * NINPUTS;
-      q[i] = slap_MatrixFromArray(NSTATES, 1, qptr);
+      q[i] = slap_Matrix(NSTATES, 1, qptr);
       qptr += NSTATES;
-      r[i] = slap_MatrixFromArray(NINPUTS, 1, rptr);
+      r[i] = slap_Matrix(NINPUTS, 1, rptr);
       rptr += NINPUTS;   
     }
-    X[i] = slap_MatrixFromArray(NSTATES, 1, Xptr);
+    X[i] = slap_Matrix(NSTATES, 1, Xptr);
     Xptr += NSTATES;
-    Xref[i] = slap_MatrixFromArray(NSTATES, 1, Xref_ptr);
+    Xref[i] = slap_Matrix(NSTATES, 1, Xref_ptr);
     Xref_ptr += NSTATES;
-    P[i] = slap_MatrixFromArray(NSTATES, NSTATES, Pptr);
+    P[i] = slap_Matrix(NSTATES, NSTATES, Pptr);
     Pptr += NSTATES * NSTATES;
-    p[i] = slap_MatrixFromArray(NSTATES, 1, pptr);
+    p[i] = slap_Matrix(NSTATES, 1, pptr);
     pptr += NSTATES;
-    YX[i] = slap_MatrixFromArray(2 * NSTATES, 1, xdual_ptr);
+    YX[i] = slap_Matrix(2 * NSTATES, 1, xdual_ptr);
     xdual_ptr += 2 * NSTATES;
   }
 
@@ -144,39 +144,39 @@ void AbsLqrLtvTest() {
   tiny_InitWorkspaceTempData(&work, temp_data);
 
   // Now can fill in all the remaining struct
-  tiny_InitModelFromArray(&model, A, B, f, A_data, B_data, f_data);
+  tiny_InitModel(&model, A, B, f, A_data, B_data, f_data);
   model.get_jacobians = tiny_Bicycle5dGetJacobians;  // from Bicycle
   model.get_nonl_model = tiny_Bicycle5dNonlinearDynamics;
 
   tiny_InitSolutionFromMatrix(&work, X, U, P, p, K, d, YX, YU, TINY_NULL_MAT);
-  soln.YG = slap_MatrixFromArray(NSTATES, 1, goal_dual_data);
-  data.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);  // check if possible  
+  soln.YG = slap_Matrix(NSTATES, 1, goal_dual_data);
+  data.x0 = slap_Matrix(NSTATES, 1, x0_data);  // check if possible  
   data.Xref = Xref;
   data.Uref = Uref;
   data.q = q;
   data.r = r;
-  data.qf = slap_MatrixFromArray(NSTATES, 1, qf_data);  
+  data.qf = slap_Matrix(NSTATES, 1, qf_data);  
 
-  data.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
+  data.Q = slap_Matrix(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(data.Q, 1e-1);
-  data.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
+  data.R = slap_Matrix(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(data.R, 1e-1);
-  data.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
+  data.Qf = slap_Matrix(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(data.Qf, 10e-1);
 
   //TODO: API set bound
-  data.Acx = slap_MatrixFromArray(2 * NSTATES, NSTATES, Acstr_state_data);
+  data.Acx = slap_Matrix(2 * NSTATES, NSTATES, Acstr_state_data);
   Matrix upper_half = slap_CreateSubMatrix(data.Acx, 0, 0, NSTATES, NSTATES);
   Matrix lower_half = slap_CreateSubMatrix(data.Acx, NSTATES, 0, NSTATES, NSTATES);
   slap_SetIdentity(upper_half, 1);
   slap_SetIdentity(lower_half, -1);
-  data.Acu = slap_MatrixFromArray(2 * NINPUTS, NINPUTS, Acstr_input_data);
+  data.Acu = slap_Matrix(2 * NINPUTS, NINPUTS, Acstr_input_data);
   upper_half = slap_CreateSubMatrix(data.Acu, 0, 0, NINPUTS, NINPUTS);
   lower_half = slap_CreateSubMatrix(data.Acu, NINPUTS, 0, NINPUTS, NINPUTS);
   slap_SetIdentity(upper_half, 1);
   slap_SetIdentity(lower_half, -1);
-  data.bcx = slap_MatrixFromArray(2 * NSTATES, 1, bcstr_state_data);
-  data.bcu = slap_MatrixFromArray(2 * NINPUTS, 1, bcstr_input_data);
+  data.bcx = slap_Matrix(2 * NSTATES, 1, bcstr_state_data);
+  data.bcu = slap_Matrix(2 * NINPUTS, 1, bcstr_input_data);
   
   // Absolute formulation
   // Compute and store A, B offline

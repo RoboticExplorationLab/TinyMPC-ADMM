@@ -39,13 +39,13 @@ void AddCostTest() {
   float* uptr = u_ref_data;
   float* xptr = x_ref_data;
   for (int i = 0; i < NHORIZON; ++i) {
-    Uref[i] = slap_MatrixFromArray(NINPUTS, 1, uptr);
+    Uref[i] = slap_Matrix(NINPUTS, 1, uptr);
     uptr += NINPUTS;
-    Xref[i] = slap_MatrixFromArray(NSTATES, 1, xptr);
+    Xref[i] = slap_Matrix(NSTATES, 1, xptr);
     xptr += NSTATES;
   }
-  Matrix x = slap_MatrixFromArray(NSTATES, 1, x_data);
-  Matrix u = slap_MatrixFromArray(NINPUTS, 1, u_data);
+  Matrix x = slap_Matrix(NSTATES, 1, x_data);
+  Matrix u = slap_Matrix(NINPUTS, 1, u_data);
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
@@ -62,11 +62,11 @@ void AddCostTest() {
 
   tiny_InitWorkspaceTempData(&work, 0, 0, 0, 0, temp_data);
 
-  data.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
+  data.Q = slap_Matrix(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(data.Q, 0.1);
-  data.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
+  data.R = slap_Matrix(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(data.R, 1);
-  soln.Pinf = slap_MatrixFromArray(NSTATES, NSTATES, Pinf_data);
+  soln.Pinf = slap_Matrix(NSTATES, NSTATES, Pinf_data);
   slap_SetIdentity(soln.Pinf, 0.5);
   data.Xref = Xref;
   data.Uref = Uref;

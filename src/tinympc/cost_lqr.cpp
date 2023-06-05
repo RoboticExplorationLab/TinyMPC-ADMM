@@ -8,10 +8,10 @@ enum tiny_ErrorCode tiny_AddStageCost(tiny_AdmmWorkspace* work, const int k) {
   // int n = work->data->model[0].nstates;
   // int m = work->data->model[0].ninputs;
   // float dx_data[n];
-  // Matrix dx = slap_MatrixFromArray(n, 1, dx_data);
+  // Matrix dx = slap_Matrix(n, 1, dx_data);
   // MatAdd(dx, work->soln->X[k], work->data->Xref[k], -1);
   // work->info->obj_val += 0.5 * slap_QuadraticForm(dx, work->data->Q, dx);
-  // Matrix du = slap_MatrixFromArray(m, 1, dx_data);
+  // Matrix du = slap_Matrix(m, 1, dx_data);
   // MatAdd(du, work->soln->U[k], work->data->Uref[k], -1);
   // work->info->obj_val += 0.5 * slap_QuadraticForm(du, work->data->R, du);
   work->info->obj_val += (0.5 * (work->soln->X[k] - work->data->Xref[k]).transpose() * 
@@ -25,7 +25,7 @@ enum tiny_ErrorCode tiny_AddTerminalCost(tiny_AdmmWorkspace* work) {
   // int n = work->data->model[0].nstates;
   int N = work->data->model[0].nhorizon;
   // float dx_data[n];
-  // Matrix dx = slap_MatrixFromArray(n, 1, dx_data);
+  // Matrix dx = slap_Matrix(n, 1, dx_data);
   // MatAdd(dx, work->soln->X[N - 1], work->data->Xref[N - 1], -1);
   work->info->obj_val += 0.5 * (work->soln->X[N-1] - work->data->Xref[N-1]).transpose() * 
                          work->soln->Pinf * (work->soln->X[N-1] - work->data->Xref[N-1]) ;

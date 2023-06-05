@@ -79,37 +79,37 @@ void DeltaLqrLtvTest() {
 
   tiny_InitWorkspaceTempData(&work, temp_data);
 
-  tiny_InitModelFromArray(&model, A, B, TINY_NULL, A_data, B_data, TINY_NULL);
+  tiny_InitModel(&model, A, B, TINY_NULL, A_data, B_data, TINY_NULL);
 
   for (int i = 0; i < NHORIZON; ++i) {
     if (i < NHORIZON - 1) {
-      A[i] = slap_MatrixFromArray(NSTATES, NSTATES, Aptr);
+      A[i] = slap_Matrix(NSTATES, NSTATES, Aptr);
       Aptr += NSTATES * NSTATES;
-      B[i] = slap_MatrixFromArray(NSTATES, NINPUTS, Bptr);
+      B[i] = slap_Matrix(NSTATES, NINPUTS, Bptr);
       Bptr += NSTATES * NINPUTS;
-      U[i] = slap_MatrixFromArray(NINPUTS, 1, Uptr);
+      U[i] = slap_Matrix(NINPUTS, 1, Uptr);
       // slap_SetConst(U[i], 0.01);
       Uptr += NINPUTS;
-      Unom[i] = slap_MatrixFromArray(NINPUTS, 1, Uref_ptr);
+      Unom[i] = slap_Matrix(NINPUTS, 1, Uref_ptr);
       Uref_ptr += NINPUTS;
-      Uref[i] = slap_MatrixFromArray(NINPUTS, 1, ug_data);
-      K[i] = slap_MatrixFromArray(NINPUTS, NSTATES, Kptr);
+      Uref[i] = slap_Matrix(NINPUTS, 1, ug_data);
+      K[i] = slap_Matrix(NINPUTS, NSTATES, Kptr);
       Kptr += NINPUTS * NSTATES;
-      d[i] = slap_MatrixFromArray(NINPUTS, 1, dptr);
+      d[i] = slap_Matrix(NINPUTS, 1, dptr);
       dptr += NINPUTS;
-      q[i] = slap_MatrixFromArray(NSTATES, 1, qptr);
+      q[i] = slap_Matrix(NSTATES, 1, qptr);
       qptr += NSTATES;
-      r[i] = slap_MatrixFromArray(NINPUTS, 1, rptr);
+      r[i] = slap_Matrix(NINPUTS, 1, rptr);
       rptr += NINPUTS;  
     }
-    X[i] = slap_MatrixFromArray(NSTATES, 1, Xptr);
+    X[i] = slap_Matrix(NSTATES, 1, Xptr);
     Xptr += NSTATES;
-    Xnom[i] = slap_MatrixFromArray(NSTATES, 1, Xref_ptr);
+    Xnom[i] = slap_Matrix(NSTATES, 1, Xref_ptr);
     Xref_ptr += NSTATES;
-    Xref[i] = slap_MatrixFromArray(NSTATES, 1, xg_data);
-    P[i] = slap_MatrixFromArray(NSTATES, NSTATES, Pptr);
+    Xref[i] = slap_Matrix(NSTATES, 1, xg_data);
+    P[i] = slap_Matrix(NSTATES, NSTATES, Pptr);
     Pptr += NSTATES * NSTATES;
-    p[i] = slap_MatrixFromArray(NSTATES, 1, pptr);
+    p[i] = slap_Matrix(NSTATES, 1, pptr);
     pptr += NSTATES;
   }
 
@@ -122,18 +122,18 @@ void DeltaLqrLtvTest() {
   soln.p = p;
   soln.U = U;
   soln.X = X;
-  data.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);  // check if possible  
+  data.x0 = slap_Matrix(NSTATES, 1, x0_data);  // check if possible  
   data.Xref = Xref;
   data.Uref = Uref;
   data.q = q;
   data.r = r;
-  data.qf = slap_MatrixFromArray(NSTATES, 1, qf_data);  
+  data.qf = slap_Matrix(NSTATES, 1, qf_data);  
 
-  data.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
+  data.Q = slap_Matrix(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(data.Q, 10e-1);
-  data.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
+  data.R = slap_Matrix(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(data.R, 1e-1);
-  data.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
+  data.Qf = slap_Matrix(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(data.Qf, 10e-1);
 
   // DELTA FORMULATION: Xref in objective and Xnom linearization, state is tracking
@@ -204,33 +204,33 @@ void AbsLqrLtvTest() {
 
   for (int i = 0; i < NHORIZON; ++i) {
     if (i < NHORIZON - 1) {
-      A[i] = slap_MatrixFromArray(NSTATES, NSTATES, Aptr);
+      A[i] = slap_Matrix(NSTATES, NSTATES, Aptr);
       Aptr += NSTATES * NSTATES;
-      B[i] = slap_MatrixFromArray(NSTATES, NINPUTS, Bptr);
+      B[i] = slap_Matrix(NSTATES, NINPUTS, Bptr);
       Bptr += NSTATES * NINPUTS;
-      f[i] = slap_MatrixFromArray(NSTATES, 1, fptr);
+      f[i] = slap_Matrix(NSTATES, 1, fptr);
       fptr += NSTATES;
-      U[i] = slap_MatrixFromArray(NINPUTS, 1, Uptr);
+      U[i] = slap_Matrix(NINPUTS, 1, Uptr);
       // slap_SetConst(U[i], 0.01);
       Uptr += NINPUTS;
-      Uref[i] = slap_MatrixFromArray(NINPUTS, 1, Uref_ptr);
+      Uref[i] = slap_Matrix(NINPUTS, 1, Uref_ptr);
       Uref_ptr += NINPUTS;
-      K[i] = slap_MatrixFromArray(NINPUTS, NSTATES, Kptr);
+      K[i] = slap_Matrix(NINPUTS, NSTATES, Kptr);
       Kptr += NINPUTS * NSTATES;
-      d[i] = slap_MatrixFromArray(NINPUTS, 1, dptr);
+      d[i] = slap_Matrix(NINPUTS, 1, dptr);
       dptr += NINPUTS;
-      q[i] = slap_MatrixFromArray(NSTATES, 1, qptr);
+      q[i] = slap_Matrix(NSTATES, 1, qptr);
       qptr += NSTATES;
-      r[i] = slap_MatrixFromArray(NINPUTS, 1, rptr);
+      r[i] = slap_Matrix(NINPUTS, 1, rptr);
       rptr += NINPUTS;        
     }
-    X[i] = slap_MatrixFromArray(NSTATES, 1, Xptr);
+    X[i] = slap_Matrix(NSTATES, 1, Xptr);
     Xptr += NSTATES;
-    Xref[i] = slap_MatrixFromArray(NSTATES, 1, Xref_ptr);
+    Xref[i] = slap_Matrix(NSTATES, 1, Xref_ptr);
     Xref_ptr += NSTATES;
-    P[i] = slap_MatrixFromArray(NSTATES, NSTATES, Pptr);
+    P[i] = slap_Matrix(NSTATES, NSTATES, Pptr);
     Pptr += NSTATES * NSTATES;
-    p[i] = slap_MatrixFromArray(NSTATES, 1, pptr);
+    p[i] = slap_Matrix(NSTATES, 1, pptr);
     pptr += NSTATES;
   }
 
@@ -253,23 +253,23 @@ void AbsLqrLtvTest() {
   tiny_InitWorkspaceTempData(&work, temp_data);
 
   // Now can fill in all the remaining struct
-  tiny_InitModelFromArray(&model, A, B, f, A_data, B_data, f_data);
+  tiny_InitModel(&model, A, B, f, A_data, B_data, f_data);
   model.get_jacobians = tiny_Bicycle5dGetJacobians;  // from Bicycle
   model.get_nonl_model = tiny_Bicycle5dNonlinearDynamics;
 
   tiny_InitSolutionFromMatrix(&work, X, U, P, p, K, d, TINY_NULL, TINY_NULL, TINY_NULL_MAT);
-  data.x0 = slap_MatrixFromArray(NSTATES, 1, x0_data);  // check if possible  
+  data.x0 = slap_Matrix(NSTATES, 1, x0_data);  // check if possible  
   data.Xref = Xref;
   data.Uref = Uref;
   data.q = q;
   data.r = r;
-  data.qf = slap_MatrixFromArray(NSTATES, 1, qf_data);  
+  data.qf = slap_Matrix(NSTATES, 1, qf_data);  
 
-  data.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
+  data.Q = slap_Matrix(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(data.Q, 10e-1);
-  data.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
+  data.R = slap_Matrix(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(data.R, 1e-1);
-  data.Qf = slap_MatrixFromArray(NSTATES, NSTATES, Qf_data);
+  data.Qf = slap_Matrix(NSTATES, NSTATES, Qf_data);
   slap_SetIdentity(data.Qf, 10e-1);
 
   // Absolute formulation

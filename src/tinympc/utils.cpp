@@ -211,7 +211,7 @@ void PrintSummary(tiny_AdmmInfo *info) {
 //   for (int k = 0; k < length - 1; ++k) {
 //     slap_Copy(mats[k], mats[k + 1]);
 //   }
-//   slap_CopyFromArray(mats[length - 1], x);
+//   slap_Copy(mats[length - 1], x);
 // }
 
 #ifdef __cplusplus

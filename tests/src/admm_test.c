@@ -101,19 +101,19 @@ void CheckTerminationTest() {
   tiny_InitWorkspaceTempData(&work, ZU, ZU_new, 0, 0, temp_data);
   tiny_InitPrimalCache(&work, Quu_inv_data, AmBKt_data, coeff_d2p_data);
   
-  tiny_InitModelFromArray(&model, &A, &B, &f, A_data, B_data, f_data);
-  tiny_InitSolnTrajFromArray(&work, X, U, X_data, U_data);
-  tiny_InitSolnGainsFromArray(&work, d, p, d_data, p_data, Kinf_data, Pinf_data);
-  tiny_InitSolnDualsFromArray(&work, 0, YU, 0, YU_data, 0);
+  tiny_InitModel(&model, &A, &B, &f, A_data, B_data, f_data);
+  tiny_InitSolnTraj(&work, X, U, X_data, U_data);
+  tiny_InitSolnGains(&work, d, p, d_data, p_data, Kinf_data, Pinf_data);
+  tiny_InitSolnDuals(&work, 0, YU, 0, YU_data, 0);
 
   tiny_SetInitialState(&work, x0_data);  
   tiny_SetGoalReference(&work, Xref, Uref, xg_data, ug_data);
 
-  tiny_InitDataQuadCostFromArray(&work, Q_data, R_data);
+  tiny_InitDataQuadCost(&work, Q_data, R_data);
   slap_SetIdentity(data.Q, 10);  
   slap_SetIdentity(data.R, 0.1);
   slap_AddIdentity(data.R, work.rho); // \tilde{R}
-  tiny_InitDataLinearCostFromArray(&work, q, r, r_tilde, q_data, r_data, r_tilde_data);
+  tiny_InitDataLinearCost(&work, q, r, r_tilde, q_data, r_data, r_tilde_data);
 
   tiny_SetInputBound(&work, Acu_data, umin_data, umax_data);
 

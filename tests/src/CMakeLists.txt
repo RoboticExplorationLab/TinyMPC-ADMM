@@ -15,7 +15,7 @@ function(add_my_test name)
   target_link_libraries(${TEST_NAME}
     PRIVATE
     simpletest
-    tinympc::tinympc
+    # tinympc::tinympc
     m  # math library
     )
   add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
