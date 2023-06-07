@@ -1,5 +1,9 @@
 #include "admm.h"
 
+# ifdef __cplusplus
+extern "C" {
+# endif // ifdef __cplusplus
+
 enum tiny_ErrorCode tiny_SolveAdmm(tiny_AdmmWorkspace* work) {
 
   tiny_ResetInfo(work);
@@ -177,3 +181,7 @@ enum tiny_ErrorCode tiny_WarmStartInput(tiny_AdmmWorkspace* work, Eigen::VectorM
   work->soln->U = U;
   return TINY_NO_ERROR;
 }
+
+# ifdef __cplusplus
+}
+# endif // ifdef __cplusplus

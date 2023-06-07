@@ -6,6 +6,10 @@
 #include "tinympc/tinympc.h"
 #include "Eigen.h"
 
+# ifdef __cplusplus
+extern "C" {
+# endif // ifdef __cplusplus
+
 // Macro variables
 #define DT 0.01       // dt
 // #define NSTATES 12   // no. of states (error state)
@@ -263,3 +267,7 @@ int main() {
 
   return 0;
 }
+
+# ifdef __cplusplus
+}
+# endif // ifdef __cplusplus
