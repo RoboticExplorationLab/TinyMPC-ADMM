@@ -14,8 +14,14 @@ enum tiny_ErrorCode tiny_AddStageCost(tiny_AdmmWorkspace* work, const int k) {
 
 enum tiny_ErrorCode tiny_AddTerminalCost(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
-  work->info->obj_val += 0.5 * (work->soln->X[N-1] - work->data->Xref[N-1]).transpose() * 
-                         (*(work->soln->Pinf)) * (work->soln->X[N-1] - work->data->Xref[N-1]) ;
+  if (work->stgs->adaptive_horizon > 0) {
+    work->info->obj_val += 0.5 * (work->soln->X[N-1] - work->data->Xref[N-1]).transpose() * 
+                          (*(work->soln->Pinf_s)) * (work->soln->X[N-1] - work->data->Xref[N-1]);
+  }
+  else {
+    work->info->obj_val += 0.5 * (work->soln->X[N-1] - work->data->Xref[N-1]).transpose() * 
+                          (*(work->soln->Pinf)) * (work->soln->X[N-1] - work->data->Xref[N-1]);
+  }
   return TINY_NO_ERROR;
 }
 
@@ -29,7 +35,12 @@ enum tiny_ErrorCode tiny_UpdateLinearCost(tiny_AdmmWorkspace* work) {
     (work->data->r[k]).noalias() = -(*(work->data->R)).lazyProduct(work->data->Uref[k]);
   }
   /* Compute q[N-1] = -Pinf*Xref[N-1] */ 
-  (work->soln->p[N-1]).noalias() = -(*(work->soln->Pinf)).lazyProduct(work->data->Xref[N-1]);
+  if (work->stgs->adaptive_horizon > 0) {
+    (work->soln->p[N-1]).noalias() = -(*(work->soln->Pinf_s)).lazyProduct(work->data->Xref[N-1]);
+  }
+  else {
+    (work->soln->p[N-1]).noalias() = -(*(work->soln->Pinf)).lazyProduct(work->data->Xref[N-1]);
+  }
   return TINY_NO_ERROR;
 }
 

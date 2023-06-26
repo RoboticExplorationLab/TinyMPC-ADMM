@@ -24,6 +24,9 @@ Eigen::VectorNf* YX, Eigen::VectorMf* YU, Eigen::VectorNf* YG,
 Eigen::MatrixMNf* Kinf, Eigen::VectorMf* d, 
 Eigen::MatrixNf* Pinf, Eigen::VectorNf* p);
 
+enum tiny_ErrorCode tiny_InitSolutionStretch(tiny_AdmmWorkspace* work,
+Eigen::MatrixMNf* Kinf, Eigen::MatrixNf* Pinf);
+
 enum tiny_ErrorCode tiny_InitWorkspace(tiny_AdmmWorkspace* work,
                                        tiny_AdmmInfo* info,
                                        tiny_Model* model,
@@ -37,6 +40,9 @@ Eigen::VectorMf* ZU, Eigen::VectorMf* ZU_new, Eigen::VectorNf* ZX, Eigen::Vector
 // enum tiny_ErrorCode tiny_EvalPrimalCache(tiny_AdmmWorkspace* work);
 
 enum tiny_ErrorCode tiny_InitPrimalCache(tiny_AdmmWorkspace* work, 
+Eigen::MatrixMf* Quu_inv_data, Eigen::MatrixNf* AmBKt_data, Eigen::MatrixNMf* coeff_d2p_data);
+
+enum tiny_ErrorCode tiny_InitPrimalCacheStretch(tiny_AdmmWorkspace* work, 
 Eigen::MatrixMf* Quu_inv_data, Eigen::MatrixNf* AmBKt_data, Eigen::MatrixNMf* coeff_d2p_data);
 
 enum tiny_ErrorCode tiny_ResetInfo(tiny_AdmmWorkspace* work);

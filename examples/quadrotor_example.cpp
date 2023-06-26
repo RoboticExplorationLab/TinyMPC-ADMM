@@ -144,7 +144,7 @@ static VectorMf Qu;
 static VectorMf ZU[NHORIZON-1]; 
 static VectorMf ZU_new[NHORIZON-1];
 
-static VectorNf x0 = (VectorNf() << 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0).finished();
+static VectorNf x0 = (VectorNf() << 0.5, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0).finished();
 static VectorNf xg = (VectorNf() << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).finished();
 static VectorMf ug = (VectorMf() << 0, 0, 0, 0).finished();;
 
@@ -186,7 +186,7 @@ void InitMpc() {
   tiny_UpdateLinearCost(&work);
 
   /* Solver settings */
-  stgs.max_iter = 1;           // limit this if needed
+  stgs.max_iter = 5;           // limit this if needed
   stgs.verbose = 0;
   stgs.check_termination = 1;
   stgs.tol_abs_dual = 5e-2;
@@ -229,7 +229,7 @@ int main() {
 
     // Inject noise into measurement
     for (int j = 0; j < NSTATES; ++j) {
-      X[k](j) += X[k](j) * T_NOISE(1);
+      X[k](j) += X[k](j) * T_NOISE(0);
     }
 
     clock_t start, end;
