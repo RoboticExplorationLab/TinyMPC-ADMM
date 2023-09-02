@@ -22,8 +22,8 @@ extern "C" {
 // Codes generated from julia/quadrotor_quat/quadrotor_gen
 // Discrete dynamics of quadrotor
 //========================================
-void tiny_QuadNonlinearDynamics_Raw(sfloat* xn, const sfloat* x,
-                                    const sfloat* u);
+void tiny_QuadNonlinearDynamics_Raw(float* xn, const float* x,
+                                    const float* u);
 
 void tiny_QuadNonlinearDynamics(Matrix* xn, const Matrix x, const Matrix u);
 
@@ -31,9 +31,9 @@ void tiny_QuadNonlinearDynamics(Matrix* xn, const Matrix x, const Matrix u);
 // // Codes generated from julia/quadrotor_quat/quadrotor_gen
 // // Jacobians of discrete dynamics of quadrotor
 // //========================================
-// void tiny_QuadGetJacobianA_Raw(sfloat* A, const sfloat* x, const sfloat* u);
+// void tiny_QuadGetJacobianA_Raw(float* A, const float* x, const float* u);
 
-// void tiny_QuadGetJacobianB_Raw(sfloat* B, const sfloat* x, const sfloat* u);
+// void tiny_QuadGetJacobianB_Raw(float* B, const float* x, const float* u);
 
 // void tiny_QuadGetJacobians(Matrix* A, Matrix* B, const Matrix x,
 //                             const Matrix u);

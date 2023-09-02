@@ -1,8 +1,3 @@
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "data/forward_pass_data.h"
 #include "simpletest.h"
 #include "slap/slap.h"
@@ -14,18 +9,18 @@
 #define NINPUTS 2
 #define NHORIZON 3
 
-sfloat A_data[NSTATES * NSTATES] = {1,   0, 0, 0, 0, 1,   0, 0,
+float A_data[NSTATES * NSTATES] = {1,   0, 0, 0, 0, 1,   0, 0,
                                     0.1, 0, 1, 0, 0, 0.1, 0, 1};
-sfloat B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
-sfloat f_data[NSTATES] = {0, 0, 0, 0};
-// sfloat x0_data[NSTATES] = {5,7,2,-1.4};
-sfloat Q_data[NSTATES*NSTATES] = {0};
-sfloat R_data[NINPUTS*NINPUTS] = {0};
-sfloat q_data[NSTATES*(NHORIZON-1)] = {0};
-sfloat r_data[NINPUTS*(NHORIZON-1)] = {0};
+float B_data[NSTATES * NINPUTS] = {0.005, 0, 0.1, 0, 0, 0.005, 0, 0.1};
+float f_data[NSTATES] = {0, 0, 0, 0};
+// float x0_data[NSTATES] = {5,7,2,-1.4};
+float Q_data[NSTATES*NSTATES] = {0};
+float R_data[NINPUTS*NINPUTS] = {0};
+float q_data[NSTATES*(NHORIZON-1)] = {0};
+float r_data[NINPUTS*(NHORIZON-1)] = {0};
 
-sfloat Xref_data[NSTATES] = {0};
-sfloat Uref_data[NINPUTS] = {0};
+float Xref_data[NSTATES] = {0};
+float Uref_data[NINPUTS] = {0};
 
   Matrix A;
   Matrix B;
@@ -41,7 +36,7 @@ sfloat Uref_data[NINPUTS] = {0};
   Matrix r[NHORIZON-1];
 
 void ForwardPassTest() {
-  const sfloat tol = 1e-6;
+  const float tol = 1e-6;
 
   tiny_Model model;
   tiny_InitModel(&model, NSTATES, NINPUTS, NHORIZON, 0, 0, 0.1);
@@ -53,18 +48,18 @@ void ForwardPassTest() {
   tiny_AdmmWorkspace work;
   tiny_InitWorkspace(&work, &info, &model, &data, &soln, &stgs);
   
-  sfloat temp_data[work.data_size];
+  float temp_data[work.data_size];
   T_INIT_ZEROS(temp_data);
 
   tiny_InitWorkspaceTempData(&work, 0, 0, 0, 0, temp_data);
-  tiny_InitModelFromArray(&model, &A, &B, &f, A_data, B_data, f_data);
+  tiny_InitModel(&model, &A, &B, &f, A_data, B_data, f_data);
 
-  tiny_InitSolnTrajFromArray(&work, X, U, x_data, u_data);
-  tiny_InitSolnGainsFromArray(&work, d, 0, d_data, 0, K_data, 0);
+  tiny_InitSolnTraj(&work, X, U, x_data, u_data);
+  tiny_InitSolnGains(&work, d, 0, d_data, 0, K_data, 0);
 
-  sfloat* xsol_ptr = xsol_data;
+  float* xsol_ptr = xsol_data;
   for (int i = 0; i < NHORIZON; ++i) {
-    Xsln[i] = slap_MatrixFromArray(NSTATES, 1, xsol_ptr);
+    Xsln[i] = slap_Matrix(NSTATES, 1, xsol_ptr);
     xsol_ptr += NSTATES;
   }
 
@@ -72,19 +67,19 @@ void ForwardPassTest() {
   data.Xref = Xref;
   data.Uref = Uref;
 
-  data.Q = slap_MatrixFromArray(NSTATES, NSTATES, Q_data);
+  data.Q = slap_Matrix(NSTATES, NSTATES, Q_data);
   slap_SetIdentity(data.Q, 1);
-  data.R = slap_MatrixFromArray(NINPUTS, NINPUTS, R_data);
+  data.R = slap_Matrix(NINPUTS, NINPUTS, R_data);
   slap_SetIdentity(data.R, 1);
-  data.q[0] = slap_MatrixFromArray(NSTATES, 1, q_data);
-  data.q[1] = slap_MatrixFromArray(NSTATES, 1, &q_data[NSTATES]);
-  data.r[0] = slap_MatrixFromArray(NINPUTS, 1, r_data);
-  data.r[1] = slap_MatrixFromArray(NINPUTS, 1, &r_data[NINPUTS]);
-  Xref[0] = slap_MatrixFromArray(NSTATES, 1, Xref_data);
-  Xref[1] = slap_MatrixFromArray(NSTATES, 1, Xref_data);
-  Xref[2] = slap_MatrixFromArray(NSTATES, 1, Xref_data);
-  Uref[0] = slap_MatrixFromArray(NINPUTS, 1, Uref_data);
-  Uref[1] = slap_MatrixFromArray(NINPUTS, 1, Uref_data);
+  data.q[0] = slap_Matrix(NSTATES, 1, q_data);
+  data.q[1] = slap_Matrix(NSTATES, 1, &q_data[NSTATES]);
+  data.r[0] = slap_Matrix(NINPUTS, 1, r_data);
+  data.r[1] = slap_Matrix(NINPUTS, 1, &r_data[NINPUTS]);
+  Xref[0] = slap_Matrix(NSTATES, 1, Xref_data);
+  Xref[1] = slap_Matrix(NSTATES, 1, Xref_data);
+  Xref[2] = slap_Matrix(NSTATES, 1, Xref_data);
+  Uref[0] = slap_Matrix(NINPUTS, 1, Uref_data);
+  Uref[1] = slap_Matrix(NINPUTS, 1, Uref_data);
   tiny_UpdateLinearCost(&work);
 
   uptr = u_data;

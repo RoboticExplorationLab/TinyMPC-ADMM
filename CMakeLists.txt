@@ -12,14 +12,17 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS NO)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS NO)
 
 include(CMakePrintHelpers)
 include(GNUInstallDirs)
 # include(Functions)
-include(FetchContent)
+# include(FetchContent)
 
 # Add CPM Dependency Manager
-include(FindCPM)
+# include(FindCPM)
 
 # Handle default build type
 set(TINY_DEFAULT_BUILD_TYPE "Release")
@@ -35,9 +38,6 @@ option(TINY_BUILD_TESTS "Build tests for TinyMPC" ON)
 # Enable clang-tidy analysis
 option(TINY_CLANG_TIDY "Run clang-tidy analyzer on the source code." OFF)
 
-# Floating point precision
-set(TINY_FLOAT float CACHE STRING "Floating point precision (float,double).")
-
 # Build examples
 option(TINY_BUILD_EXAMPLES "Build examples for TinyMPC." ON)
 
@@ -50,48 +50,22 @@ option(TINY_PROFILE "Compile with -pg" OFF)
 ##############################
 # Dependencies
 ##############################
-
-# slap
-if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-FetchContent_Declare(slap
-  GIT_REPOSITORY https://github.com/bjack205/slap
-  GIT_TAG main
-  )
-set(SLAP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(SLAP_VECTORIZE ${TINY_VECTORIZE} CACHE BOOL "" FORCE)
-set(SLAP_FLOAT ${TINY_FLOAT} CACHE STRING "" FORCE)
-FetchContent_MakeAvailable(slap)
-endif ()
-
-# Google Test
-# if (TINY_BUILD_TESTS)
-#   CPMAddPackage(
-#       NAME googletest
-#       GITHUB_REPOSITORY google/googletest
-#       VERSION 1.13.0
-#       DOWNLOAD_EXTRACT_TIMESTAMP
-#       OPTIONS
-#       "INSTALL_GTEST OFF"
-#       "gtest_force_shared_crt ON"
-#   )
-#   add_library(gtest::gtest ALIAS gtest_main)
-#   enable_testing()
-#   include(GoogleTest)
-#   include(CTest)
-# endif ()
+include_directories(ext/Eigen)
+add_compile_options(-fno-math-errno -ffast-math -Ofast -DNDEBUG)
 
 ##############################
 # Main build targets
 ##############################
 # Compile options
 if (NOT WIN32)
-  add_compile_options(-Wall -Wextra -pedantic)
+  add_compile_options()
+  # add_compile_options(-Wall -Wextra -pedantic -Wno-comment)
   # add_compile_options(-Wno-error=unknown-pragmas
   #                     -Wformat=2 -Wno-unused-parameter -Wshadow 
   #                     -Wwrite-strings -Wstrict-prototypes -Wold-style-definition 
   #                     -Wredundant-decls -Wnested-externs -Wmissing-include-dirs)
   if (TINY_VECTORIZE)
-    add_compile_options(-march=native)
+    add_compile_options(-march=native -mfma)
   endif()
   # if (TINY_PROFILE)
   #   add_compile_options(-pd)
@@ -99,22 +73,8 @@ if (NOT WIN32)
 endif()
 
 if (CMAKE_C_COMPILER_ID MATCHES "GNU")
-  add_compile_options(-Wjump-misses-init -Wlogical-op)
+  add_compile_options(-Wlogical-op)
 endif()  
-
-# TODO: Future options to optimize library for specific use of constraints
-# option(SET_GOAL_CONSTRAINT "Set goal constraint" OFF)
-# if (SET_GOAL_CONSTRAINT)
-#   add_definitions(-DGOAL_CONSTRAINT)
-# endif()
-# option(SET_INPUT_CONSTRAINT "Set input constraints" ON)
-# if (SET_INPUT_CONSTRAINT)
-#   add_definitions(-DINPUT_CONSTRAINT)
-# endif()
-# option(SET_STATE_CONSTRAINT "Set state constraints" ON)
-# if (SET_STATE_CONSTRAINT)
-#   add_definitions(-DSTATE_CONSTRAINT)
-# endif()
 
 # Make all includes relative to src/ directory
 include_directories(${PROJECT_SOURCE_DIR}/src)

@@ -1,6 +1,6 @@
 add_library(simpletest
   simpletest.h
-  simpletest.c
+  simpletest.cpp
   )
 
 target_include_directories(simpletest

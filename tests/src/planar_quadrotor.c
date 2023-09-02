@@ -4,12 +4,12 @@
 // Planar quadrotor model parameters
 //========================================
 // struct tiny_Model_PlanarQuadrotor {
-//   sfloat g;
-//   sfloat m;
-//   sfloat l;
-//   sfloat J;
-//   sfloat umin[2];
-//   sfloat umax[2];
+//   float g;
+//   float m;
+//   float l;
+//   float J;
+//   float umin[2];
+//   float umax[2];
 // } tiny_DefaultModel_PlanarQuadrotor = {9.81, 1,      0.018,
 //                                        0.3,  {0, 0}, {19.62, 19.62}};
 
@@ -17,8 +17,8 @@
 // Codes generated from julia/planar_quad_gen
 // Discrete dynamics of planar quadrotor
 //========================================
-void tiny_PQuadNonlinearDynamics_Raw(sfloat* xn, const sfloat* x,
-                                     const sfloat* u) {
+void tiny_PQuadNonlinearDynamics_Raw(float* xn, const float* x,
+                                     const float* u) {
   xn[0] = 0.16666666666666666 *
               (0.2 * (0.05 * (u[0] + u[1]) * sin(0.05 * x[5] + x[2]) + x[3]) +
                0.1 * (0.1 * (u[0] + u[1]) *
@@ -80,7 +80,7 @@ void tiny_PQuadNonlinearDynamics(Matrix* xn, const Matrix x, const Matrix u) {
 // Codes generated from julia/planar_quad_gen
 // Jacobians of discrete dynamics of planar quadrotor
 //========================================
-void tiny_PQuadGetJacobianA_Raw(sfloat* A, const sfloat* x, const sfloat* u) {
+void tiny_PQuadGetJacobianA_Raw(float* A, const float* x, const float* u) {
   A[0] = 1;
   A[1] = 0;
   A[2] = 0;
@@ -167,7 +167,7 @@ void tiny_PQuadGetJacobianA_Raw(sfloat* A, const sfloat* x, const sfloat* u) {
   A[35] = 1;
 }
 
-void tiny_PQuadGetJacobianB_Raw(sfloat* B, const sfloat* x, const sfloat* u) {
+void tiny_PQuadGetJacobianB_Raw(float* B, const float* x, const float* u) {
   B[0] =
       0.16666666666666666 *
       (0.01 * sin(0.05 * x[5] + x[2]) + 0.01 * sin(x[2]) +
