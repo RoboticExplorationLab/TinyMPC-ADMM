@@ -15,7 +15,7 @@ extern "C" {
 // #define NSTATES 12   // no. of states (error state)
 // #define NINPUTS 4    // no. of controls
 // These are already defined in `constants.h`
-#define NHORIZON 4  // horizon steps (NHORIZON states and NHORIZON-1 controls)
+#define NHORIZON 10  // horizon steps (NHORIZON states and NHORIZON-1 controls)
 #define NSIM 200     // simulation steps (fixed with reference data)
 
 using namespace Eigen;
@@ -207,12 +207,12 @@ void InitMpc() {
   tiny_UpdateLinearCost(&work);
 
   /* Solver settings */
-  stgs.en_cstr_states = 0;
+  stgs.en_cstr_states = 1;
   stgs.max_iter = 100;           // limit this if needed
   stgs.verbose = 0;
-  stgs.check_termination = 1;
-  stgs.tol_abs_dual = 5e-2;
-  stgs.tol_abs_prim = 5e-2;
+  stgs.check_termination = 0;
+  stgs.tol_abs_dual = 1e-2;
+  stgs.tol_abs_prim = 1e-2;
 
   // Absolute formulation:
   // Warm-starting since horizon data is reused

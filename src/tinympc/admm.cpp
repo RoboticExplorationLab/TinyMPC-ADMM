@@ -148,7 +148,7 @@ enum tiny_ErrorCode UpdateSlackDual(tiny_AdmmWorkspace* work) {
 
 enum tiny_ErrorCode ComputePrimalResidual(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
-  work->info->pri_res = 0;
+  work->info->pri_res = 0.0f;
   if (work->stgs->en_cstr_inputs) {
     for (int k = 0; k < N - 1; ++k) {    
       work->info->pri_res = T_MAX(work->info->pri_res, (work->soln->U[k] - work->ZU_new[k]).cwiseAbs().maxCoeff());
@@ -159,7 +159,7 @@ enum tiny_ErrorCode ComputePrimalResidual(tiny_AdmmWorkspace* work) {
 
 enum tiny_ErrorCode ComputeDualResidual(tiny_AdmmWorkspace* work) {
   int N = work->data->model[0].nhorizon;
-  work->info->dua_res = 0;
+  work->info->dua_res = 0.0f;
   if (work->stgs->en_cstr_inputs) {
     for (int k = 0; k < N - 1; ++k) {
       work->info->dua_res = T_MAX(work->info->dua_res, 
