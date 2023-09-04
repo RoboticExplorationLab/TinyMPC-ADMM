@@ -24,6 +24,7 @@ enum tiny_ErrorCode tiny_BackwardPassGrad(tiny_AdmmWorkspace* work) {
   }
   // LTI model
   if (!model[0].ltv && !model[0].affine) {
+    // printf("backward pass\n");
     for (int k = N - 2; k >= 0; --k) {
       /* Compute  Qu = B'*p[k+1] + r[k] */
       // slap_MatMulAtB(work->Qu, model[0].B[0], work->soln->p[k+1]);
@@ -42,7 +43,7 @@ enum tiny_ErrorCode tiny_BackwardPassGrad(tiny_AdmmWorkspace* work) {
       // MatMulAdd(work->soln->p[k], work->coeff_d2p, work->soln->d[k], 1, -1);
       // MatMulAdd(work->soln->p[k], work->AmBKt, work->soln->p[k+1], 1, 1);
       // MatAdd(work->soln->p[k],work->soln->p[k], work->data->q[k], 1);  
-      work->soln->p[k] = work->data->q[k];
+      work->soln->p[k] = work->data->q_tilde[k];
       (work->soln->p[k]).noalias() += (*(work->AmBKt)).lazyProduct(work->soln->p[k+1])
                          - ((*(work->soln->Kinf)).transpose()).lazyProduct(work->data->r_tilde[k]) + (*(work->coeff_d2p)).lazyProduct(work->soln->d[k]);   
       // PrintMatrixT(work->soln->p[k]);

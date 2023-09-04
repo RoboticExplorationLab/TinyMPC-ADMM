@@ -64,11 +64,12 @@ Eigen::MatrixNf* Pinf, Eigen::VectorNf* p) {
 }
 
 enum tiny_ErrorCode tiny_InitDataCost(tiny_AdmmWorkspace* work, 
-Eigen::MatrixNf* Q, Eigen::VectorNf* q, Eigen::MatrixMf* R, Eigen::VectorMf* r, Eigen::VectorMf* r_tilde) {
+Eigen::MatrixNf* Q, Eigen::VectorNf* q, Eigen::MatrixMf* R, Eigen::VectorMf* r, Eigen::VectorNf* q_tilde, Eigen::VectorMf* r_tilde) {
   work->data->Q = Q;
   work->data->R = R;
   work->data->q = q;
   work->data->r = r;
+  work->data->q_tilde = q_tilde;
   work->data->r_tilde = r_tilde;
   return TINY_NO_ERROR;
 }

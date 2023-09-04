@@ -127,13 +127,14 @@ typedef struct {
   Eigen::MatrixNf* Q;
   Eigen::MatrixMf* R;
   Eigen::VectorNf* q;
+  Eigen::VectorNf* q_tilde;
   Eigen::VectorMf* r;
   Eigen::VectorMf* r_tilde;
   
   Eigen::VectorNf* Xref;
   Eigen::VectorMf* Uref;
 
-  Eigen::MatrixNf* Acx;
+  Eigen::VectorNf* Acx;
   Eigen::VectorNf* ucx;
   Eigen::VectorNf* lcx;
   Eigen::MatrixMf* Acu;
