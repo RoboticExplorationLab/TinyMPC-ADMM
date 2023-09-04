@@ -46,7 +46,7 @@ enum tiny_ErrorCode tiny_UpdateConstrainedLinearCost(tiny_AdmmWorkspace* work) {
   // }
 
   // if (work->stgs->en_cstr_states) {
-  for (int k = 0; k < N - 1; ++k) {
+  for (int k = 1; k < N - 1; ++k) {
     /* Compute q_tilde[k] = q[k] - ρ*(z[k]-y[k]) */ 
     work->data->q_tilde[k] = work->data->q[k] - work->rho * (work->ZX_new[k] - work->soln->YX[k]);   
     }  
