@@ -64,7 +64,7 @@ static VectorNf xg = (VectorNf() << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).finished
 static VectorMf ug = (VectorMf() << 0, 0, 0, 0).finished();;
 
 static VectorNf X[NSIM];
-
+ 
 // Create TinyMPC struct
 static tiny_Model model;
 static tiny_AdmmSettings stgs;
@@ -192,7 +192,7 @@ void InitMpc() {
   tiny_SetGoalInput(&work, Uref, &ug);
 
   /* Set up LQR cost */
-  tiny_InitDataCost(&work, &Q, q, &R, r, q_tilde, r_tilde);
+  tiny_InitDataCost(&work, &Q, q, q_tilde, &R, r, r_tilde);
 
   /* Set up constraints */
   tiny_SetInputBound(&work, &Acu, &lcu, &ucu);
